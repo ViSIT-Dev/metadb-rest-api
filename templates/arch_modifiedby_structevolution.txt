@@ -1,0 +1,44 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?structuralevolution_idby_title;separator=",") as ?structuralevolution_idby_titles) (group_concat(distinct ?structuralevolution_description;separator=",") as ?structuralevolution_descriptions) (group_concat(distinct ?structuralevolution_comment;separator=",") as ?structuralevolution_comments) (group_concat(distinct ?structevol_exemplifies_function;separator=",") as ?structevol_exemplifies_functions) (group_concat(distinct ?structevol_motivatedby_person;separator=",") as ?structevol_motivatedby_persons) (group_concat(distinct ?structevol_carriedoutby_person;separator=",") as ?structevol_carriedoutby_persons) (group_concat(distinct ?structevol_influencedby_person;separator=",") as ?structevol_influencedby_persons) (group_concat(distinct ?structuralevol_dating;separator=",") as ?structuralevol_datings) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y1 .
+	?y1 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y1 <http://erlangen-crm.org/170309/P1_is_identified_by> ?y2 .
+	 ?y2 <http://erlangen-crm.org/170309/P3_has_note> ?structuralevolution_idby_title . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y3 .
+	?y3 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y3 <http://visit.de/ontologies/vismo/description> ?structuralevolution_description . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y4 .
+	?y4 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y4 <http://visit.de/ontologies/vismo/comment> ?structuralevolution_comment . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y5 .
+	?y5 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y5 <http://erlangen-crm.org/170309/P137_exemplifies> ?y6 .
+	 ?y6 <http://erlangen-crm.org/170309/P3_has_note> ?structevol_exemplifies_function . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y7 .
+	?y7 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y7 <http://erlangen-crm.org/170309/P17_was_motivated_by> ?structevol_motivatedby_person .
+	?structevol_motivatedby_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y8 .
+	?y8 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y8 <http://erlangen-crm.org/170309/P14_carried_out_by> ?structevol_carriedoutby_person .
+	?structevol_carriedoutby_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y9 .
+	?y9 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y9 <http://erlangen-crm.org/170309/P15_was_influenced_by> ?structevol_influencedby_person .
+	?structevol_influencedby_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?structuralevol_dating .
+	?structuralevol_dating rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

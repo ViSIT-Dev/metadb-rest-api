@@ -1,0 +1,129 @@
+Example Wisski Paths:
+
+--- Normal Group
+<path>
+	<enabled>1</enabled>
+	<weight>0</weight>
+	<id>object</id>
+	<group_id>0</group_id>
+	<field_type_informative/>
+	<cardinality>-1</cardinality>
+	<path_array>
+		<x>http://visit.de/ontologies/vismo/Object</x>
+	</path_array>
+	<datatype_property>empty</datatype_property>
+	<short_name/>
+	<disamb>0</disamb>
+	<description/>
+	<uuid>3d381f56-22ff-430b-b01f-a6b876f28201</uuid>
+	<is_group>1</is_group>
+	<name>Object</name>
+</path>
+
+--- Example 1-step Path, Ending in a Property
+<path>
+	<enabled>1</enabled>
+	<weight>4</weight>
+	<id>object_description</id>
+	<group_id>object</group_id>
+	<field_type_informative>string_long</field_type_informative>
+	<cardinality>-1</cardinality>
+	<path_array>
+		<x>http://visit.de/ontologies/vismo/Object</x>
+	</path_array>
+	<datatype_property>http://visit.de/ontologies/vismo/description</datatype_property>
+	<short_name/>
+	<disamb>0</disamb>
+	<description/>
+	<uuid>9a87575d-54af-4efe-b09d-be8761560510</uuid>
+	<is_group>0</is_group>
+	<name>Object_description</name>
+</path>
+
+--- Example 3-step Path, Ending in a Property
+<path>
+	<enabled>1</enabled>
+	<weight>0</weight>
+	<id>object_identifiedby_title</id>
+	<group_id>object</group_id>
+	<field_type_informative>string</field_type_informative>
+	<cardinality>-1</cardinality>
+	<path_array>
+		<x>http://visit.de/ontologies/vismo/Object</x>
+		<y>http://erlangen-crm.org/170309/P1_is_identified_by</y>
+		<x>http://erlangen-crm.org/170309/E35_Title</x>
+	</path_array>
+	<datatype_property>http://erlangen-crm.org/170309/P3_has_note</datatype_property>
+	<short_name/>
+	<disamb>2</disamb>
+	<description/>
+	<uuid>0c5b89a4-10e5-458b-acf5-86ab8b9bbf41</uuid>
+	<is_group>0</is_group>
+	<name>Object_identifiedBy_Title</name>
+</path>
+
+--- Example 3-step Path, Ending in a Reference
+<path>
+	<enabled>1</enabled>
+	<weight>6</weight>
+	<id>object_has_reference</id>
+	<group_id>object</group_id>
+	<field_type_informative>entity_reference</field_type_informative>
+	<cardinality>-1</cardinality>
+	<path_array>
+		<x>http://visit.de/ontologies/vismo/Object</x>
+		<y>http://visit.de/ontologies/vismo/reference</y>
+		<x>http://visit.de/ontologies/vismo/Reference</x>
+	</path_array>
+	<datatype_property>empty</datatype_property>
+	<short_name/>
+	<disamb>2</disamb>
+	<description/>
+	<uuid>047a8cee-106e-4ebc-b807-16fdab7d1736</uuid>
+	<is_group>0</is_group>
+	<name>Object_has_Reference</name>
+</path>
+
+--- Leading to a Subgroup
+<path>
+	<enabled>1</enabled>
+	<weight>14</weight>
+	<id>object_prefidentifier_inscriptio</id>
+	<group_id>object</group_id>
+	<field_type_informative/>
+	<cardinality>-1</cardinality>
+	<path_array>
+		<x>http://visit.de/ontologies/vismo/Object</x>
+		<y>http://erlangen-crm.org/170309/P128_carries</y>
+		<x>http://erlangen-crm.org/170309/E34_Inscription</x>
+	</path_array>
+	<datatype_property>empty</datatype_property>
+	<short_name/>
+	<disamb>0</disamb>
+	<description/>
+	<uuid>2b9626ec-a523-4ca7-a6d5-f40422af3086</uuid>
+	<is_group>1</is_group>
+	<name>Object_prefIdentifier_Inscription</name>
+</path>
+
+--- Subgroup Path
+<path>
+	<enabled>1</enabled>
+	<weight>0</weight>
+	<id>inscription_text</id>
+	<group_id>object_prefidentifier_inscriptio</group_id>
+	<field_type_informative>string</field_type_informative>
+	<cardinality>-1</cardinality>
+	<path_array>
+		<x>http://visit.de/ontologies/vismo/Object</x>
+		<y>http://erlangen-crm.org/170309/P128_carries</y>
+		<x>http://erlangen-crm.org/170309/E34_Inscription</x>
+	</path_array>
+	<datatype_property>http://erlangen-crm.org/170309/P3_has_note</datatype_property>
+	<short_name/>
+	<disamb>0</disamb>
+	<description/>
+	<uuid>b7863114-2ebb-472f-a418-7eaf375759ed</uuid>
+	<is_group>0</is_group>
+	<name>Inscription_text</name>
+</path>

@@ -1,0 +1,28 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?person_birthday;separator=",") as ?person_birthdays) (group_concat(distinct ?person_mother;separator=",") as ?person_mothers) (group_concat(distinct ?person_father;separator=",") as ?person_fathers) (group_concat(distinct ?person_birthplace;separator=",") as ?person_birthplaces) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E67_Birth> .
+	?y1 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y2 .
+	 ?y2 <http://erlangen-crm.org/170309/P79_beginning_is_qualified_by> ?person_birthday . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y3 .
+	?y3 rdf:type <http://erlangen-crm.org/170309/E67_Birth> .
+	?y3 <http://erlangen-crm.org/170309/P96_by_mother> ?person_mother .
+	?person_mother rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y4 .
+	?y4 rdf:type <http://erlangen-crm.org/170309/E67_Birth> .
+	?y4 <http://erlangen-crm.org/170309/P97_from_father> ?person_father .
+	?person_father rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y5 .
+	?y5 rdf:type <http://erlangen-crm.org/170309/E67_Birth> .
+	?y5 <http://erlangen-crm.org/170309/P7_took_place_at> ?person_birthplace .
+	?person_birthplace rdf:type <http://visit.de/ontologies/vismo/Place> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

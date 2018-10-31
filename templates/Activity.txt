@@ -1,0 +1,46 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?activity_idby_title;separator=",") as ?activity_idby_titles) (group_concat(distinct ?activity_description;separator=",") as ?activity_descriptions) (group_concat(distinct ?activity_comment;separator=",") as ?activity_comments) (group_concat(distinct ?activity_keyword;separator=",") as ?activity_keywords) (group_concat(distinct ?activity_hadparticipant_person;separator=",") as ?activity_hadparticipant_persons) (group_concat(distinct ?activity_used_architecture;separator=",") as ?activity_used_architectures) (group_concat(distinct ?activity_used_object;separator=",") as ?activity_used_objects) (group_concat(distinct ?activity_tookplaceat_place;separator=",") as ?activity_tookplaceat_places) (group_concat(distinct ?activity_isdepictedby_object;separator=",") as ?activity_isdepictedby_objects) (group_concat(distinct ?activity_has_reference;separator=",") as ?activity_has_references) (group_concat(distinct ?activity_helpfullinks;separator=",") as ?activity_helpfullinkss) (group_concat(distinct ?activity_thumbnail;separator=",") as ?activity_thumbnails) (group_concat(distinct ?activity_dating;separator=",") as ?activity_datings) (group_concat(distinct ?activity_digitalrepresentation;separator=",") as ?activity_digitalrepresentations) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E35_Title> .
+	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?activity_idby_title . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/description> ?activity_description}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/comment> ?activity_comment}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/keyword> ?activity_keyword}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P11_had_participant> ?activity_hadparticipant_person .
+	?activity_hadparticipant_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P16_used_specific_object> ?activity_used_architecture .
+	?activity_used_architecture rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P16_used_specific_object> ?activity_used_object .
+	?activity_used_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P7_took_place_at> ?activity_tookplaceat_place .
+	?activity_tookplaceat_place rdf:type <http://visit.de/ontologies/vismo/Place> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P62i_is_depicted_by> ?activity_isdepictedby_object .
+	?activity_isdepictedby_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/reference> ?activity_has_reference .
+	?activity_has_reference rdf:type <http://visit.de/ontologies/vismo/Reference> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/helpfulLinks> ?activity_helpfullinks}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/thumbnail> ?activity_thumbnail}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?activity_dating .
+	?activity_dating rdf:type <http://visit.de/ontologies/vismo/Dating> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/hasDigitalRepresentation> ?activity_digitalrepresentation .
+	?activity_digitalrepresentation rdf:type <http://visit.de/ontologies/vismo/DigitalRepresentation> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

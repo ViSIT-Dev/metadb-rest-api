@@ -1,0 +1,33 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?custody_receiving_person;separator=",") as ?custody_receiving_persons) (group_concat(distinct ?custody_receiving_group;separator=",") as ?custody_receiving_groups) (group_concat(distinct ?custody_from_person;separator=",") as ?custody_from_persons) (group_concat(distinct ?custody_from_group;separator=",") as ?custody_from_groups) (group_concat(distinct ?toc_dating;separator=",") as ?toc_datings) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P30i_custody_transferred_through> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y1 <http://erlangen-crm.org/170309/P29_custody_received_by> ?custody_receiving_person .
+	?custody_receiving_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P30i_custody_transferred_through> ?y2 .
+	?y2 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y2 <http://erlangen-crm.org/170309/P29_custody_received_by> ?custody_receiving_group .
+	?custody_receiving_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P30i_custody_transferred_through> ?y3 .
+	?y3 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y3 <http://erlangen-crm.org/170309/P28_custody_surrendered_by> ?custody_from_person .
+	?custody_from_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P30i_custody_transferred_through> ?y4 .
+	?y4 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y4 <http://erlangen-crm.org/170309/P28_custody_surrendered_by> ?custody_from_group .
+	?custody_from_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P30i_custody_transferred_through> ?y5 .
+	?y5 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y5 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y6 .
+	 ?y6 <http://erlangen-crm.org/170309/P79_beginning_is_qualified_by> ?toc_dating . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

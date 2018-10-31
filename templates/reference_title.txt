@@ -1,0 +1,16 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?reference_title_title;separator=",") as ?reference_title_titles) (group_concat(distinct ?reference_title_superordinate;separator=",") as ?reference_title_superordinates) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
+	?y1 rdf:type <http://visit.de/ontologies/vismo/Title> .
+	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?reference_title_title . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y2 .
+	?y2 rdf:type <http://visit.de/ontologies/vismo/Title> .
+	?y2 <http://visit.de/ontologies/vismo/superordinateTitle> ?reference_title_superordinate . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

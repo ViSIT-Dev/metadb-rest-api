@@ -1,0 +1,89 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?architecture_idby_title;separator=",") as ?architecture_idby_titles) (group_concat(distinct ?arch_sacraltype;separator=",") as ?arch_sacraltypes) (group_concat(distinct ?arch_has_seculartype;separator=",") as ?arch_has_seculartypes) (group_concat(distinct ?arch_bishopricaffiliation;separator=",") as ?arch_bishopricaffiliations) (group_concat(distinct ?arch_geographicaffiliation;separator=",") as ?arch_geographicaffiliations) (group_concat(distinct ?arch_orderaffiliation;separator=",") as ?arch_orderaffiliations) (group_concat(distinct ?architecture_description;separator=",") as ?architecture_descriptions) (group_concat(distinct ?architecture_comment;separator=",") as ?architecture_comments) (group_concat(distinct ?architecture_innerdescription;separator=",") as ?architecture_innerdescriptions) (group_concat(distinct ?architecture_outerdescription;separator=",") as ?architecture_outerdescriptions) (group_concat(distinct ?architecture_depictedby_object;separator=",") as ?architecture_depictedby_objects) (group_concat(distinct ?architecture_buildinghistory;separator=",") as ?architecture_buildinghistorys) (group_concat(distinct ?arch_currentlyholds_object;separator=",") as ?arch_currentlyholds_objects) (group_concat(distinct ?architecture_exemplify_function;separator=",") as ?architecture_exemplify_functions) (group_concat(distinct ?architecture_location_place;separator=",") as ?architecture_location_places) (group_concat(distinct ?arch_currentowner_person;separator=",") as ?arch_currentowner_persons) (group_concat(distinct ?arch_currentowner_group;separator=",") as ?arch_currentowner_groups) (group_concat(distinct ?arch_currentowner_institution;separator=",") as ?arch_currentowner_institutions) (group_concat(distinct ?architecture_contains_arch;separator=",") as ?architecture_contains_archs) (group_concat(distinct ?architecture_fallswithin_arch;separator=",") as ?architecture_fallswithin_archs) (group_concat(distinct ?architecture_tookpartin_activity;separator=",") as ?architecture_tookpartin_activitys) (group_concat(distinct ?architecture_has_reference;separator=",") as ?architecture_has_references) (group_concat(distinct ?architecture_helpfullinks;separator=",") as ?architecture_helpfullinkss) (group_concat(distinct ?architecture_thumbnail;separator=",") as ?architecture_thumbnails) (group_concat(distinct ?arch_producedby_production;separator=",") as ?arch_producedby_productions) (group_concat(distinct ?arch_modifiedby_structevolution;separator=",") as ?arch_modifiedby_structevolutions) (group_concat(distinct ?architecture_digitalrepresentati;separator=",") as ?architecture_digitalrepresentatis) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E35_Title> .
+	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?architecture_idby_title . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y2 .
+	?y2 rdf:type <http://visit.de/ontologies/vismo/SacralBuilding> .
+	?y2 <http://erlangen-crm.org/170309/P3_has_note> ?arch_sacraltype . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y3 .
+	?y3 rdf:type <http://visit.de/ontologies/vismo/SecularBuilding> .
+	?y3 <http://erlangen-crm.org/170309/P3_has_note> ?arch_has_seculartype . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y4 .
+	?y4 rdf:type <http://visit.de/ontologies/vismo/BishopricAffiliation> .
+	?y4 <http://erlangen-crm.org/170309/P3_has_note> ?arch_bishopricaffiliation . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y5 .
+	?y5 rdf:type <http://visit.de/ontologies/vismo/GeographicalAffiliation> .
+	?y5 <http://erlangen-crm.org/170309/P3_has_note> ?arch_geographicaffiliation . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y6 .
+	?y6 rdf:type <http://visit.de/ontologies/vismo/OrderAffiliation> .
+	?y6 <http://erlangen-crm.org/170309/P3_has_note> ?arch_orderaffiliation . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/description> ?architecture_description}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/comment> ?architecture_comment}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/innerDescription> ?architecture_innerdescription}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/outerDescription> ?architecture_outerdescription}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P62i_is_depicted_by> ?architecture_depictedby_object .
+	?architecture_depictedby_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/buildingHistory> ?architecture_buildinghistory}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P55i_currently_holds> ?arch_currentlyholds_object .
+	?arch_currentlyholds_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P137_exemplifies> ?y14 .
+	?y14 rdf:type <http://visit.de/ontologies/vismo/Function> .
+	?y14 <http://erlangen-crm.org/170309/P3_has_note> ?architecture_exemplify_function . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P55_has_current_location> ?architecture_location_place .
+	?architecture_location_place rdf:type <http://visit.de/ontologies/vismo/Place> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P52_has_current_owner> ?arch_currentowner_person .
+	?arch_currentowner_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P52_has_current_owner> ?arch_currentowner_group .
+	?arch_currentowner_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P52_has_current_owner> ?arch_currentowner_institution .
+	?arch_currentowner_institution rdf:type <http://visit.de/ontologies/vismo/Institution> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P89i_contains> ?architecture_contains_arch .
+	?architecture_contains_arch rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P89_falls_within> ?architecture_fallswithin_arch .
+	?architecture_fallswithin_arch rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P16i_was_used_for> ?architecture_tookpartin_activity .
+	?architecture_tookpartin_activity rdf:type <http://visit.de/ontologies/vismo/Activity> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/reference> ?architecture_has_reference .
+	?architecture_has_reference rdf:type <http://visit.de/ontologies/vismo/Reference> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/helpfulLinks> ?architecture_helpfullinks}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/thumbnail> ?architecture_thumbnail}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?arch_producedby_production .
+	?arch_producedby_production rdf:type <http://erlangen-crm.org/170309/E12_Production> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?arch_modifiedby_structevolution .
+	?arch_modifiedby_structevolution rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/hasDigitalRepresentation> ?architecture_digitalrepresentati .
+	?architecture_digitalrepresentati rdf:type <http://visit.de/ontologies/vismo/DigitalRepresentation> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

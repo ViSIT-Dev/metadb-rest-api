@@ -1,0 +1,85 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?object_identifiedby_title;separator=",") as ?object_identifiedby_titles) (group_concat(distinct ?object_has_description;separator=",") as ?object_has_descriptions) (group_concat(distinct ?object_exemplifies_function;separator=",") as ?object_exemplifies_functions) (group_concat(distinct ?object_inventory_number;separator=",") as ?object_inventory_numbers) (group_concat(distinct ?object_description;separator=",") as ?object_descriptions) (group_concat(distinct ?object_comment;separator=",") as ?object_comments) (group_concat(distinct ?object_has_reference;separator=",") as ?object_has_references) (group_concat(distinct ?object_literature;separator=",") as ?object_literatures) (group_concat(distinct ?object_current_owner;separator=",") as ?object_current_owners) (group_concat(distinct ?object_current_location;separator=",") as ?object_current_locations) (group_concat(distinct ?object_currentlocation_arch;separator=",") as ?object_currentlocation_archs) (group_concat(distinct ?object_composedof_object;separator=",") as ?object_composedof_objects) (group_concat(distinct ?object_partof_object;separator=",") as ?object_partof_objects) (group_concat(distinct ?object_tookpartin_activity;separator=",") as ?object_tookpartin_activitys) (group_concat(distinct ?object_depicts_person;separator=",") as ?object_depicts_persons) (group_concat(distinct ?object_depicts_architecture;separator=",") as ?object_depicts_architectures) (group_concat(distinct ?object_depicts_place;separator=",") as ?object_depicts_places) (group_concat(distinct ?object_depicts_activity;separator=",") as ?object_depicts_activitys) (group_concat(distinct ?object_helpfullinks;separator=",") as ?object_helpfullinkss) (group_concat(distinct ?object_thumbnail;separator=",") as ?object_thumbnails) (group_concat(distinct ?object_prefidentifier_inscriptio;separator=",") as ?object_prefidentifier_inscriptios) (group_concat(distinct ?object_producedby_production;separator=",") as ?object_producedby_productions) (group_concat(distinct ?object_has_dimension;separator=",") as ?object_has_dimensions) (group_concat(distinct ?object_transferred_custody;separator=",") as ?object_transferred_custodys) (group_concat(distinct ?object_dating;separator=",") as ?object_datings) (group_concat(distinct ?object_digitalrepresentation;separator=",") as ?object_digitalrepresentations) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E35_Title> .
+	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?object_identifiedby_title . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y2 .
+	?y2 rdf:type <http://visit.de/ontologies/vismo/Description> .
+	?y2 <http://erlangen-crm.org/170309/P3_has_note> ?object_has_description . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P137_exemplifies> ?y3 .
+	?y3 rdf:type <http://visit.de/ontologies/vismo/Function> .
+	?y3 <http://erlangen-crm.org/170309/P3_has_note> ?object_exemplifies_function . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P48_has_preferred_identifier> ?y4 .
+	?y4 rdf:type <http://erlangen-crm.org/170309/E42_Identifier> .
+	?y4 <http://erlangen-crm.org/170309/P3_has_note> ?object_inventory_number . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/description> ?object_description}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/comment> ?object_comment}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/reference> ?object_has_reference .
+	?object_has_reference rdf:type <http://visit.de/ontologies/vismo/Reference> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/literature> ?object_literature}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P52_has_current_owner> ?object_current_owner .
+	?object_current_owner rdf:type <http://visit.de/ontologies/vismo/Institution> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P55_has_current_location> ?object_current_location .
+	?object_current_location rdf:type <http://visit.de/ontologies/vismo/Institution> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P55_has_current_location> ?object_currentlocation_arch .
+	?object_currentlocation_arch rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P46_is_composed_of> ?object_composedof_object .
+	?object_composedof_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P46i_forms_part_of> ?object_partof_object .
+	?object_partof_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P16i_was_used_for> ?object_tookpartin_activity .
+	?object_tookpartin_activity rdf:type <http://visit.de/ontologies/vismo/Activity> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P62_depicts> ?object_depicts_person .
+	?object_depicts_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P62_depicts> ?object_depicts_architecture .
+	?object_depicts_architecture rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P62_depicts> ?object_depicts_place .
+	?object_depicts_place rdf:type <http://visit.de/ontologies/vismo/Place> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P62_depicts> ?object_depicts_activity .
+	?object_depicts_activity rdf:type <http://visit.de/ontologies/vismo/Activity> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/helpfulLinks> ?object_helpfullinks}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/thumbnail> ?object_thumbnail}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P128_carries> ?object_prefidentifier_inscriptio .
+	?object_prefidentifier_inscriptio rdf:type <http://erlangen-crm.org/170309/E34_Inscription> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?object_producedby_production .
+	?object_producedby_production rdf:type <http://erlangen-crm.org/170309/E12_Production> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P43_has_dimension> ?object_has_dimension .
+	?object_has_dimension rdf:type <http://erlangen-crm.org/170309/E54_Dimension> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P30i_custody_transferred_through> ?object_transferred_custody .
+	?object_transferred_custody rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?object_dating .
+	?object_dating rdf:type <http://visit.de/ontologies/vismo/Dating> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/hasDigitalRepresentation> ?object_digitalrepresentation .
+	?object_digitalrepresentation rdf:type <http://visit.de/ontologies/vismo/DigitalRepresentation> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

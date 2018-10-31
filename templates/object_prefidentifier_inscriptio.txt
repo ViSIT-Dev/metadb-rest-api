@@ -1,0 +1,27 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?inscription_text;separator=",") as ?inscription_texts) (group_concat(distinct ?inscription_has_type;separator=",") as ?inscription_has_types) (group_concat(distinct ?inscription_signature;separator=",") as ?inscription_signatures) (group_concat(distinct ?inscription_mounting;separator=",") as ?inscription_mountings) (group_concat(distinct ?inscription_date;separator=",") as ?inscription_dates) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P128_carries> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E34_Inscription> .
+	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_text . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P128_carries> ?y2 .
+	?y2 rdf:type <http://erlangen-crm.org/170309/E34_Inscription> .
+	?y2 <http://erlangen-crm.org/170309/P2_has_type> ?y3 .
+	 ?y3 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_has_type . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P128_carries> ?y4 .
+	?y4 rdf:type <http://erlangen-crm.org/170309/E34_Inscription> .
+	?y4 <http://erlangen-crm.org/170309/P106_is_composed_of> ?y5 .
+	 ?y5 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_signature . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P128_carries> ?y7 .
+	?y7 rdf:type <http://erlangen-crm.org/170309/E34_Inscription> .
+	?y7 <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y8 .
+	 ?y8 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_date . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

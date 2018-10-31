@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?group_idby_actorappel;separator=",") as ?group_idby_actorappels) (group_concat(distinct ?group_ownerof_architecture;separator=",") as ?group_ownerof_architectures) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E82_Actor_Appellation> .
+	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?group_idby_actorappel . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P52i_is_current_owner_of> ?group_ownerof_architecture .
+	?group_ownerof_architecture rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

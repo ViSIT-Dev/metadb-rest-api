@@ -1,0 +1,22 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?production_authorname;separator=",") as ?production_authornames) (group_concat(distinct ?production_year;separator=",") as ?production_years) (group_concat(distinct ?ref_production_tookplaceat_place;separator=",") as ?ref_production_tookplaceat_places) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y1 .
+	?y1 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?production_authorname . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y2 .
+	?y2 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y2 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y3 .
+	 ?y3 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?production_year . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y4 .
+	?y4 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y4 <http://erlangen-crm.org/170309/P7_took_place_at> ?ref_production_tookplaceat_place .
+	?ref_production_tookplaceat_place rdf:type <http://visit.de/ontologies/vismo/Place> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 
