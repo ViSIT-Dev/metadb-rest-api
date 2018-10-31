@@ -28,7 +28,7 @@ public class Anno4jRepository {
         return this.anno4j;
     }
 
-    // TODO Exchange this, when Anno4j version is updated to 2.4.x, Matthias already implemented this
+    // TODO (Manu) Exchange this, when Anno4j version is updated to 2.4.x, Matthias already implemented this
     public String getLowestClassGivenId(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
 
