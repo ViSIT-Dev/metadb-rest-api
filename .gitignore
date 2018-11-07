@@ -288,3 +288,5 @@ metadb-rest-api\.iml
 target/test-classes/util/CheckLiveServer\.class
 
 \.idea/
+
+*.class
