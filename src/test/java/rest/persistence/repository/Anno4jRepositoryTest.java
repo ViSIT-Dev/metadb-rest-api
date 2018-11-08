@@ -1,5 +1,6 @@
 package rest.persistence.repository;
 
+import com.github.anno4j.Anno4j;
 import com.github.anno4j.model.Annotation;
 import com.github.anno4j.model.impl.targets.SpecificResource;
 import com.github.anno4j.model.namespaces.OADM;
@@ -16,6 +17,9 @@ public class Anno4jRepositoryTest extends BaseWebTest {
 
     @Autowired
     private Anno4jRepository repository;
+
+    @Autowired
+    private Anno4j anno4j;
 
     @Test
     public void getLowestClassGivenId() throws IllegalAccessException, InstantiationException, MalformedQueryException, RepositoryException, QueryEvaluationException {
