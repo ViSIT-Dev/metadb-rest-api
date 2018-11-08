@@ -32,7 +32,7 @@ public class DigitalRepresentationRepository {
      * @param id    The ID of the vismo:Resource from which the technicalMetadata is to be queried.
      * @return      A list of Strings that represent the technicalMetadata for the searched vismo:Resource entity.
      */
-    private List<String> getTechnicalMetadataStrings(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    public List<String> getTechnicalMetadataStrings(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
 
         String queryString = "SELECT ?d\n" +
