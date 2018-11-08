@@ -4,6 +4,7 @@ import com.github.anno4j.Anno4j;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.marmotta.ldpath.parser.ParseException;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
@@ -27,6 +28,8 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest{
 
     @Before
     public void setUp() throws RepositoryException, IllegalAccessException, InstantiationException {
+        Assume.assumeTrue(this.isOfflineCheck());
+
         Anno4j anno4j = this.digitalRepresentationRepository.getAnno4j();
 
         this.createModel(anno4j);
