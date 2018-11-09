@@ -1,8 +1,10 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.querying.QueryService;
 import model.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
+import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
@@ -26,13 +28,29 @@ public class DigitalRepresentationRepository {
     //              - Gegeben Object-ID, liefere alle Strings zurück, die als technische Metadaten eines DigitalRepresentation-Objekts vorliegen
     //              - Gegeben Object-ID, lösche alle aktuellen technischen Metadaten Strings und ersetze sie mit den der Request mitgegebenen Strings
 
+    public String getSingleTechnicalMetadataByMediaID(String id) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
+        QueryService qs = this.anno4j.createQueryService();
+
+        qs.addCriteria(".", id);
+
+        List<DigitalRepresentation> result = qs.execute(DigitalRepresentation.class);
+
+        if(!result.isEmpty()) {
+            return result.get(0).getTechnicalMetadata();
+        } else {
+            // Exchange this to own exception
+            throw new QueryEvaluationException("ID not existent!");
+        }
+    }
+
+    // TODO (Manu) Rewrite this to Anno4j? No direct SPARQL needed
     /**
      * Private method that queries the technicalMetadata Strings given an ID of a vismo:Resource entity.
      *
      * @param id    The ID of the vismo:Resource from which the technicalMetadata is to be queried.
      * @return      A list of Strings that represent the technicalMetadata for the searched vismo:Resource entity.
      */
-    public List<String> getTechnicalMetadataStrings(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    public List<String> getAllTechnicalMetadataStringsByObjectID(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
 
         String queryString = "SELECT ?d\n" +
@@ -52,5 +70,12 @@ public class DigitalRepresentationRepository {
         }
 
         return technicalMetadatas;
+    }
+
+    /**
+     * ATM mainly here for test purposes. Do not like this, change possibility?
+     */
+    public Anno4j getAnno4j() {
+        return this.anno4j;
     }
 }

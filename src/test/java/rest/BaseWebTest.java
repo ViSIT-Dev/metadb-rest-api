@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,6 +29,12 @@ public class BaseWebTest {
     @Autowired
     private WebApplicationContext context;
 
+    @Value("${visit.rest.sparql.endpoint.query}")
+    private String sparqlEndpointQuery;
+
+    @Value("${visit.rest.sparql.endpoint.update}")
+    private String sparqlEndpointUpdate;
+
     @Before
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
@@ -42,5 +49,9 @@ public class BaseWebTest {
 
     public MockMvc getMockMvc() {
         return mockMvc;
+    }
+
+    public boolean isOfflineCheck() {
+        return (this.sparqlEndpointQuery.equals("none")) && (this.sparqlEndpointUpdate.equals("none"));
     }
 }

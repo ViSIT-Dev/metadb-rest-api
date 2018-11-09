@@ -50,14 +50,14 @@ public class QueryMetadataTest {
     }
 
     private void createModel(Anno4j anno4j) throws RepositoryException, IllegalAccessException, InstantiationException {
-        Resource resource = this.anno4j.createObject(Resource.class);
+        Resource resource = anno4j.createObject(Resource.class);
         this.id = resource.getResourceAsString();
 
-        DigitalRepresentation rep1 = this.anno4j.createObject(DigitalRepresentation.class);
+        DigitalRepresentation rep1 = anno4j.createObject(DigitalRepresentation.class);
         String test = "test1";
         rep1.setTechnicalMetadata(test);
 
-        DigitalRepresentation rep2 = this.anno4j.createObject(DigitalRepresentation.class);
+        DigitalRepresentation rep2 = anno4j.createObject(DigitalRepresentation.class);
         String test2 = "test2";
         rep2.setTechnicalMetadata(test2);
 
