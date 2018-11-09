@@ -56,6 +56,24 @@
             <version>2.4</version>
         </dependency>
 
+        <!-- TODO: Remove this when Anno4j version is updated -->
+        <dependency>
+            <groupId>org.apache.marmotta</groupId>
+            <artifactId>ldpath-core</artifactId>
+            <version>3.4.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.marmotta</groupId>
+            <artifactId>ldpath-backend-sesame</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
