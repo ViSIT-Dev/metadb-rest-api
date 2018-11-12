@@ -5,6 +5,7 @@ import org.openrdf.OpenRDFException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import rest.Exception.DigitalRepositoryException;
 import rest.service.DigitalRepresentationService;
 
 import java.util.List;
@@ -19,10 +20,10 @@ public class DigitalRepresentationController {
      *
      * @param id Gives the Media id for Access on the Repository
      * @return returns a String of the Metadata found.
-     * @throws OpenRDFException
+     * @throws DigitalRepositoryException
      */
-    @GetMapping(value="standard/media/{id}")
-    public String getSingleTechnicalMetadataByMediaID(@PathVariable("id") String id) throws OpenRDFException, ParseException {
+    @GetMapping(value="media/{id}")
+    public String getSingleTechnicalMetadataByMediaID(@PathVariable("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
     }
 
@@ -30,10 +31,10 @@ public class DigitalRepresentationController {
      *
      * @param id Gives the Object id for Access on the repository
      * @return returns a List of Strings of the Metadata found
-     * @throws OpenRDFException
+     * @throws DigitalRepositoryException
      */
-    @GetMapping(value="standard/object/{id}")
-    public List<String> getAllTechnicalMetadataStringsByObjectID(@PathVariable("id") String id) throws OpenRDFException{
+    @GetMapping(value="object/{id}")
+    public List<String> getAllTechnicalMetadataStringsByObjectID(@PathVariable("id") String id) throws DigitalRepositoryException{
         return digitalRepresentationService.getAllTechnicalMetadataStringsByObjectID(id);
     }
 
