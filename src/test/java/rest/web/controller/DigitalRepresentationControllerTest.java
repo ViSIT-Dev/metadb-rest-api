@@ -22,5 +22,12 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         Assume.assumeTrue(this.isOfflineCheck());
     }
     @Test
-    public void
+    public void getSingleTechnicalMetadataByMediaIDTest() {
+
+
+    }
+    @Test
+    public void getAllTechnicalMetadataStringsByObjectIDTest(){
+
+    }
 }
