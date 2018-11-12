@@ -17,12 +17,13 @@ public class VISMO {
 
     public final static String DIGITAL_REPRESENTATION = NS + "DigitalRepresentation";
 
-
     /*
     Relationships
      */
 
     public final static String HAS_DIGITAL_REPRESENTATION = NS + "hasDigitalRepresentation";
+
+    public final static String DIGITALLY_REPRESENTS = NS + "digitallyRepresents";
 
     /*
     Properties
