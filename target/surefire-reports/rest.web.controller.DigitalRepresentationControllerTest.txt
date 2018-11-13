@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: rest.web.controller.DigitalRepresentationControllerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 4.728 s <<< FAILURE! - in rest.web.controller.DigitalRepresentationControllerTest
+getSingleTechnicalMetadataByFalseMediaIDTest(rest.web.controller.DigitalRepresentationControllerTest)  Time elapsed: 0.478 s  <<< ERROR!
+java.lang.Exception: Unexpected exception, expected<rest.Exception.DigitalRepositoryException> but was<java.lang.NullPointerException>
+	at rest.web.controller.DigitalRepresentationControllerTest.getSingleTechnicalMetadataByFalseMediaIDTest(DigitalRepresentationControllerTest.java:54)
+
