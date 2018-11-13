@@ -23,6 +23,7 @@ public class DigitalRepresentationRepository {
 
     @Autowired
     private Anno4j anno4j;
+
     public String getSingleTechnicalMetadataByMediaID(String id) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
         QueryService qs = this.anno4j.createQueryService();
 

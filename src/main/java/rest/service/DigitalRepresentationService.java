@@ -2,6 +2,7 @@ package rest.service;
 
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import rest.Exception.DigitalRepositoryException;
@@ -15,6 +16,8 @@ import java.util.List;
 @Service
 public class DigitalRepresentationService {
 
+    // TODO Ganz wichtig! Autowiring nicht vergessen :)
+    @Autowired
     private DigitalRepresentationRepository digitalRepresentationRepository;
 
     /**

@@ -17,23 +17,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class DigitalRepresentationRepositoryTest extends BaseWebTest{
-
-    @Autowired
-    private DigitalRepresentationRepository digitalRepresentationRepository;
+public class DigitalRepresentationRepositoryTest extends BaseWebTest {
 
     private String objectID;
     private String mediaID1;
     private String mediaID2;
-
-    @Before
-    public void setUp() throws RepositoryException, IllegalAccessException, InstantiationException {
-        Assume.assumeTrue(this.isOfflineCheck());
-
-        Anno4j anno4j = this.digitalRepresentationRepository.getAnno4j();
-
-        this.createModel(anno4j);
-    }
 
     @Test
     public void testGetAllTechnicalMetadataStringsByObjectID() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
@@ -61,7 +49,10 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest{
         String techMetadata = this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(nonExistentID);
     }
 
-    private void createModel(Anno4j anno4j) throws RepositoryException, IllegalAccessException, InstantiationException {
+    @Override
+    public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException {
+        Anno4j anno4j = this.digitalRepresentationRepository.getAnno4j();
+
         Resource resource = anno4j.createObject(Resource.class);
         this.objectID = resource.getResourceAsString();
 
@@ -78,5 +69,4 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest{
         resource.addDigitalRepresentation(rep1);
         resource.addDigitalRepresentation(rep2);
     }
-
 }

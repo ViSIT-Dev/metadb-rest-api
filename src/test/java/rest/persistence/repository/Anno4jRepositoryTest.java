@@ -19,36 +19,27 @@ import static org.junit.Assert.*;
 
 public class Anno4jRepositoryTest extends BaseWebTest {
 
-    @Autowired
-    private Anno4jRepository repository;
-
     private String annotationID;
     private String specificResourceID;
 
-    @Before
-    public void setUp() throws RepositoryException, IllegalAccessException, InstantiationException {
-        Assume.assumeTrue(this.isOfflineCheck());
-
-        Anno4j anno4j = this.repository.getAnno4j();
-
-        this.createModel(anno4j);
-    }
-
     @Test
     public void getLowestClassGivenId() throws IllegalAccessException, InstantiationException, MalformedQueryException, RepositoryException, QueryEvaluationException {
-        String resource = this.repository.getLowestClassGivenId(this.annotationID);
+        String resource = this.anno4jRepository.getLowestClassGivenId(this.annotationID);
 
         assertEquals(OADM.ANNOTATION, resource);
     }
 
     @Test
     public void getLowestClassGivenId2() throws RepositoryException, IllegalAccessException, InstantiationException, QueryEvaluationException, MalformedQueryException {
-        String resource = this.repository.getLowestClassGivenId(this.specificResourceID);
+        String resource = this.anno4jRepository.getLowestClassGivenId(this.specificResourceID);
 
         assertEquals(OADM.SPECIFIC_RESOURCE, resource);
     }
 
-    private void createModel(Anno4j anno4j) throws RepositoryException, IllegalAccessException, InstantiationException {
+    @Override
+    public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException {
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
         Annotation annotation = anno4j.createObject(Annotation.class);
         this.annotationID = annotation.getResourceAsString();
 
