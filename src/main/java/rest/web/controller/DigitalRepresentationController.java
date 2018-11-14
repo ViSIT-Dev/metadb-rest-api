@@ -3,6 +3,7 @@ package rest.web.controller;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import rest.Exception.DigitalRepositoryException;
@@ -12,7 +13,7 @@ import java.util.List;
 
 // TODO Pfad für Mapping: Habe gelesen, dass wir "https://database.visit.uni-passau.de/" nicht angeben müssen, d.h. mapping für diesen Controller ist nur "/api..."
 @RestController
-//@RequestMapping(value="https://database.visit.uni-passau.de/api/")
+@RequestMapping(value="/api/")//produces = "application/json; charset=utf-8")
 public class DigitalRepresentationController {
     @Autowired private DigitalRepresentationService digitalRepresentationService;
     // TODO (Christian) Controller für die DigitalRepresentation Requirements. Nimmt alle HTTP Anfragen entgegen und gibt dementsprechend Aufrufe an den Service weiter
@@ -35,8 +36,8 @@ public class DigitalRepresentationController {
      * @throws DigitalRepositoryException
      */
     // TODO Mapping anpassen, es reicht get auf "/media/{id}" (falls ID als Pfad-Variable klappt, siehe oben)
-    @GetMapping(value="/api/media/{id}")
-    public String getSingleTechnicalMetadataByMediaID(@PathVariable("id") String id) {
+    @GetMapping(value="media/{id}")
+    public String getSingleTechnicalMetadataByMediaID(@PathVariable("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
     }
 
@@ -47,7 +48,7 @@ public class DigitalRepresentationController {
      * @throws DigitalRepositoryException
      */
     @GetMapping(value="object/{id}")
-    public List<String> getAllTechnicalMetadataStringsByObjectID(@PathVariable("id") String id) {
+    public List<String> getAllTechnicalMetadataStringsByObjectID(@PathVariable("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getAllTechnicalMetadataStringsByObjectID(id);
     }
 
