@@ -86,7 +86,8 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         weil er den Pfad nicht kennt.
         */
         String requestURL = standardUrl + "media/" + urlLikeID;
-        MvcResult mvcResult = this.mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound()).andReturn();
+        MvcResult mvcResult = this.mockMvc.perform(get(requestURL))
+                .andDo(print()).andExpect(status().isNotFound()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertThat(mvcResultString, Matchers.isEmptyString());
     }
@@ -97,7 +98,8 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     @Test
     public void getAllTechnicalMetadataStringsByObjectIDTest() throws Exception {
         String requestURL = standardUrl + "object/" + objectID;
-        MvcResult mvcResult = this.mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = this.mockMvc.perform(get(requestURL))
+                .andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertTrue(mvcResultString.contains("urlLikeIDtechMetadata"));
         assertTrue(mvcResultString.contains("test1"));
@@ -111,7 +113,8 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         /*Erstelle einen zufälligen Alphanumerischen String mit Länge 47*/
         String random = RandomStringUtils.randomAlphanumeric(47);
         String requestURL = standardUrl + "object/"+random ;
-        MvcResult mvcResult = this.mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound()).andReturn();
+        MvcResult mvcResult = this.mockMvc.perform(get(requestURL))
+                .andDo(print()).andExpect(status().isNotFound()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertThat(mvcResultString.toString(),Matchers.isEmptyOrNullString());
     }
