@@ -1,17 +1,15 @@
 package rest.web.controller;
 
-import org.apache.marmotta.ldpath.parser.ParseException;
-import org.openrdf.OpenRDFException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import rest.Exception.DigitalRepositoryException;
 import rest.service.DigitalRepresentationService;
 
 import java.util.List;
 
-// TODO Pfad für Mapping: Habe gelesen, dass wir "https://database.visit.uni-passau.de/" nicht angeben müssen, d.h. mapping für diesen Controller ist nur "/api..."
 @RestController
 @RequestMapping(value="/api/")//produces = "application/json; charset=utf-8")
 public class DigitalRepresentationController {
@@ -27,15 +25,14 @@ public class DigitalRepresentationController {
      könnte das zu Probleme führen, weil die eigentlich URL dann ja nicht mehr zu erkennen ist.
       */
 
-    // TODO Bitte nachschauen, was Spring macht wenn wir einen String zurück geben. Könnte nur zur Navigation führen...
-
     /**
-     *
      * @param id Gives the Media id for Access on the Repository
      * @return returns a String of the Metadata found.
      * @throws DigitalRepositoryException
      */
-    // TODO Mapping anpassen, es reicht get auf "/media/{id}" (falls ID als Pfad-Variable klappt, siehe oben)
+
+    // TODO Christian: Controller Methoden auf ID als RequestParameter umschreiben, da wir diese nicht wie bisher als Pfadvariablen benutzen können
+    // TODO Hier ist ein Beispiel dafür: https://www.logicbig.com/tutorials/spring-framework/spring-web-mvc/spring-mvc-request-param.html
     @GetMapping(value="media/{id}")
     public String getSingleTechnicalMetadataByMediaID(@PathVariable("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
