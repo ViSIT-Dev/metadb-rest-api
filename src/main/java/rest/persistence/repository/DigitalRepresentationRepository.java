@@ -2,6 +2,7 @@ package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
+import model.Resource;
 import model.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.marmotta.ldpath.parser.ParseException;
@@ -31,7 +32,7 @@ public class DigitalRepresentationRepository {
 
         List<DigitalRepresentation> result = qs.execute(DigitalRepresentation.class);
 
-        if(!result.isEmpty()) {
+        if (!result.isEmpty()) {
             return result.get(0).getTechnicalMetadata();
         } else {
             // Exchange this to own exception
@@ -40,11 +41,12 @@ public class DigitalRepresentationRepository {
     }
 
     // TODO (Manu) Rewrite this to Anno4j? No direct SPARQL needed
+
     /**
      * Private method that queries the technicalMetadata Strings given an ID of a vismo:Resource entity.
      *
-     * @param id    The ID of the vismo:Resource from which the technicalMetadata is to be queried.
-     * @return      A list of Strings that represent the technicalMetadata for the searched vismo:Resource entity.
+     * @param id The ID of the vismo:Resource from which the technicalMetadata is to be queried.
+     * @return A list of Strings that represent the technicalMetadata for the searched vismo:Resource entity.
      */
     public List<String> getAllTechnicalMetadataStringsByObjectID(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
@@ -61,12 +63,42 @@ public class DigitalRepresentationRepository {
 
         List<String> technicalMetadatas = new LinkedList<>();
 
-        for(RDFObject object : list) {
+        for (RDFObject object : list) {
             technicalMetadatas.add(((DigitalRepresentation) object).getTechnicalMetadata());
         }
 
         return technicalMetadatas;
     }
+
+    /**
+     *  Public method to create a new node of a DigitialRepresentation on a givebn resource
+     * @param resourceId objectID to create the new DigitalRepresentaion on
+     * @return return the id of the new DigitalRepresentation
+     * @throws RepositoryException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ParseException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     */
+    public String createNewDigitalRepresentationNode(String resourceId) throws RepositoryException, IllegalAccessException, InstantiationException, ParseException, MalformedQueryException, QueryEvaluationException {
+        Anno4j anno4j = getAnno4j();
+        //Resource resource = anno4j.createObject(Resource.class);
+        QueryService qs = anno4j.createQueryService();
+        qs.addCriteria(".",resourceId);
+        List<Resource> resources = qs.execute(Resource.class);
+        if(!resources.isEmpty()){
+             DigitalRepresentation digitalRepresentation = anno4j.createObject(DigitalRepresentation.class);
+            Resource resource = resources.get(0);
+            resource.addDigitalRepresentation(digitalRepresentation);
+           return digitalRepresentation.getResourceAsString();
+        }
+        else{
+            throw new QueryEvaluationException("ID is not existent!");
+        }
+
+    }
+
 
     /**
      * ATM mainly here for test purposes. Do not like this, change possibility?

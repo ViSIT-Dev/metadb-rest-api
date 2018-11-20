@@ -46,4 +46,17 @@ public class DigitalRepresentationService {
 
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public String createNewDigitalRepresentationNode(@NonNull String id) {
+        try{
+            return digitalRepresentationRepository.createNewDigitalRepresentationNode(id);
+        }catch (Exception e){
+          throw new DigitalRepositoryException(e.getMessage());
+        }
+    }
+
 }

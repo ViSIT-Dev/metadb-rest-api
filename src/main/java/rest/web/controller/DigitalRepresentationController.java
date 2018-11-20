@@ -1,10 +1,7 @@
 package rest.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import rest.Exception.DigitalRepositoryException;
 import rest.service.DigitalRepresentationService;
 
@@ -33,8 +30,8 @@ public class DigitalRepresentationController {
 
     // TODO Christian: Controller Methoden auf ID als RequestParameter umschreiben, da wir diese nicht wie bisher als Pfadvariablen benutzen können
     // TODO Hier ist ein Beispiel dafür: https://www.logicbig.com/tutorials/spring-framework/spring-web-mvc/spring-mvc-request-param.html
-    @GetMapping(value="media/{id}")
-    public String getSingleTechnicalMetadataByMediaID(@PathVariable("id") String id) throws DigitalRepositoryException {
+    @RequestMapping(value="media")
+    public String getSingleTechnicalMetadataByMediaID(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
     }
 
@@ -44,11 +41,14 @@ public class DigitalRepresentationController {
      * @return returns a List of Strings of the Metadata found
      * @throws DigitalRepositoryException
      */
-    @GetMapping(value="object/{id}")
-    public List<String> getAllTechnicalMetadataStringsByObjectID(@PathVariable("id") String id) throws DigitalRepositoryException {
+    @GetMapping(value="object")
+    public List<String> getAllTechnicalMetadataStringsByObjectID(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getAllTechnicalMetadataStringsByObjectID(id);
     }
-
+    @PostMapping(value="object")
+    public String createNewDigitalRepresentationNode(@RequestParam("id") String id) throws DigitalRepositoryException {
+        return digitalRepresentationService.createNewDigitalRepresentationNode(id);
+    }
 
 
     /*
