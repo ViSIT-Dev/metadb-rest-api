@@ -1,10 +1,13 @@
 package rest.persistence.repository;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
 import model.Resource;
 import model.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
+import org.apache.jena.atlas.json.JSON;
+import org.apache.jena.atlas.json.JsonObject;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -71,7 +74,8 @@ public class DigitalRepresentationRepository {
     }
 
     /**
-     *  Public method to create a new node of a DigitialRepresentation on a givebn resource
+     * Public method to create a new node of a DigitialRepresentation on a givebn resource
+     *
      * @param resourceId objectID to create the new DigitalRepresentaion on
      * @return return the id of the new DigitalRepresentation
      * @throws RepositoryException
@@ -85,17 +89,32 @@ public class DigitalRepresentationRepository {
         Anno4j anno4j = getAnno4j();
         //Resource resource = anno4j.createObject(Resource.class);
         QueryService qs = anno4j.createQueryService();
-        qs.addCriteria(".",resourceId);
+        qs.addCriteria(".", resourceId);
         List<Resource> resources = qs.execute(Resource.class);
-        if(!resources.isEmpty()){
-             DigitalRepresentation digitalRepresentation = anno4j.createObject(DigitalRepresentation.class);
+        if (!resources.isEmpty()) {
+            DigitalRepresentation digitalRepresentation = anno4j.createObject(DigitalRepresentation.class);
             Resource resource = resources.get(0);
             resource.addDigitalRepresentation(digitalRepresentation);
-           return digitalRepresentation.getResourceAsString();
-        }
-        else{
+            return digitalRepresentation.getResourceAsString();
+        } else {
             throw new QueryEvaluationException("ID is not existent!");
         }
+    }
+
+    /**
+     * @param resourceID
+     * @param newData
+     */
+    public void updateDigitalRepresentationNode(String resourceID, JsonObject newData) {
+        Anno4j anno4j = getAnno4j();
+        try{
+
+        }catch(Exception e){
+
+        }
+
+
+
 
     }
 

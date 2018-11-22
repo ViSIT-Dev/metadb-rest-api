@@ -1,5 +1,7 @@
 package rest.web.controller;
 
+import org.apache.jena.atlas.json.JSON;
+import org.apache.jena.atlas.json.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rest.Exception.DigitalRepositoryException;
@@ -8,9 +10,10 @@ import rest.service.DigitalRepresentationService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value="/api/")//produces = "application/json; charset=utf-8")
+@RequestMapping(value = "/api/")//produces = "application/json; charset=utf-8")
 public class DigitalRepresentationController {
-    @Autowired private DigitalRepresentationService digitalRepresentationService;
+    @Autowired
+    private DigitalRepresentationService digitalRepresentationService;
     // TODO (Christian) Controller für die DigitalRepresentation Requirements. Nimmt alle HTTP Anfragen entgegen und gibt dementsprechend Aufrufe an den Service weiter
 
     // TODO Bitte die IDs als Parameter des Requests, nicht als Pfad-Variable übergeben
@@ -23,6 +26,8 @@ public class DigitalRepresentationController {
       */
 
     /**
+     * Controller Method to get a single media representation based on a media id
+     *
      * @param id Gives the Media id for Access on the Repository
      * @return returns a String of the Metadata found.
      * @throws DigitalRepositoryException
@@ -30,24 +35,42 @@ public class DigitalRepresentationController {
 
     // TODO Christian: Controller Methoden auf ID als RequestParameter umschreiben, da wir diese nicht wie bisher als Pfadvariablen benutzen können
     // TODO Hier ist ein Beispiel dafür: https://www.logicbig.com/tutorials/spring-framework/spring-web-mvc/spring-mvc-request-param.html
-    @RequestMapping(value="media")
+    @RequestMapping(value = "media")
     public String getSingleTechnicalMetadataByMediaID(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
     }
 
     /**
+     * Controller Method to get all the media represenatation based on a Object ID
      *
      * @param id Gives the Object id for Access on the repository
      * @return returns a List of Strings of the Metadata found
      * @throws DigitalRepositoryException
      */
-    @GetMapping(value="object")
+    @GetMapping(value = "object")
     public List<String> getAllTechnicalMetadataStringsByObjectID(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getAllTechnicalMetadataStringsByObjectID(id);
     }
-    @PostMapping(value="object")
+
+    /**
+     * Controller Method to create a new media representation node based on a object id
+     *
+     * @param id
+     * @return
+     * @throws DigitalRepositoryException
+     */
+    @PostMapping(value = "object")
     public String createNewDigitalRepresentationNode(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.createNewDigitalRepresentationNode(id);
+    }
+
+    /**
+     * @param id
+     * @param data
+     */
+    @PutMapping(value = "object")
+    public void updateDigitalRepresentaionNode(@RequestParam("id") String id, @RequestBody JsonObject data) {
+
     }
 
 

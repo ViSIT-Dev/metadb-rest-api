@@ -7,6 +7,7 @@ import model.technicalMetadata.DigitalRepresentation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsEmptyCollection;
+import org.hibernate.validator.internal.constraintvalidators.bv.number.bound.MaxValidatorForDouble;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -133,6 +134,12 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
                 .andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertFalse(mvcResultString.isEmpty());
+        //check in the result if an empty media object is created when requesting the object
+       String requestURL1 = standardUrl + "object?id=" + objectID;
+        MvcResult mvcResult1 = this.mockMvc.perform(get(requestURL1))
+                .andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString1 = mvcResult1.getResponse().getContentAsString();
+        assertTrue(mvcResultString1.contains("null"));
     }
 
     /**
@@ -147,17 +154,15 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
                 .andDo(print()).andExpect(status().isNotFound()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertThat(mvcResultString, Matchers.isEmptyOrNullString());
+        //check in the result if an empty media object is not created when requesting the object
+        String requestURL1 = standardUrl + "object?id=" + objectID;
+        MvcResult mvcResult1 = this.mockMvc.perform(get(requestURL1))
+                .andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString1 = mvcResult1.getResponse().getContentAsString();
+        assertFalse(mvcResultString1.contains("null"));
     }
 
-    /*@Test
-    private void checkReferencesOnObject(String objectID) throws Exception {
-        String requestURL = standardUrl + "object?id="+ objectID;
-        MvcResult mvcResult = this.mockMvc.perform((get(requestURL)))
-                .andDo(print()).andExpect(status().isOk()).andReturn();
-        String mvcResultString = mvcResult.getResponse().getContentAsString();
-        assertTur
 
-    }*/
 
     @Override
     public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException {
