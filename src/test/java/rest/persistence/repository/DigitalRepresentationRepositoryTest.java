@@ -23,6 +23,8 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
     private String mediaID1;
     private String mediaID2;
 
+    // TODO Christian: Bitte Funktionalität vom Repository hier auch auf Repository-Ebene prüfen
+
     @Test
     public void testGetAllTechnicalMetadataStringsByObjectID() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         List<String> result = this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(this.objectID);

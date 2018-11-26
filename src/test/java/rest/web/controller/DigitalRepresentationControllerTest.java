@@ -134,6 +134,9 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
                 .andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertFalse(mvcResultString.isEmpty());
+
+        // TODO With the queried URI, check if there is a DigitalRepresentation entity in the database with that URI
+
         //check in the result if an empty media object is created when requesting the object
        String requestURL1 = standardUrl + "object?id=" + objectID;
         MvcResult mvcResult1 = this.mockMvc.perform(get(requestURL1))
