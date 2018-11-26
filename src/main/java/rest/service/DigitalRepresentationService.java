@@ -9,6 +9,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import rest.Exception.DigitalRepositoryException;
+import rest.Exception.UpdateDigitalRepositoryException;
 import rest.persistence.repository.DigitalRepresentationRepository;
 
 import java.util.List;
@@ -69,10 +70,16 @@ public class DigitalRepresentationService {
     /**
      * Service Method to update a Media Representation by given media ID and the new Dataset.
      *
-     * @param id
+     * @param mediaId
      * @param newData
      */
-    public void updateDigitalRepresentationNode(@NonNull String id, @NonNull JsonObject newData) {
+    public void updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull JsonObject newData) {
+        String newDataString = newData.toString();
+        try {
+            digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newDataString);
+        } catch (Exception e) {
+            throw new UpdateDigitalRepositoryException(e.getMessage());
+        }
     }
 
 }

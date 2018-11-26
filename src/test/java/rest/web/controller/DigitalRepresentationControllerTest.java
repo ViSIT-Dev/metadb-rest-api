@@ -1,37 +1,21 @@
 package rest.web.controller;
 
 import com.github.anno4j.Anno4j;
-import com.github.anno4j.querying.QueryService;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
-import org.hamcrest.collection.IsEmptyCollection;
-import org.hibernate.validator.internal.constraintvalidators.bv.number.bound.MaxValidatorForDouble;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.config.RepositoryConfigException;
-import org.springframework.http.StreamingHttpOutputMessage;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
-import rest.Exception.DigitalRepositoryException;
-import rest.persistence.repository.DigitalRepresentationRepository;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.not;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -70,10 +54,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     @Test
     public void getSingleTechnicalMetadataByExistingIDTest() throws Exception {
         String requestURL = standardUrl + "media?id=" + mediaID1;
-        MvcResult mvcResult = this.mockMvc.perform(get(requestURL))
-                .andDo(print()).andExpect(status().isOk()).andReturn();
-        String mvcResultString = mvcResult.getResponse().getContentAsString();
-        assertTrue(mvcResultString.contains("test1"));
+        performCorrectGetResultTest(requestURL, "test1");
     }
 
     /**
@@ -89,28 +70,40 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         weil er den Pfad nicht kennt.
         */
         String requestURL = standardUrl + "media?id=" + urlLikeID;
-        MvcResult mvcResult = this.mockMvc.perform(get(requestURL))
-                .andDo(print()).andExpect(status().isOk()).andReturn();
-        String mvcResultString = mvcResult.getResponse().getContentAsString();
-        assertTrue(mvcResultString.contains("urlLikeIDtechMetadata"));
+        String result1 = "urlLikeIDtechMetadata";
+        performCorrectGetResultTest(requestURL, result1);
     }
 
     /**
-     * Testmethod, expects a List to come with a ObjectID given
+     * Wrapper Method for expected correct Get Request Tests.
+     *
+     * @param requestURL
+     * @param expectedResult
+     * @throws Exception
+     */
+    private void performCorrectGetResultTest(String requestURL, String expectedResult) throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(get(requestURL))
+                .andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+        assertTrue(mvcResultString.contains(expectedResult));
+    }
+
+    /**
+     * Testmethod, expects a List to come with a ObjectID given.
      */
     @Test
     public void getAllTechnicalMetadataStringsByObjectIDTest() throws Exception {
         String requestURL = standardUrl + "object?id=" + objectID;
-        MvcResult mvcResult = this.mockMvc.perform(get(requestURL))
-                .andDo(print()).andExpect(status().isOk()).andReturn();
-        String mvcResultString = mvcResult.getResponse().getContentAsString();
-        assertTrue(mvcResultString.contains("urlLikeIDtechMetadata"));
-        assertTrue(mvcResultString.contains("test1"));
-        assertTrue(mvcResultString.contains("test2"));
+        String result1 = "test1";
+        String result2 = "test2";
+        String result3 = "urlLikeIDtechMetadata";
+        performCorrectGetResultTest(requestURL, result1);
+        performCorrectGetResultTest(requestURL, result2);
+        performCorrectGetResultTest(requestURL, result3);
     }
 
     /**
-     * Testmethod to look for a, expects NotFoundResponse
+     * Testmethod to look for a Object with a random String, expects NotFoundResponse
      */
     @Test
     public void getAllTechnicalMetadataStringsByFalseObjectIDTest() throws Exception {
@@ -125,6 +118,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
 
     /**
      * TestMethod to create a new node with a given ObjectID expects a String with the new DigitalRepresentationID
+     *
      * @throws Exception
      */
     @Test
@@ -134,24 +128,24 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
                 .andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertFalse(mvcResultString.isEmpty());
-
+        String newMediaID = mvcResultString;
         // TODO With the queried URI, check if there is a DigitalRepresentation entity in the database with that URI
-
         //check in the result if an empty media object is created when requesting the object
-       String requestURL1 = standardUrl + "object?id=" + objectID;
-        MvcResult mvcResult1 = this.mockMvc.perform(get(requestURL1))
-                .andDo(print()).andExpect(status().isOk()).andReturn();
-        String mvcResultString1 = mvcResult1.getResponse().getContentAsString();
-        assertTrue(mvcResultString1.contains("null"));
+        String requestURL1 = standardUrl + "object?id=" + objectID;
+        performCorrectGetResultTest(requestURL1, "null");
+        //check if with the given new Media id a OK response form the Server comes with an empty body
+        String requestURL2 = standardUrl + "media?id=" + newMediaID;
+        performCorrectGetResultTest(requestURL2, "");
     }
 
     /**
      * TestMethod to create a new node with a given ObjectID expects a NotFoundResponse
+     *
      * @throws Exception
      */
     @Test
     public void createNewDigitalRepresentationFailure() throws Exception {
-        String random =  RandomStringUtils.randomAlphanumeric(47);
+        String random = RandomStringUtils.randomAlphanumeric(47);
         String requestURL = standardUrl + "object?id=" + random;
         MvcResult mvcResult = this.mockMvc.perform(post(requestURL))
                 .andDo(print()).andExpect(status().isNotFound()).andReturn();
@@ -164,7 +158,6 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         String mvcResultString1 = mvcResult1.getResponse().getContentAsString();
         assertFalse(mvcResultString1.contains("null"));
     }
-
 
 
     @Override

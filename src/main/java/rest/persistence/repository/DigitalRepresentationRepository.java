@@ -39,7 +39,7 @@ public class DigitalRepresentationRepository {
             return result.get(0).getTechnicalMetadata();
         } else {
             // Exchange this to own exception
-            throw new QueryEvaluationException("ID not existent!");
+            throw new QueryEvaluationException("ID " + id + "  not existent!");
         }
     }
 
@@ -97,25 +97,30 @@ public class DigitalRepresentationRepository {
             resource.addDigitalRepresentation(digitalRepresentation);
             return digitalRepresentation.getResourceAsString();
         } else {
-            throw new QueryEvaluationException("ID is not existent!");
+            throw new QueryEvaluationException("ID " + resourceId + " is not existent!");
         }
     }
 
     /**
-     * @param resourceID
-     * @param newData
+     * Method to update the new created/exisitng  media representation node given the JSON String and the mediaID.
+     * @param mediaID
+     * @param newDataString
+     * @throws RepositoryException
+     * @throws ParseException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
      */
-    public void updateDigitalRepresentationNode(String resourceID, JsonObject newData) {
+    public void updateDigitalRepresentationNode(String mediaID, String newDataString) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
         Anno4j anno4j = getAnno4j();
-        try{
-
-        }catch(Exception e){
-
+        QueryService qs = anno4j.createQueryService();
+        qs.addCriteria(".", mediaID);
+        List<DigitalRepresentation> digitalRepresentations = qs.execute(DigitalRepresentation.class);
+        if (!digitalRepresentations.isEmpty()) {
+            DigitalRepresentation digitalRepresentation = digitalRepresentations.get(0);
+            digitalRepresentation.setTechnicalMetadata(newDataString);
+        } else {
+            throw new QueryEvaluationException("ID " + mediaID + " is not existent!");
         }
-
-
-
-
     }
 
 

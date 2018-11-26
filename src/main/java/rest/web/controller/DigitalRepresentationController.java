@@ -64,13 +64,10 @@ public class DigitalRepresentationController {
         return digitalRepresentationService.createNewDigitalRepresentationNode(id);
     }
 
-    /**
-     * @param id
-     * @param data
-     */
-    @PutMapping(value = "object")
-    public void updateDigitalRepresentaionNode(@RequestParam("id") String id, @RequestBody JsonObject data) {
 
+    @PutMapping(value = "object")
+    public void updateDigitalRepresentationNode(@RequestParam("id") String id, @RequestBody JsonObject newData) {
+        digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
 
