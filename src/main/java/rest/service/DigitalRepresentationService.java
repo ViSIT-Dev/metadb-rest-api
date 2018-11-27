@@ -73,7 +73,7 @@ public class DigitalRepresentationService {
      * @param mediaId
      * @param newData
      */
-    public void updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull JsonObject newData) {
+    public void updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) {
         String newDataString = newData.toString();
         try {
             digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newDataString);

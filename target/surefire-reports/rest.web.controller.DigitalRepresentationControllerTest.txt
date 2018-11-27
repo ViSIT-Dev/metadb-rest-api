@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: rest.web.controller.DigitalRepresentationControllerTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.321 s - in rest.web.controller.DigitalRepresentationControllerTest

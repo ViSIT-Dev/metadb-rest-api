@@ -1,20 +1,28 @@
 package rest.web.controller;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.querying.QueryService;
+import com.google.gson.Gson;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
+import org.json.JSONObject;
 import org.junit.Test;
+import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rest.BaseWebTest;
+
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.not;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,6 +40,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     private String mediaID2;
     private String urlLikeID = "http://visit.de/model/id1";
     private final String standardUrl = "https://database.visit.uni-passau.de/api/";
+    private Anno4j anno4j;
 
     /**
      * Testmethod, expects a DigitalRepositoryException to come with a false given MediaID
@@ -97,9 +106,9 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         String result1 = "test1";
         String result2 = "test2";
         String result3 = "urlLikeIDtechMetadata";
-        performCorrectGetResultTest(requestURL, result1);
-        performCorrectGetResultTest(requestURL, result2);
-        performCorrectGetResultTest(requestURL, result3);
+        this.performCorrectGetResultTest(requestURL, result1);
+        this.performCorrectGetResultTest(requestURL, result2);
+        this.performCorrectGetResultTest(requestURL, result3);
     }
 
     /**
@@ -135,7 +144,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         performCorrectGetResultTest(requestURL1, "null");
         //check if with the given new Media id a OK response form the Server comes with an empty body
         String requestURL2 = standardUrl + "media?id=" + newMediaID;
-        performCorrectGetResultTest(requestURL2, "");
+        this.performCorrectGetResultTest(requestURL2, "");
     }
 
     /**
@@ -159,6 +168,54 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         assertFalse(mvcResultString1.contains("null"));
     }
 
+    /**
+     * TestMethod to Update an existing Digital REpresentation with a given DigitalRepresentation String with the new Metadata String Expects the new String t
+     * be in the response when same DigitalRepresentation is requested
+     *
+     * @throws Exception
+     */
+    @Test
+    public void updateDigitalRepresentationSuccess() throws Exception {
+        String requestURL = standardUrl + "media?id=" + this.mediaID1;
+
+        String newData = "newDataInput";
+        //Hole das existierende DigitalRepresentation Objekt und schreibe Metadaten neu um  späte diese als JSON Bean überzugeben.
+        /*this.anno4j = this.digitalRepresentationRepository.getAnno4j();
+        QueryService qs = anno4j.createQueryService();
+        qs.addCriteria(".", this.mediaID1);
+        DigitalRepresentation digitalRepresentation = qs.execute(DigitalRepresentation.class).get(0);
+        digitalRepresentation.setTechnicalMetadata(newData);
+        Gson gson = new Gson();
+        String digitalRepresenation  =  gson.toJson(digitalRepresentation);*/
+        this.mockMvc.perform(put(requestURL)
+                .content(newData))
+                .andDo(print())
+                .andExpect(status().isOk());
+        this.performCorrectGetResultTest(requestURL, newData);
+    }
+
+    /**
+     * TestMethod to Update an existing Digital REpresentation with a given DigitalRepresentation JSON with the new Metadata String Expects the new String t
+     * be in the response when same DigitalRepresentation is requested
+     *
+     * @throws Exception
+     */
+    @Test
+    public void updateDigitalRepresentationFailure() throws Exception {
+        String random = RandomStringUtils.randomAlphanumeric(47);
+        String requestURL = standardUrl + "media?id=" + random;
+        String newData = "newDataInput";
+        this.mockMvc.perform(put(requestURL)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(newData))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andReturn();
+        this.mockMvc.perform(get(requestURL))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+
+    }
 
     @Override
     public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException {
@@ -168,7 +225,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
          DigitalRepresentation Objekten (IDs: mediaID1 und mediaID2).
          Auf diese Daten solltest Du dann Deine Tests aufbauen.
           */
-        Anno4j anno4j = this.digitalRepresentationRepository.getAnno4j();
+        this.anno4j = this.digitalRepresentationRepository.getAnno4j();
         Resource resource = anno4j.createObject(Resource.class);
         this.objectID = resource.getResourceAsString();
         DigitalRepresentation rep1 = anno4j.createObject(DigitalRepresentation.class);

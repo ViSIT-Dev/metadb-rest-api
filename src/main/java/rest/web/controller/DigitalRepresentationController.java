@@ -64,9 +64,9 @@ public class DigitalRepresentationController {
         return digitalRepresentationService.createNewDigitalRepresentationNode(id);
     }
 
-
-    @PutMapping(value = "object")
-    public void updateDigitalRepresentationNode(@RequestParam("id") String id, @RequestBody JsonObject newData) {
+    //TODO nochmal überprüfen wegen der Übertragung im Body als JSON(für das erfolgreiche Updaten  der Metadaten reicht schon ein einfacher String im Body...)
+    @PutMapping(value = "media")
+    public void updateDigitalRepresentationNode(@RequestParam("id") String id, @RequestBody String newData) {
         digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
