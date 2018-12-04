@@ -39,7 +39,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     private String mediaID1;
     private String mediaID2;
     private String urlLikeID = "http://visit.de/model/id1";
-    private final String standardUrl = "https://database.visit.uni-passau.de/api/";
+    private final String standardUrl = "https://database.visit.uni-passau.de/api/digrep/";
     private Anno4j anno4j;
 
     /**
@@ -138,7 +138,6 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertFalse(mvcResultString.isEmpty());
         String newMediaID = mvcResultString;
-        // TODO With the queried URI, check if there is a DigitalRepresentation entity in the database with that URI
         //check in the result if an empty media object is created when requesting the object
         String requestURL1 = standardUrl + "object?id=" + objectID;
         performCorrectGetResultTest(requestURL1, "null");
@@ -157,7 +156,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         String random = RandomStringUtils.randomAlphanumeric(47);
         String requestURL = standardUrl + "object?id=" + random;
         MvcResult mvcResult = this.mockMvc.perform(post(requestURL))
-                .andDo(print()).andExpect(status().isNotFound()).andReturn();
+                .andDo(print()).andExpect(status().isConflict()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertThat(mvcResultString, Matchers.isEmptyOrNullString());
         //check in the result if an empty media object is not created when requesting the object

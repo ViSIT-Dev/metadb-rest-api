@@ -10,7 +10,7 @@ import rest.service.DigitalRepresentationService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/")//produces = "application/json; charset=utf-8")
+@RequestMapping(value = "/api/digrep/")//produces = "application/json; charset=utf-8")
 public class DigitalRepresentationController {
     @Autowired
     private DigitalRepresentationService digitalRepresentationService;

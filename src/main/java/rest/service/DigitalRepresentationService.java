@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import rest.Exception.CreateNewDigtialRepresentationNodeException;
 import rest.Exception.DigitalRepositoryException;
 import rest.Exception.UpdateDigitalRepositoryException;
 import rest.persistence.repository.DigitalRepresentationRepository;
@@ -63,7 +64,7 @@ public class DigitalRepresentationService {
         try {
             return digitalRepresentationRepository.createNewDigitalRepresentationNode(id);
         } catch (Exception e) {
-            throw new DigitalRepositoryException(e.getMessage());
+            throw new CreateNewDigtialRepresentationNodeException(e.getMessage());
         }
     }
 
