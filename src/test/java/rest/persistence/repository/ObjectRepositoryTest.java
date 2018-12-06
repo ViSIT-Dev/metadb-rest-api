@@ -27,7 +27,7 @@ public class ObjectRepositoryTest extends BaseWebTest {
      * Test to get a Json of the Object with a given Object ID expects Success and a Json  to come
      */
     @Test
-    public void getRepresentationOfObjectSuccess() {
+    public void getRepresentationOfObjectSuccess() throws Exception {
 
         JsonObject jsonObject = this.objectRepository.getRepresentationOfObject(this.mediaID1);
 
