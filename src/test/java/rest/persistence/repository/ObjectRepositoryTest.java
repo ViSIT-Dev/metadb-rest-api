@@ -28,8 +28,7 @@ public class ObjectRepositoryTest extends BaseWebTest {
      */
     @Test
     public void getRepresentationOfObjectSuccess() throws Exception {
-
-        JsonObject jsonObject = this.objectRepository.getRepresentationOfObject(this.mediaID1);
+        this.objectRepository.getRepresentationOfObject(this.mediaID1);
 
     }
 
@@ -54,6 +53,8 @@ public class ObjectRepositoryTest extends BaseWebTest {
         resource.addDigitalRepresentation(rep1);
         resource.addDigitalRepresentation(rep2);
     }
+
+
 
 
 }
