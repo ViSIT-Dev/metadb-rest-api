@@ -8,8 +8,8 @@ import rest.persistence.repository.ObjectRepository;
  * Excpetion Class for a failed Search Query on the ObjectRepository
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ObjectRepositoryException extends RuntimeException {
-    public ObjectRepositoryException(String message) {
+public class ObjectClassNotFoundException extends RuntimeException {
+    public ObjectClassNotFoundException(String message) {
         super(message);
     }
 }

@@ -1,16 +1,21 @@
 package rest.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.atlas.json.JsonObject;
+import org.openrdf.OpenRDFException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rest.Exception.ObjectRepositoryException;
+import rest.Exception.ObjectClassNotFoundException;
+import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.ObjectRepository;
+
+import java.io.FileNotFoundException;
 
 /**
  * Service Class for the Object Repository
  */
 @Service
-public class ObjectRepositoryService {
+public class ObjectService {
 
     // TODO (Christian) In "ObjectService" umbenennen
 
@@ -18,6 +23,8 @@ public class ObjectRepositoryService {
 
     @Autowired
     ObjectRepository objectRepository;
+    @Autowired
+    Anno4jRepository anno4jRepository;
 
     // TODO (Christian) Zu implementierende Methode: Zuerst im Anno4jRepo die Klasse anfragen (wird als String zurück gegeben), dann beide Infos (ID + Klassennamen) ins ObjectRepo weiter geben (-> Dort auch Methode anpassen dafür)
 
@@ -29,11 +36,16 @@ public class ObjectRepositoryService {
      * @param id
      * @return
      */
-    public JsonObject getRepresentationOfObject(String id) {
+    public void getRepresentationOfObject(String id) {
         try {
-            return objectRepository.getRepresentationOfObject(id);
-        } catch (Exception e) {
-            throw new ObjectRepositoryException(e.getMessage());
+            String className = anno4jRepository.getLowestClassGivenId(id);
+            String classNameShortened = className.replaceAll("[a-z]{4}://[a-z]{3}.[a-z]{5}/[a-z]{10}/[a-z]{5}/","");
+           // http://www.visit.de/ontologies/vismo/
+            objectRepository.getRepresentationOfObject(id, classNameShortened);
+        } catch (OpenRDFException e) {
+            throw new ObjectClassNotFoundException(e.getMessage());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
