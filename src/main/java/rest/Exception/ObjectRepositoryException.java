@@ -13,3 +13,5 @@ public class ObjectRepositoryException extends RuntimeException {
         super(message);
     }
 }
+
+// TODO (Christian) Kein guter Exception Name, da reden wir nächstes mal drüber. Sollte irgendwie den passierten Fehler suggerieren

@@ -19,17 +19,22 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ObjectRepository {
+
     @Autowired
     private Anno4jRepository anno4jRepository;
+
+    @Autowired
     private Anno4j anno4j;
-    private RDFObject rdfObject;
-    private DigitalRepresentation digitalRepresentation;
 
+    // TODO (Christian) Kein Konstruktor nötig (hab ich bereits rausgenommen)
 
-    public ObjectRepository() throws RepositoryException, RepositoryConfigException {
-        this.anno4jRepository = new Anno4jRepository();
-    }
+    // TODO (Christian) Methode hier: Erhält ID und Klassennamen. Mit dem Klassennamen kann das richtige Query-Template ausgewählt werden
 
+    // TODO (Christian) Methode hier: Auslesen der Templates.txt files. Wird vmtl. über ein java File und den richtigen Pfad geschehen. Bitte Funktionalität dafür suchen
+
+    // TODO (Christian) In den Templates: Query idR fast fertig, der String (im Template) "ADD_ID_HERE" muss gegen die richtige ID ausgetauscht werden - vmtl. ein String.replace
+
+    // TODO (Christian) Diese Query, die Du dann als String brauchst, kannst Du genau wie im Anno4jRepo als Query an das hier autogewirete Anno4j Object weiter geben
 
     /**
      * Method to return a Json Representation of an Object with a given ID

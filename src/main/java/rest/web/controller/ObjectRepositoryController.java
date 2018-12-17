@@ -16,6 +16,9 @@ import rest.service.ObjectRepositoryService;
 @RestController
 @RequestMapping(value = "/api/")
 public class ObjectRepositoryController {
+
+    // TODO (Christian) In "ObjectController" umbenennen
+
     @Autowired
     ObjectRepositoryService objectRepositoryService;
 

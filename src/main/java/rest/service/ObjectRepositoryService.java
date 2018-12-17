@@ -11,8 +11,17 @@ import rest.persistence.repository.ObjectRepository;
  */
 @Service
 public class ObjectRepositoryService {
+
+    // TODO (Christian) In "ObjectService" umbenennen
+
+    // TODO (Christian) Anno4jRepository autowiren
+
     @Autowired
     ObjectRepository objectRepository;
+
+    // TODO (Christian) Zu implementierende Methode: Zuerst im Anno4jRepo die Klasse anfragen (wird als String zurück gegeben), dann beide Infos (ID + Klassennamen) ins ObjectRepo weiter geben (-> Dort auch Methode anpassen dafür)
+
+    // TODO (Christian) Rückgabewert der Methode kann ein String sein, der das JSON repräsentieren wird
 
     /**
      * Method to return a Json Representation of an Object with a given ID
