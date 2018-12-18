@@ -1,18 +1,17 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
-import model.technicalMetadata.DigitalRepresentation;
-import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.config.RepositoryConfigException;
-import org.openrdf.repository.object.RDFObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.ServerSocket;
 
 /**
  * Repository Class for Querying RDFObject Representations
@@ -41,17 +40,23 @@ public class ObjectRepository {
      *
      * @param id
      * @return
-     * @throws RepositoryException
-     * @throws MalformedQueryException
-     * @throws QueryEvaluationException
      */
 
-    public JsonObject getRepresentationOfObject(@NonNull String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException, ClassNotFoundException {
-        Anno4jRepository anno4jRepository = this.getAnno4jRepository();
-        String className = anno4jRepository.getLowestClassGivenId(id);
-        System.out.println(className);
-
-        return null;
+    public void getRepresentationOfObject(@NonNull String id, @NonNull String className) throws FileNotFoundException {
+        String directory = "templates";
+        String fileName = directory + "\\" + className + ".txt";
+        File file = new File(fileName);
+        System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");
+        if (new File(directory).isDirectory()) {
+            System.out.println("Directory does exist! ");
+        } else {
+            throw new FileNotFoundException("Directory "+new File(directory).getAbsolutePath()+" does not exist!");
+        }
+        if (!file.canRead()) {
+            throw new FileNotFoundException("File with Query Template for Class " + className + " has not been found!");
+        } else {
+            System.out.println("File does exist!");
+        }
 
     }
 
@@ -64,7 +69,6 @@ public class ObjectRepository {
     }
 
     /**
-     *
      * @return
      */
     public Anno4j getAnno4j() {
