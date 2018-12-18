@@ -5,7 +5,9 @@ import com.github.anno4j.model.Annotation;
 import com.github.anno4j.model.impl.targets.SpecificResource;
 import com.github.anno4j.model.namespaces.OADM;
 import model.Resource;
+import model.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
+import model.vismo.Group;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +23,7 @@ public class Anno4jRepositoryTest extends BaseWebTest {
 
     private String annotationID;
     private String specificResourceID;
+    private String groupID;
 
     @Test
     public void getLowestClassGivenId() throws IllegalAccessException, InstantiationException, MalformedQueryException, RepositoryException, QueryEvaluationException {
@@ -36,6 +39,13 @@ public class Anno4jRepositoryTest extends BaseWebTest {
         assertEquals(OADM.SPECIFIC_RESOURCE, resource);
     }
 
+    @Test
+    public void getLowestClassGivenIdWithVismoGroup() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+        String resource = this.anno4jRepository.getLowestClassGivenId(this.groupID);
+
+        assertEquals(VISMO.GROUP, resource);
+    }
+
     @Override
     public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException {
         Anno4j anno4j = this.anno4jRepository.getAnno4j();
@@ -45,5 +55,8 @@ public class Anno4jRepositoryTest extends BaseWebTest {
 
         SpecificResource specificResource = anno4j.createObject(SpecificResource.class);
         this.specificResourceID = specificResource.getResourceAsString();
+
+        Group group = anno4j.createObject(Group.class);
+        this.groupID = group.getResourceAsString();
     }
 }

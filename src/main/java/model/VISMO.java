@@ -17,6 +17,8 @@ public class VISMO {
 
     public final static String DIGITAL_REPRESENTATION = NS + "DigitalRepresentation";
 
+    public final static String GROUP = NS + "Group";
+
     /*
     Relationships
      */
