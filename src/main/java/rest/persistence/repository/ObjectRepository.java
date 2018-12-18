@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.ServerSocket;
 
 /**
  * Repository Class for Querying RDFObject Representations
@@ -42,11 +43,21 @@ public class ObjectRepository {
      */
 
     public void getRepresentationOfObject(@NonNull String id, @NonNull String className) throws FileNotFoundException {
-
-        File template = new File("../templates/"+className+".txt");
-        if(!template.canRead()){
-            throw new FileNotFoundException("File with Query Template for Class "+className+" has not been found!");
+        String directory = "templates";
+        String fileName = directory + "\\" + className + ".txt";
+        File file = new File(fileName);
+        System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");
+        if (new File(directory).isDirectory()) {
+            System.out.println("Directory does exist! ");
+        } else {
+            throw new FileNotFoundException("Directory "+new File(directory).getAbsolutePath()+" does not exist!");
         }
+        if (!file.canRead()) {
+            throw new FileNotFoundException("File with Query Template for Class " + className + " has not been found!");
+        } else {
+            System.out.println("File does exist!");
+        }
+
     }
 
 

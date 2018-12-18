@@ -9,7 +9,9 @@ import rest.Exception.ObjectClassNotFoundException;
 import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.ObjectRepository;
 
+import java.io.CharArrayReader;
 import java.io.FileNotFoundException;
+import java.util.regex.Pattern;
 
 /**
  * Service Class for the Object Repository
@@ -39,13 +41,16 @@ public class ObjectService {
     public void getRepresentationOfObject(String id) {
         try {
             String className = anno4jRepository.getLowestClassGivenId(id);
-            String classNameShortened = className.replaceAll("[a-z]{4}://[a-z]{3}.[a-z]{5}/[a-z]{10}/[a-z]{5}/","");
-           // http://www.visit.de/ontologies/vismo/
-            objectRepository.getRepresentationOfObject(id, classNameShortened);
+            String toRemoveChar = "http://visit.de/ontologies/vismo/";
+            String classGetFile = this.withoutString(className, toRemoveChar);
+            objectRepository.getRepresentationOfObject(id, classGetFile);
         } catch (OpenRDFException e) {
             throw new ObjectClassNotFoundException(e.getMessage());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+    private String withoutString(String base, String remove) {
+        return Pattern.compile(Pattern.quote(remove), Pattern.CASE_INSENSITIVE).matcher(base).replaceAll("");
     }
 }

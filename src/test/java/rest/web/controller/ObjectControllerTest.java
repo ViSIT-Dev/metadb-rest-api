@@ -23,10 +23,14 @@ public class ObjectControllerTest extends BaseWebTest {
     private final String standardUrl = "https://database.visit.uni-passau.de/api/";
     private Anno4j anno4j;
 
-    @Test//(expected = NullPointerException.class)
+    @Test
     public void getRepresentationOfObjectSuccess() throws Exception {
         String requestURL = standardUrl + "object?id="+objectID;
         mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk());
+    }
+    @Test
+    public void getRepresentationOfObjectFileNotFound(){
+
     }
 
     @Override
