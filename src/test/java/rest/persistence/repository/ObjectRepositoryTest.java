@@ -36,7 +36,13 @@ public class ObjectRepositoryTest extends BaseWebTest {
         String randClass = RandomStringUtils.randomAlphanumeric(12);
         String randID = RandomStringUtils.randomAlphanumeric(47);
         objectRepository.getRepresentationOfObject(randClass, randID);
-
+    }
+    @Test
+    public void getRepresenatationofObjectSuccess()  throws Exception {
+        String testClass= "Group";
+        String testID = this.objectID;
+        String result = objectRepository.getRepresentationOfObject(testID,testClass);
+        assertFalse(result.isEmpty());
     }
 
 

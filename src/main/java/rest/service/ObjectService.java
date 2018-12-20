@@ -11,6 +11,7 @@ import rest.persistence.repository.ObjectRepository;
 
 import java.io.CharArrayReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 /**
@@ -38,18 +39,27 @@ public class ObjectService {
      * @param id
      * @return
      */
-    public void getRepresentationOfObject(String id) {
+    public String getRepresentationOfObject(String id) {
+        String result = null;
         try {
             String className = anno4jRepository.getLowestClassGivenId(id);
             String toRemoveChar = "http://visit.de/ontologies/vismo/";
             String classGetFile = this.withoutString(className, toRemoveChar);
-            objectRepository.getRepresentationOfObject(id, classGetFile);
+            result = objectRepository.getRepresentationOfObject(id, classGetFile);
         } catch (OpenRDFException e) {
             throw new ObjectClassNotFoundException(e.getMessage());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        return result;
     }
+
+    /**
+     * Wrapper Method to remove Content of String
+     * @param base
+     * @param remove
+     * @return
+     */
     private String withoutString(String base, String remove) {
         return Pattern.compile(Pattern.quote(remove), Pattern.CASE_INSENSITIVE).matcher(base).replaceAll("");
     }

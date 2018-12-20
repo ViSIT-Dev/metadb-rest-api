@@ -28,7 +28,7 @@ public class ObjectController {
      * @return
      */
     @GetMapping(value = "object")
-    public void getRepresentationOfObject(@RequestParam("id") String id) throws ObjectClassNotFoundException {
-        this.objectService.getRepresentationOfObject(id);
+    public String getRepresentationOfObject(@RequestParam("id") String id) throws ObjectClassNotFoundException {
+       return this.objectService.getRepresentationOfObject(id);
     }
 }

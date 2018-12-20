@@ -1,17 +1,25 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
-import org.apache.jena.atlas.json.JsonObject;
+import org.openrdf.OpenRDFException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.object.ObjectConnection;
+import org.openrdf.repository.object.ObjectQuery;
+import org.openrdf.repository.object.RDFObject;
+import org.openrdf.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.ServerSocket;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Repository Class for Querying RDFObject Representations
@@ -42,7 +50,7 @@ public class ObjectRepository {
      * @return
      */
 
-    public void getRepresentationOfObject(@NonNull String id, @NonNull String className) throws FileNotFoundException {
+    public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException {
         String directory = "templates";
         String fileName = directory + "\\" + className + ".txt";
         File file = new File(fileName);
@@ -50,28 +58,66 @@ public class ObjectRepository {
         if (new File(directory).isDirectory()) {
             System.out.println("Directory does exist! ");
         } else {
-            throw new FileNotFoundException("Directory "+new File(directory).getAbsolutePath()+" does not exist!");
+            throw new FileNotFoundException("Directory " + new File(directory).getAbsolutePath() + " does not exist!");
         }
         if (!file.canRead()) {
             throw new FileNotFoundException("File with Query Template for Class " + className + " has not been found!");
         } else {
             System.out.println("File does exist!");
         }
+            String fileContent = this.readFile(fileName);
+            System.out.println("\nFile content is: ");
+            System.out.println(fileContent);
+            String sparqlQuery = this.replaceString(fileContent, "^ADD_ID_HERE$", id);
+            System.out.println("\nNew SparqlQuery: ");
+            System.out.println(sparqlQuery);
+            ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
+            ObjectQuery objectQuery = objectConnection.prepareObjectQuery(sparqlQuery);
+            Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
+            List<RDFObject> rdfObjectList = rdfObjectResult.asList();
+            String result = "";
+            for (RDFObject rdfObject : rdfObjectList) {
+                result += "\n" + rdfObject.getResource().toString();
+            }
+            return result;
 
+        }
+        /**
+         * Wrapper Method to read Content of Files
+         *
+         * @param path
+         * @return
+         * @throws IOException
+         */
+        private String readFile (String path) throws IOException {
+            byte[] encoded = Files.readAllBytes(Paths.get(path));
+            return new String(encoded);
+        }
+
+        /**
+         * Wrapper Method to replace content of String with another Substring
+         *
+         * @param base
+         * @param remove
+         * @param replace
+         * @return
+         */
+        private String replaceString (String base, String remove, String replace){
+            return Pattern.compile(Pattern.quote(remove), Pattern.CASE_INSENSITIVE).matcher(base).replaceAll(replace);
+        }
+
+
+        /**
+         * ATM mainly here for test purposes. Do not like this, change possibility?
+         */
+        private Anno4jRepository getAnno4jRepository () {
+            return this.anno4jRepository;
+        }
+
+        /**
+         * @return
+         */
+        public Anno4j getAnno4j () {
+            return anno4j;
+        }
     }
-
-
-    /**
-     * ATM mainly here for test purposes. Do not like this, change possibility?
-     */
-    private Anno4jRepository getAnno4jRepository() {
-        return this.anno4jRepository;
-    }
-
-    /**
-     * @return
-     */
-    public Anno4j getAnno4j() {
-        return anno4j;
-    }
-}
