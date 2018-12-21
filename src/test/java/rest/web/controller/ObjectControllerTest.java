@@ -7,7 +7,10 @@ import model.technicalMetadata.DigitalRepresentation;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
+import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
+
+import javax.validation.constraints.AssertFalse;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,7 +29,9 @@ public class ObjectControllerTest extends BaseWebTest {
     @Test
     public void getRepresentationOfObjectSuccess() throws Exception {
         String requestURL = standardUrl + "object?id="+objectID;
-        mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk());
+        MvcResult mvcResult =  mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString =  mvcResult.getResponse().toString();
+        assertFalse(!mvcResultString.isEmpty());
     }
     @Test
     public void getRepresentationOfObjectFileNotFound(){

@@ -75,11 +75,11 @@ public class ObjectRepository {
             ObjectQuery objectQuery = objectConnection.prepareObjectQuery(sparqlQuery);
             Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
             List<RDFObject> rdfObjectList = rdfObjectResult.asList();
-            String result = "";
+            StringBuilder result = new StringBuilder();
             for (RDFObject rdfObject : rdfObjectList) {
-                result += "\n" + rdfObject.getResource().toString();
+                result.append("\n").append(rdfObject.getResource().toString());
             }
-            return result;
+            return result.toString();
 
         }
         /**
