@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?person_idby_actorappel;separator=",") as ?person_idby_actorappels) (group_concat(distinct ?person_hastype_profession;separator=",") as ?person_hastype_professions) (group_concat(distinct ?person_firstname;separator=",") as ?person_firstnames) (group_concat(distinct ?person_lastname;separator=",") as ?person_lastnames) (group_concat(distinct ?person_pseudonym;separator=",") as ?person_pseudonyms) (group_concat(distinct ?person_alternatename;separator=",") as ?person_alternatenames) (group_concat(distinct ?person_carries_title;separator=",") as ?person_carries_titles) (group_concat(distinct ?person_comment;separator=",") as ?person_comments) (group_concat(distinct ?person_description;separator=",") as ?person_descriptions) (group_concat(distinct ?person_keyword;separator=",") as ?person_keywords) (group_concat(distinct ?person_parentof_person;separator=",") as ?person_parentof_persons) (group_concat(distinct ?person_ischildof_person;separator=",") as ?person_ischildof_persons) (group_concat(distinct ?person_ownerof_architecture;separator=",") as ?person_ownerof_architectures) (group_concat(distinct ?person_depictedon_object;separator=",") as ?person_depictedon_objects) (group_concat(distinct ?person_participatedin_activity;separator=",") as ?person_participatedin_activitys) (group_concat(distinct ?person_has_reference;separator=",") as ?person_has_references) (group_concat(distinct ?person_helpfullinks;separator=",") as ?person_helpfullinkss) (group_concat(distinct ?person_thumbnail;separator=",") as ?person_thumbnails) (group_concat(distinct ?person_birth;separator=",") as ?person_births) (group_concat(distinct ?person_death;separator=",") as ?person_deaths) (group_concat(distinct ?person_marriage;separator=",") as ?person_marriages) (group_concat(distinct ?person_digitalrepresentation;separator=",") as ?person_digitalrepresentations) 
+SELECT ?x ?type (group_concat(distinct ?person_idby_actorappel;separator=",") as ?person_idby_actorappels) (group_concat(distinct ?person_hastype_profession;separator=",") as ?person_hastype_professions) (group_concat(distinct ?person_firstname;separator=",") as ?person_firstnames) (group_concat(distinct ?person_lastname;separator=",") as ?person_lastnames) (group_concat(distinct ?person_pseudonym;separator=",") as ?person_pseudonyms) (group_concat(distinct ?person_alternatename;separator=",") as ?person_alternatenames) (group_concat(distinct ?person_carries_title;separator=",") as ?person_carries_titles) (group_concat(distinct ?person_comment;separator=",") as ?person_comments) (group_concat(distinct ?person_description;separator=",") as ?person_descriptions) (group_concat(distinct ?person_keyword;separator=",") as ?person_keywords) (group_concat(distinct ?person_iconography;separator=",") as ?person_iconographys) (group_concat(distinct ?person_parentof_person;separator=",") as ?person_parentof_persons) (group_concat(distinct ?person_ischildof_person;separator=",") as ?person_ischildof_persons) (group_concat(distinct ?person_ownerof_architecture;separator=",") as ?person_ownerof_architectures) (group_concat(distinct ?person_motiv_arch_production;separator=",") as ?person_motiv_arch_productions) (group_concat(distinct ?person_carriedout_arch_prod;separator=",") as ?person_carriedout_arch_prods) (group_concat(distinct ?person_infld_arch_production;separator=",") as ?person_infld_arch_productions) (group_concat(distinct ?person_motiv_structevol;separator=",") as ?person_motiv_structevols) (group_concat(distinct ?person_carriedout_structevol;separator=",") as ?person_carriedout_structevols) (group_concat(distinct ?person_infl_structevol;separator=",") as ?person_infl_structevols) (group_concat(distinct ?person_depictedon_object;separator=",") as ?person_depictedon_objects) (group_concat(distinct ?person_participatedin_activity;separator=",") as ?person_participatedin_activitys) (group_concat(distinct ?person_receivedcustody_object;separator=",") as ?person_receivedcustody_objects) (group_concat(distinct ?person_lostcustodyof_object;separator=",") as ?person_lostcustodyof_objects) (group_concat(distinct ?person_helpfullinks;separator=",") as ?person_helpfullinkss) (group_concat(distinct ?person_thumbnail;separator=",") as ?person_thumbnails) (group_concat(distinct ?person_birth;separator=",") as ?person_births) (group_concat(distinct ?person_death;separator=",") as ?person_deaths) (group_concat(distinct ?person_marriage;separator=",") as ?person_marriages) (group_concat(distinct ?person_refentry;separator=",") as ?person_refentrys) (group_concat(distinct ?person_digitalrepresentation;separator=",") as ?person_digitalrepresentations) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
@@ -30,6 +30,8 @@ OPTIONAL {
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/keyword> ?person_keyword}
 OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/iconography> ?person_iconography}
+OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P152i_is_parent_of> ?person_parentof_person .
 	?person_parentof_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
 OPTIONAL {
@@ -39,14 +41,51 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P52i_is_current_owner_of> ?person_ownerof_architecture .
 	?person_ownerof_architecture rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
 OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P17i_motivated> ?y15 .
+	?y15 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y15 <http://erlangen-crm.org/170309/P108_has_produced> ?person_motiv_arch_production .
+	?person_motiv_arch_production rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P14i_performed> ?y16 .
+	?y16 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y16 <http://erlangen-crm.org/170309/P108_has_produced> ?person_carriedout_arch_prod .
+	?person_carriedout_arch_prod rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P15i_influenced> ?y17 .
+	?y17 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y17 <http://erlangen-crm.org/170309/P108_has_produced> ?person_infld_arch_production .
+	?person_infld_arch_production rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P17i_motivated> ?y18 .
+	?y18 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y18 <http://erlangen-crm.org/170309/P31_has_modified> ?person_motiv_structevol .
+	?person_motiv_structevol rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P14i_performed> ?y19 .
+	?y19 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y19 <http://erlangen-crm.org/170309/P31_has_modified> ?person_carriedout_structevol .
+	?person_carriedout_structevol rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P15i_influenced> ?y20 .
+	?y20 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y20 <http://erlangen-crm.org/170309/P31_has_modified> ?person_infl_structevol .
+	?person_infl_structevol rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P62i_is_depicted_by> ?person_depictedon_object .
 	?person_depictedon_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P11i_participated_in> ?person_participatedin_activity .
 	?person_participatedin_activity rdf:type <http://visit.de/ontologies/vismo/Activity> . }
 OPTIONAL {
-	?x <http://visit.de/ontologies/vismo/reference> ?person_has_reference .
-	?person_has_reference rdf:type <http://visit.de/ontologies/vismo/Reference> . }
+	?x <http://erlangen-crm.org/170309/P29i_received_custody_through> ?y23 .
+	?y23 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y23 <http://erlangen-crm.org/170309/P30_transferred_custody_of> ?person_receivedcustody_object .
+	?person_receivedcustody_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P28i_surrendered_custody_through> ?y24 .
+	?y24 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y24 <http://erlangen-crm.org/170309/P30_transferred_custody_of> ?person_lostcustodyof_object .
+	?person_lostcustodyof_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/helpfulLinks> ?person_helpfullinks}
 OPTIONAL {
@@ -60,6 +99,9 @@ OPTIONAL {
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?person_marriage .
 	?person_marriage rdf:type <http://visit.de/ontologies/vismo/Marriage> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/referencedByEntry> ?person_refentry .
+	?person_refentry rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> . }
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/hasDigitalRepresentation> ?person_digitalrepresentation .
 	?person_digitalrepresentation rdf:type <http://visit.de/ontologies/vismo/DigitalRepresentation> . }

@@ -1,15 +1,67 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?group_idby_actorappel;separator=",") as ?group_idby_actorappels) (group_concat(distinct ?group_ownerof_architecture;separator=",") as ?group_ownerof_architectures) 
+SELECT ?x ?type (group_concat(distinct ?group_idby_actorappel;separator=",") as ?group_idby_actorappels) (group_concat(distinct ?group_keyword;separator=",") as ?group_keywords) (group_concat(distinct ?group_iconography;separator=",") as ?group_iconographys) (group_concat(distinct ?group_produced_object;separator=",") as ?group_produced_objects) (group_concat(distinct ?group_ownerof_architecture;separator=",") as ?group_ownerof_architectures) (group_concat(distinct ?group_motiv_arch_production;separator=",") as ?group_motiv_arch_productions) (group_concat(distinct ?group_carriedout_arch_production;separator=",") as ?group_carriedout_arch_productions) (group_concat(distinct ?group_infl_arch_production;separator=",") as ?group_infl_arch_productions) (group_concat(distinct ?group_motiv_structevol;separator=",") as ?group_motiv_structevols) (group_concat(distinct ?group_carriedout_structevol;separator=",") as ?group_carriedout_structevols) (group_concat(distinct ?group_infl_structevol;separator=",") as ?group_infl_structevols) (group_concat(distinct ?group_receivedcustodyof_object;separator=",") as ?group_receivedcustodyof_objects) (group_concat(distinct ?group_lostcustodyof_object;separator=",") as ?group_lostcustodyof_objects) (group_concat(distinct ?group_refentry;separator=",") as ?group_refentrys) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
 	?y1 rdf:type <http://erlangen-crm.org/170309/E82_Actor_Appellation> .
 	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?group_idby_actorappel . }
 OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/keyword> ?group_keyword}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/iconography> ?group_iconography}
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P14i_performed> ?y4 .
+	?y4 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y4 <http://erlangen-crm.org/170309/P108_has_produced> ?group_produced_object .
+	?group_produced_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P52i_is_current_owner_of> ?group_ownerof_architecture .
 	?group_ownerof_architecture rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P17i_motivated> ?y6 .
+	?y6 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y6 <http://erlangen-crm.org/170309/P108_has_produced> ?group_motiv_arch_production .
+	?group_motiv_arch_production rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P14i_performed> ?y7 .
+	?y7 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y7 <http://erlangen-crm.org/170309/P108_has_produced> ?group_carriedout_arch_production .
+	?group_carriedout_arch_production rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P15i_influenced> ?y8 .
+	?y8 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y8 <http://erlangen-crm.org/170309/P108_has_produced> ?group_infl_arch_production .
+	?group_infl_arch_production rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P17i_motivated> ?y9 .
+	?y9 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y9 <http://erlangen-crm.org/170309/P31_has_modified> ?group_motiv_structevol .
+	?group_motiv_structevol rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P14i_performed> ?y10 .
+	?y10 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y10 <http://erlangen-crm.org/170309/P31_has_modified> ?group_carriedout_structevol .
+	?group_carriedout_structevol rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P15i_influenced> ?y11 .
+	?y11 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y11 <http://erlangen-crm.org/170309/P31_has_modified> ?group_infl_structevol .
+	?group_infl_structevol rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P29i_received_custody_through> ?y12 .
+	?y12 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y12 <http://erlangen-crm.org/170309/P30_transferred_custody_of> ?group_receivedcustodyof_object .
+	?group_receivedcustodyof_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P28i_surrendered_custody_through> ?y13 .
+	?y13 rdf:type <http://erlangen-crm.org/170309/E10_Transfer_of_Custody> .
+	?y13 <http://erlangen-crm.org/170309/P30_transferred_custody_of> ?group_lostcustodyof_object .
+	?group_lostcustodyof_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/referencedByEntry> ?group_refentry .
+	?group_refentry rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

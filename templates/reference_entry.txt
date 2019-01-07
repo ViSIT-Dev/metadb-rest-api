@@ -1,0 +1,42 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?reference_entry_pages;separator=",") as ?reference_entry_pagess) (group_concat(distinct ?reference_entry_about_activity;separator=",") as ?reference_entry_about_activitys) (group_concat(distinct ?reference_entry_about_arch;separator=",") as ?reference_entry_about_archs) (group_concat(distinct ?reference_entry_about_object;separator=",") as ?reference_entry_about_objects) (group_concat(distinct ?reference_entry_about_place;separator=",") as ?reference_entry_about_places) (group_concat(distinct ?reference_entry_about_group;separator=",") as ?reference_entry_about_groups) (group_concat(distinct ?reference_entry_about_person;separator=",") as ?reference_entry_about_persons) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/containsEntry> ?y1 .
+	?y1 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y1 <http://visit.de/ontologies/vismo/entryPages> ?reference_entry_pages . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/containsEntry> ?y2 .
+	?y2 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y2 <http://visit.de/ontologies/vismo/entryIsAbout> ?reference_entry_about_activity .
+	?reference_entry_about_activity rdf:type <http://visit.de/ontologies/vismo/Activity> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/containsEntry> ?y3 .
+	?y3 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y3 <http://visit.de/ontologies/vismo/entryIsAbout> ?reference_entry_about_arch .
+	?reference_entry_about_arch rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/containsEntry> ?y4 .
+	?y4 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y4 <http://visit.de/ontologies/vismo/entryIsAbout> ?reference_entry_about_object .
+	?reference_entry_about_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/containsEntry> ?y5 .
+	?y5 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y5 <http://visit.de/ontologies/vismo/entryIsAbout> ?reference_entry_about_place .
+	?reference_entry_about_place rdf:type <http://visit.de/ontologies/vismo/Place> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/containsEntry> ?y6 .
+	?y6 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y6 <http://visit.de/ontologies/vismo/entryIsAbout> ?reference_entry_about_group .
+	?reference_entry_about_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/containsEntry> ?y7 .
+	?y7 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y7 <http://visit.de/ontologies/vismo/entryIsAbout> ?reference_entry_about_person .
+	?reference_entry_about_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

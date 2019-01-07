@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?object_dating_start;separator=",") as ?object_dating_starts) (group_concat(distinct ?object_dating_end;separator=",") as ?object_dating_ends) (group_concat(distinct ?object_dating_sometime;separator=",") as ?object_dating_sometimes) 
+SELECT ?x ?type (group_concat(distinct ?object_dating_start;separator=",") as ?object_dating_starts) (group_concat(distinct ?object_dating_end;separator=",") as ?object_dating_ends) (group_concat(distinct ?object_dating_sometime;separator=",") as ?object_dating_sometimes) (group_concat(distinct ?object_dating_century;separator=",") as ?object_dating_centurys) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y1 .
@@ -15,6 +15,10 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y3 .
 	?y3 rdf:type <http://visit.de/ontologies/vismo/Dating> .
 	?y3 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?object_dating_sometime . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y4 .
+	?y4 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y4 <http://erlangen-crm.org/170309/P81_ongoing_throughout> ?object_dating_century . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

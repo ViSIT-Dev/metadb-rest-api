@@ -1,0 +1,17 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?group_refentry_pages;separator=",") as ?group_refentry_pagess) (group_concat(distinct ?group_refentry_in_reference;separator=",") as ?group_refentry_in_references) 
+WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/referencedByEntry> ?y1 .
+	?y1 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y1 <http://visit.de/ontologies/vismo/entryPages> ?group_refentry_pages . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/referencedByEntry> ?y2 .
+	?y2 rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> .
+	?y2 <http://visit.de/ontologies/vismo/isEntryIn> ?group_refentry_in_reference .
+	?group_refentry_in_reference rdf:type <http://visit.de/ontologies/vismo/Reference> . }
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

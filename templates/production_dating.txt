@@ -1,23 +1,28 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?production_dating_start;separator=",") as ?production_dating_starts) (group_concat(distinct ?production_dating_end;separator=",") as ?production_dating_ends) (group_concat(distinct ?production_date_sometime;separator=",") as ?production_date_sometimes) 
+SELECT ?x ?type (group_concat(distinct ?object_prod_dating_start;separator=",") as ?object_prod_dating_starts) (group_concat(distinct ?object_prod_dating_end;separator=",") as ?object_prod_dating_ends) (group_concat(distinct ?production_date_sometime;separator=",") as ?production_date_sometimes) (group_concat(distinct ?object_prod_dating_century;separator=",") as ?object_prod_dating_centurys) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y1 .
 	?y1 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
 	?y1 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y2 .
-	 ?y2 <http://erlangen-crm.org/170309/P79_beginning_is_qualified_by> ?production_dating_start . }
+	 ?y2 <http://erlangen-crm.org/170309/P79_beginning_is_qualified_by> ?object_prod_dating_start . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y3 .
 	?y3 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
 	?y3 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y4 .
-	 ?y4 <http://erlangen-crm.org/170309/P80_end_is_qualified_by> ?production_dating_end . }
+	 ?y4 <http://erlangen-crm.org/170309/P80_end_is_qualified_by> ?object_prod_dating_end . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y5 .
 	?y5 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
 	?y5 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y6 .
 	 ?y6 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?production_date_sometime . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y7 .
+	?y7 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y7 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y8 .
+	 ?y8 <http://erlangen-crm.org/170309/P81_ongoing_throughout> ?object_prod_dating_century . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

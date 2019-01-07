@@ -16,10 +16,8 @@ import rest.service.ObjectService;
 @RequestMapping(value = "/api/")
 public class ObjectController {
 
-    // TODO (Christian) In "ObjectController" umbenennen
-
     @Autowired
-    ObjectService objectService;
+    private ObjectService objectService;
 
     /**
      * Method to return a Json Representation of an Object with a given ID
