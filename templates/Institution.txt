@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?institution_idby_appel;separator=",") as ?institution_idby_appels) (group_concat(distinct ?institution_ownerof_arch;separator=",") as ?institution_ownerof_archs) (group_concat(distinct ?institution_owns_catalog;separator=",") as ?institution_owns_catalogs) (group_concat(distinct ?institution_loc_catalog;separator=",") as ?institution_loc_catalogs) (group_concat(distinct ?institution_helpfullinks;separator=",") as ?institution_helpfullinkss) 
+SELECT ?x ?type (group_concat(distinct ?institution_idby_appel;separator=",") as ?institution_idby_appels) (group_concat(distinct ?institution_ownerof_arch;separator=",") as ?institution_ownerof_archs) (group_concat(distinct ?institution_fallswithin_place;separator=",") as ?institution_fallswithin_places) (group_concat(distinct ?institution_address;separator=",") as ?institution_addresss) (group_concat(distinct ?institution_owns_catalog;separator=",") as ?institution_owns_catalogs) (group_concat(distinct ?institution_loc_catalog;separator=",") as ?institution_loc_catalogs) (group_concat(distinct ?institution_helpfullinks;separator=",") as ?institution_helpfullinkss) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
@@ -10,6 +10,13 @@ OPTIONAL {
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P52i_is_current_owner_of> ?institution_ownerof_arch .
 	?institution_ownerof_arch rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P89_falls_within> ?institution_fallswithin_place .
+	?institution_fallswithin_place rdf:type <http://visit.de/ontologies/vismo/Place> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y4 .
+	?y4 rdf:type <http://visit.de/ontologies/vismo/GeographicalAffiliation> .
+	?y4 <http://erlangen-crm.org/170309/P3_has_note> ?institution_address . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P52i_is_current_owner_of> ?institution_owns_catalog .
 	?institution_owns_catalog rdf:type <http://visit.de/ontologies/vismo/Reference> . }

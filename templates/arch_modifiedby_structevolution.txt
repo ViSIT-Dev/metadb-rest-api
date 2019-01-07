@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?structuralevolution_idby_title;separator=",") as ?structuralevolution_idby_titles) (group_concat(distinct ?structuralevolution_description;separator=",") as ?structuralevolution_descriptions) (group_concat(distinct ?structuralevolution_comment;separator=",") as ?structuralevolution_comments) (group_concat(distinct ?structevol_exemplifies_function;separator=",") as ?structevol_exemplifies_functions) (group_concat(distinct ?structevol_motivatedby_person;separator=",") as ?structevol_motivatedby_persons) (group_concat(distinct ?structevol_carriedoutby_person;separator=",") as ?structevol_carriedoutby_persons) (group_concat(distinct ?structevol_influencedby_person;separator=",") as ?structevol_influencedby_persons) (group_concat(distinct ?structuralevol_dating;separator=",") as ?structuralevol_datings) 
+SELECT ?x ?type (group_concat(distinct ?structuralevolution_idby_title;separator=",") as ?structuralevolution_idby_titles) (group_concat(distinct ?structuralevolution_description;separator=",") as ?structuralevolution_descriptions) (group_concat(distinct ?structuralevolution_comment;separator=",") as ?structuralevolution_comments) (group_concat(distinct ?structevol_exemplifies_function;separator=",") as ?structevol_exemplifies_functions) (group_concat(distinct ?structevol_motivatedby_person;separator=",") as ?structevol_motivatedby_persons) (group_concat(distinct ?structevol_carriedoutby_person;separator=",") as ?structevol_carriedoutby_persons) (group_concat(distinct ?structevol_influencedby_person;separator=",") as ?structevol_influencedby_persons) (group_concat(distinct ?structevol_motivby_group;separator=",") as ?structevol_motivby_groups) (group_concat(distinct ?structevol_carriedoutby_group;separator=",") as ?structevol_carriedoutby_groups) (group_concat(distinct ?structevol_inflby_group;separator=",") as ?structevol_inflby_groups) (group_concat(distinct ?arch_structevol_dating;separator=",") as ?arch_structevol_datings) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y1 .
@@ -37,8 +37,23 @@ OPTIONAL {
 	?y9 <http://erlangen-crm.org/170309/P15_was_influenced_by> ?structevol_influencedby_person .
 	?structevol_influencedby_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
 OPTIONAL {
-	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?structuralevol_dating .
-	?structuralevol_dating rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> . }
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y10 .
+	?y10 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y10 <http://erlangen-crm.org/170309/P17_was_motivated_by> ?structevol_motivby_group .
+	?structevol_motivby_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y11 .
+	?y11 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y11 <http://erlangen-crm.org/170309/P14_carried_out_by> ?structevol_carriedoutby_group .
+	?structevol_carriedoutby_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y12 .
+	?y12 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
+	?y12 <http://erlangen-crm.org/170309/P15_was_influenced_by> ?structevol_inflby_group .
+	?structevol_inflby_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?arch_structevol_dating .
+	?arch_structevol_dating rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

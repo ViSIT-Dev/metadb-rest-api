@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?production_motivatedby_person;separator=",") as ?production_motivatedby_persons) (group_concat(distinct ?production_carriedoutby_person;separator=",") as ?production_carriedoutby_persons) (group_concat(distinct ?production_inflby_person;separator=",") as ?production_inflby_persons) (group_concat(distinct ?arch_production_dating;separator=",") as ?arch_production_datings) 
+SELECT ?x ?type (group_concat(distinct ?production_motivatedby_person;separator=",") as ?production_motivatedby_persons) (group_concat(distinct ?production_carriedoutby_person;separator=",") as ?production_carriedoutby_persons) (group_concat(distinct ?production_inflby_person;separator=",") as ?production_inflby_persons) (group_concat(distinct ?arch_prod_motivatedby_group;separator=",") as ?arch_prod_motivatedby_groups) (group_concat(distinct ?arch_prod_carriedoutby_group;separator=",") as ?arch_prod_carriedoutby_groups) (group_concat(distinct ?arch_prod_inflby_group;separator=",") as ?arch_prod_inflby_groups) (group_concat(distinct ?arch_production_dating;separator=",") as ?arch_production_datings) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y1 .
@@ -18,6 +18,21 @@ OPTIONAL {
 	?y3 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
 	?y3 <http://erlangen-crm.org/170309/P15_was_influenced_by> ?production_inflby_person .
 	?production_inflby_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y4 .
+	?y4 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y4 <http://erlangen-crm.org/170309/P17_was_motivated_by> ?arch_prod_motivatedby_group .
+	?arch_prod_motivatedby_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y5 .
+	?y5 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y5 <http://erlangen-crm.org/170309/P14_carried_out_by> ?arch_prod_carriedoutby_group .
+	?arch_prod_carriedoutby_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y6 .
+	?y6 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
+	?y6 <http://erlangen-crm.org/170309/P15_was_influenced_by> ?arch_prod_inflby_group .
+	?arch_prod_inflby_group rdf:type <http://visit.de/ontologies/vismo/Group> . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?arch_production_dating .
 	?arch_production_dating rdf:type <http://erlangen-crm.org/170309/E12_Production> . }

@@ -1,13 +1,19 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?marriage_partner_person;separator=",") as ?marriage_partner_persons) (group_concat(distinct ?marriage_beginning;separator=",") as ?marriage_beginnings) (group_concat(distinct ?marriage_ending;separator=",") as ?marriage_endings) 
+SELECT ?x ?type (group_concat(distinct ?marriage_partner_person;separator=",") as ?marriage_partner_persons) (group_concat(distinct ?marriage_begin_dating;separator=",") as ?marriage_begin_datings) (group_concat(distinct ?marriage_end_dating;separator=",") as ?marriage_end_datings) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?y1 .
 	?y1 rdf:type <http://visit.de/ontologies/vismo/Marriage> .
 	?y1 <http://erlangen-crm.org/170309/P107_has_current_or_former_member> ?marriage_partner_person .
 	?marriage_partner_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?marriage_begin_dating .
+	?marriage_begin_dating rdf:type <http://visit.de/ontologies/vismo/Marriage> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?marriage_end_dating .
+	?marriage_end_dating rdf:type <http://visit.de/ontologies/vismo/Marriage> . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

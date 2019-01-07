@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?activity_idby_title;separator=",") as ?activity_idby_titles) (group_concat(distinct ?activity_description;separator=",") as ?activity_descriptions) (group_concat(distinct ?activity_comment;separator=",") as ?activity_comments) (group_concat(distinct ?activity_keyword;separator=",") as ?activity_keywords) (group_concat(distinct ?activity_hadparticipant_person;separator=",") as ?activity_hadparticipant_persons) (group_concat(distinct ?activity_used_architecture;separator=",") as ?activity_used_architectures) (group_concat(distinct ?activity_used_object;separator=",") as ?activity_used_objects) (group_concat(distinct ?activity_tookplaceat_place;separator=",") as ?activity_tookplaceat_places) (group_concat(distinct ?activity_isdepictedby_object;separator=",") as ?activity_isdepictedby_objects) (group_concat(distinct ?activity_has_reference;separator=",") as ?activity_has_references) (group_concat(distinct ?activity_helpfullinks;separator=",") as ?activity_helpfullinkss) (group_concat(distinct ?activity_thumbnail;separator=",") as ?activity_thumbnails) (group_concat(distinct ?activity_dating;separator=",") as ?activity_datings) (group_concat(distinct ?activity_digitalrepresentation;separator=",") as ?activity_digitalrepresentations) 
+SELECT ?x ?type (group_concat(distinct ?activity_idby_title;separator=",") as ?activity_idby_titles) (group_concat(distinct ?activity_description;separator=",") as ?activity_descriptions) (group_concat(distinct ?activity_comment;separator=",") as ?activity_comments) (group_concat(distinct ?activity_keyword;separator=",") as ?activity_keywords) (group_concat(distinct ?activity_iconography;separator=",") as ?activity_iconographys) (group_concat(distinct ?activity_hadparticipant_person;separator=",") as ?activity_hadparticipant_persons) (group_concat(distinct ?activity_used_architecture;separator=",") as ?activity_used_architectures) (group_concat(distinct ?activity_used_object;separator=",") as ?activity_used_objects) (group_concat(distinct ?activity_tookplaceat_place;separator=",") as ?activity_tookplaceat_places) (group_concat(distinct ?activity_isdepictedby_object;separator=",") as ?activity_isdepictedby_objects) (group_concat(distinct ?activity_helpfullinks;separator=",") as ?activity_helpfullinkss) (group_concat(distinct ?activity_thumbnail;separator=",") as ?activity_thumbnails) (group_concat(distinct ?activity_dating;separator=",") as ?activity_datings) (group_concat(distinct ?activity_refentry;separator=",") as ?activity_refentrys) (group_concat(distinct ?activity_digitalrepresentation;separator=",") as ?activity_digitalrepresentations) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
@@ -13,6 +13,8 @@ OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/comment> ?activity_comment}
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/keyword> ?activity_keyword}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/iconography> ?activity_iconography}
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P11_had_participant> ?activity_hadparticipant_person .
 	?activity_hadparticipant_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
@@ -29,15 +31,15 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P62i_is_depicted_by> ?activity_isdepictedby_object .
 	?activity_isdepictedby_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
 OPTIONAL {
-	?x <http://visit.de/ontologies/vismo/reference> ?activity_has_reference .
-	?activity_has_reference rdf:type <http://visit.de/ontologies/vismo/Reference> . }
-OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/helpfulLinks> ?activity_helpfullinks}
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/thumbnail> ?activity_thumbnail}
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?activity_dating .
 	?activity_dating rdf:type <http://visit.de/ontologies/vismo/Dating> . }
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/referencedByEntry> ?activity_refentry .
+	?activity_refentry rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> . }
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/hasDigitalRepresentation> ?activity_digitalrepresentation .
 	?activity_digitalrepresentation rdf:type <http://visit.de/ontologies/vismo/DigitalRepresentation> . }

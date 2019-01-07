@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?place_idby_placeappel;separator=",") as ?place_idby_placeappels) (group_concat(distinct ?place_description;separator=",") as ?place_descriptions) (group_concat(distinct ?place_comment;separator=",") as ?place_comments) (group_concat(distinct ?place_keyword;separator=",") as ?place_keywords) (group_concat(distinct ?place_holds_architecture;separator=",") as ?place_holds_architectures) (group_concat(distinct ?place_witnessed_activity;separator=",") as ?place_witnessed_activitys) (group_concat(distinct ?place_wasbirthplaceof_person;separator=",") as ?place_wasbirthplaceof_persons) (group_concat(distinct ?place_wasdeathplaceof_person;separator=",") as ?place_wasdeathplaceof_persons) (group_concat(distinct ?place_isdepictedby_object;separator=",") as ?place_isdepictedby_objects) (group_concat(distinct ?place_has_reference;separator=",") as ?place_has_references) (group_concat(distinct ?place_helpfullinks;separator=",") as ?place_helpfullinkss) (group_concat(distinct ?place_thumbnail;separator=",") as ?place_thumbnails) (group_concat(distinct ?place_digitalrepresentation;separator=",") as ?place_digitalrepresentations) 
+SELECT ?x ?type (group_concat(distinct ?place_idby_placeappel;separator=",") as ?place_idby_placeappels) (group_concat(distinct ?place_description;separator=",") as ?place_descriptions) (group_concat(distinct ?place_comment;separator=",") as ?place_comments) (group_concat(distinct ?place_keyword;separator=",") as ?place_keywords) (group_concat(distinct ?place_iconography;separator=",") as ?place_iconographys) (group_concat(distinct ?place_holds_architecture;separator=",") as ?place_holds_architectures) (group_concat(distinct ?place_witnessed_activity;separator=",") as ?place_witnessed_activitys) (group_concat(distinct ?place_wasbirthplaceof_person;separator=",") as ?place_wasbirthplaceof_persons) (group_concat(distinct ?place_wasdeathplaceof_person;separator=",") as ?place_wasdeathplaceof_persons) (group_concat(distinct ?place_isdepictedby_object;separator=",") as ?place_isdepictedby_objects) (group_concat(distinct ?place_helpfullinks;separator=",") as ?place_helpfullinkss) (group_concat(distinct ?place_thumbnail;separator=",") as ?place_thumbnails) (group_concat(distinct ?place_refentry;separator=",") as ?place_refentrys) (group_concat(distinct ?place_digitalrepresentation;separator=",") as ?place_digitalrepresentations) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
@@ -14,31 +14,33 @@ OPTIONAL {
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/keyword> ?place_keyword}
 OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/iconography> ?place_iconography}
+OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P55i_currently_holds> ?place_holds_architecture .
 	?place_holds_architecture rdf:type <http://visit.de/ontologies/vismo/Architecture> . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P7i_witnessed> ?place_witnessed_activity .
 	?place_witnessed_activity rdf:type <http://visit.de/ontologies/vismo/Activity> . }
 OPTIONAL {
-	?x <http://erlangen-crm.org/170309/P7i_witnessed> ?y7 .
-	?y7 rdf:type <http://erlangen-crm.org/170309/E67_Birth> .
-	?y7 <http://erlangen-crm.org/170309/P92_brought_into_existence> ?place_wasbirthplaceof_person .
+	?x <http://erlangen-crm.org/170309/P7i_witnessed> ?y8 .
+	?y8 rdf:type <http://erlangen-crm.org/170309/E67_Birth> .
+	?y8 <http://erlangen-crm.org/170309/P92_brought_into_existence> ?place_wasbirthplaceof_person .
 	?place_wasbirthplaceof_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
 OPTIONAL {
-	?x <http://erlangen-crm.org/170309/P7i_witnessed> ?y8 .
-	?y8 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
-	?y8 <http://erlangen-crm.org/170309/P93_took_out_of_existence> ?place_wasdeathplaceof_person .
+	?x <http://erlangen-crm.org/170309/P7i_witnessed> ?y9 .
+	?y9 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
+	?y9 <http://erlangen-crm.org/170309/P93_took_out_of_existence> ?place_wasdeathplaceof_person .
 	?place_wasdeathplaceof_person rdf:type <http://visit.de/ontologies/vismo/Person> . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P62i_is_depicted_by> ?place_isdepictedby_object .
 	?place_isdepictedby_object rdf:type <http://visit.de/ontologies/vismo/Object> . }
 OPTIONAL {
-	?x <http://visit.de/ontologies/vismo/reference> ?place_has_reference .
-	?place_has_reference rdf:type <http://visit.de/ontologies/vismo/Reference> . }
-OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/helpfulLinks> ?place_helpfullinks}
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/thumbnail> ?place_thumbnail}
+OPTIONAL {
+	?x <http://visit.de/ontologies/vismo/referencedByEntry> ?place_refentry .
+	?place_refentry rdf:type <http://visit.de/ontologies/vismo/ReferenceEntry> . }
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/hasDigitalRepresentation> ?place_digitalrepresentation .
 	?place_digitalrepresentation rdf:type <http://visit.de/ontologies/vismo/DigitalRepresentation> . }

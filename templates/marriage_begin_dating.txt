@@ -1,0 +1,8 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cidoc: <http://erlangen-crm.org/170309/>
+PREFIX vismo: <http://visit.de/ontologies/vismo/>
+SELECT ?x ?type (group_concat(distinct ?marriage_begin_dating_exact;separator=",") as ?marriage_begin_dating_exacts) (group_concat(distinct ?marriage_begin_dating_start;separator=",") as ?marriage_begin_dating_starts) (group_concat(distinct ?marriage_begin_dating_end;separator=",") as ?marriage_begin_dating_ends) (group_concat(distinct ?marriage_begin_dating_sometime;separator=",") as ?marriage_begin_dating_sometimes) 
+WHERE { ?x rdf:type ?type .
+
+FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
+GROUP BY ?x ?type 

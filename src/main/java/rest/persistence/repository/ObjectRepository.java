@@ -42,6 +42,13 @@ public class ObjectRepository {
     // TODO (Christian) In den Templates: Query idR fast fertig, der String (im Template) "ADD_ID_HERE" muss gegen die richtige ID ausgetauscht werden - vmtl. ein String.replace
 
     // TODO (Christian) Diese Query, die Du dann als String brauchst, kannst Du genau wie im Anno4jRepo als Query an das hier autogewirete Anno4j Object weiter geben
+    // Alte TODOs oben
+
+    // TODO (Christian) Erweiterungen der Methode:
+    // TODO (Christian) 1: "Unterobjekte" der Queries rausfinden: Wenn ein value eines key/value pairs auf eine weitere ID zeigt, dann kann dies in eine weitere Query an die DB aufgelöst werden. Hier ist dann der key der Name des Query-Templates, der value beinhaltet die ID, die dann mit der selben Funktionalität angefragt werden kann
+    // TODO (Christian) 2: Schreiben der Ergebnisse als JSON. Dieses kann simpel aussehen und einfach alle key/value Paare als JSON Einträge beinhalten. Bei "Unterobjekten" können diese als Array eingetragen werden. Dieses JSON ist das Ergebnise der Anfrage, und kann dementsprechend an den Controller zurück gegeben werden.
+
+    // TODO (Christian) Checken, welcher Query-Typ der Objectconnection für uns am besten geeignet ist: objectConnection.prepareObjectQuery/.prepareTupleQuery/.prepareQuery
 
     /**
      * Method to return a Json Representation of an Object with a given ID
@@ -49,9 +56,11 @@ public class ObjectRepository {
      * @param id
      * @return
      */
-
     public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException {
         String directory = "templates";
+
+        // TODO (Christian) Bitte allgemeinen generischen Seperator einfügen, damit dies auf anderen Betriebssystemen funktioniert (kann ich für dich testen, wenn fertig)
+
         String fileName = directory + "\\" + className + ".txt";
         File file = new File(fileName);
         System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");

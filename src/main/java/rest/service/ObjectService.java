@@ -20,14 +20,10 @@ import java.util.regex.Pattern;
 @Service
 public class ObjectService {
 
-    // TODO (Christian) In "ObjectService" umbenennen
-
-    // TODO (Christian) Anno4jRepository autowiren
-
     @Autowired
-    ObjectRepository objectRepository;
+    private ObjectRepository objectRepository;
     @Autowired
-    Anno4jRepository anno4jRepository;
+    private Anno4jRepository anno4jRepository;
 
     // TODO (Christian) Zu implementierende Methode: Zuerst im Anno4jRepo die Klasse anfragen (wird als String zurück gegeben), dann beide Infos (ID + Klassennamen) ins ObjectRepo weiter geben (-> Dort auch Methode anpassen dafür)
 
@@ -46,6 +42,8 @@ public class ObjectService {
             String toRemoveChar = "http://visit.de/ontologies/vismo/";
             String classGetFile = this.withoutString(className, toRemoveChar);
             result = objectRepository.getRepresentationOfObject(id, classGetFile);
+
+            // TODO (Christian) Müssen überlegen, ob wir die Exceptions nicht nach "oben" geben sollten. Wenn was schief läuft, bekommt das sonst der Client nicht mit
         } catch (OpenRDFException e) {
             throw new ObjectClassNotFoundException(e.getMessage());
         } catch (IOException e) {

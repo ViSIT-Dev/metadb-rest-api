@@ -1,18 +1,16 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?person_dayofdeath;separator=",") as ?person_dayofdeaths) (group_concat(distinct ?person_deathplace;separator=",") as ?person_deathplaces) 
+SELECT ?x ?type (group_concat(distinct ?person_deathplace;separator=",") as ?person_deathplaces) (group_concat(distinct ?person_death_dating;separator=",") as ?person_death_datings) 
 WHERE { ?x rdf:type ?type .
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P93i_was_taken_out_of_existence_by> ?y1 .
 	?y1 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
-	?y1 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y2 .
-	 ?y2 <http://erlangen-crm.org/170309/P80_end_is_qualified_by> ?person_dayofdeath . }
-OPTIONAL {
-	?x <http://erlangen-crm.org/170309/P93i_was_taken_out_of_existence_by> ?y3 .
-	?y3 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
-	?y3 <http://erlangen-crm.org/170309/P7_took_place_at> ?person_deathplace .
+	?y1 <http://erlangen-crm.org/170309/P7_took_place_at> ?person_deathplace .
 	?person_deathplace rdf:type <http://visit.de/ontologies/vismo/Place> . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P93i_was_taken_out_of_existence_by> ?person_death_dating .
+	?person_death_dating rdf:type <http://erlangen-crm.org/170309/E69_Death> . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 
