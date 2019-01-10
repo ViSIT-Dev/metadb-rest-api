@@ -32,4 +32,8 @@ public class VISMO {
      */
 
     public final static String TECHNICAL_METADATA = NS + "technicalMetadata";
+
+    public final static String ICONOGRAPHY = NS + "iconography";
+
+    public final static String KEYWORD = NS + "keyword";
 }

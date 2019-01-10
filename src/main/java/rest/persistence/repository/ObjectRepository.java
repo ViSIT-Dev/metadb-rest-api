@@ -61,7 +61,10 @@ public class ObjectRepository {
 
         // TODO (Christian) Bitte allgemeinen generischen Seperator einfügen, damit dies auf anderen Betriebssystemen funktioniert (kann ich für dich testen, wenn fertig)
 
-        String fileName = directory + "\\" + className + ".txt";
+        // Windows version
+//        String fileName = directory + "\\" + className + ".txt";
+
+        String fileName = directory + "//" + className + ".txt";
         File file = new File(fileName);
         System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");
         if (new File(directory).isDirectory()) {
@@ -74,21 +77,24 @@ public class ObjectRepository {
         } else {
             System.out.println("File does exist!");
         }
-            String fileContent = this.readFile(fileName);
-            System.out.println("\nFile content is: ");
-            System.out.println(fileContent);
-            String sparqlQuery = this.replaceString(fileContent, "^ADD_ID_HERE$", id);
-            System.out.println("\nNew SparqlQuery: ");
-            System.out.println(sparqlQuery);
-            ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
-            ObjectQuery objectQuery = objectConnection.prepareObjectQuery(sparqlQuery);
-            Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
-            List<RDFObject> rdfObjectList = rdfObjectResult.asList();
-            StringBuilder result = new StringBuilder();
-            for (RDFObject rdfObject : rdfObjectList) {
-                result.append("\n").append(rdfObject.getResource().toString());
-            }
-            return result.toString();
+
+        String fileContent = this.readFile(fileName);
+        System.out.println("\nFile content is: ");
+        System.out.println(fileContent);
+
+        // Hab hier einen kleinen "Fehler" gefunden: Man darf die beiden Sonderzeichen vor "ADD_ID_HERE" nicht entfernen - Hab's ausgebessert
+        String sparqlQuery = this.replaceString(fileContent, "ADD_ID_HERE", id);
+        System.out.println("\nNew SparqlQuery: ");
+        System.out.println(sparqlQuery);
+        ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
+        ObjectQuery objectQuery = objectConnection.prepareObjectQuery(sparqlQuery);
+        Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
+        List<RDFObject> rdfObjectList = rdfObjectResult.asList();
+        StringBuilder result = new StringBuilder();
+        for (RDFObject rdfObject : rdfObjectList) {
+            result.append("\n").append(rdfObject.getResource().toString());
+        }
+        return result.toString();
 
         }
         /**
