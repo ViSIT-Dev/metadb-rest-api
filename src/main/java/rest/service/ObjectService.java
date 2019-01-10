@@ -2,6 +2,7 @@ package rest.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class ObjectService {
     /**
      * Method to return a Json Representation of an Object with a given ID
      *
-     * @param id
+     * @param id ID of the represented OBJECT
      * @return
      */
     public String getRepresentationOfObject(String id) {
@@ -48,14 +49,19 @@ public class ObjectService {
             throw new ObjectClassNotFoundException(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     /**
-     * Wrapper Method to remove Content of String
-     * @param base
-     * @param remove
+     * Wrapper Method to replace content of String with another Substring
+     *
+     * @param base   String on which the Substring should be removed
+     * @param remove Substring which should be removed
      * @return
      */
     private String withoutString(String base, String remove) {

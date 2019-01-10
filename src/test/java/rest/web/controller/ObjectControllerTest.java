@@ -31,7 +31,7 @@ public class ObjectControllerTest extends BaseWebTest {
         String requestURL = standardUrl + "object?id="+objectID;
         MvcResult mvcResult =  mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString =  mvcResult.getResponse().toString();
-        assertFalse(!mvcResultString.isEmpty());
+        assertFalse(mvcResultString.isEmpty());
     }
     @Test
     public void getRepresentationOfObjectFileNotFound(){

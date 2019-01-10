@@ -22,7 +22,7 @@ public class ObjectController {
     /**
      * Method to return a Json Representation of an Object with a given ID
      *
-     * @param id
+     * @param id ID of the represented OBJECT
      * @return
      */
     @GetMapping(value = "object")

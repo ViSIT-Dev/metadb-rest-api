@@ -1,9 +1,13 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.model.impl.ResourceObject;
+import com.github.anno4j.querying.QueryService;
+import model.Resource;
+import org.apache.jena.atlas.lib.Tuple;
+import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
 import org.openrdf.repository.object.ObjectQuery;
@@ -18,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -45,23 +50,30 @@ public class ObjectRepository {
     // Alte TODOs oben
 
     // TODO (Christian) Erweiterungen der Methode:
-    // TODO (Christian) 1: "Unterobjekte" der Queries rausfinden: Wenn ein value eines key/value pairs auf eine weitere ID zeigt, dann kann dies in eine weitere Query an die DB aufgelöst werden. Hier ist dann der key der Name des Query-Templates, der value beinhaltet die ID, die dann mit der selben Funktionalität angefragt werden kann
+    // TODO (Christian) 1: "Unterobjekte" der Queries rausfinden: Wenn ein value eines key/value pairs auf eine weitere ID zeigt, dann kann dies in eine weitere Query an die DB aufgelöst werden.
+    //  Hier ist dann der key der Name des Query-Templates, der value beinhaltet die ID, die dann mit der selben Funktionalität angefragt werden kann
     // TODO (Christian) 2: Schreiben der Ergebnisse als JSON. Dieses kann simpel aussehen und einfach alle key/value Paare als JSON Einträge beinhalten. Bei "Unterobjekten" können diese als Array eingetragen werden. Dieses JSON ist das Ergebnise der Anfrage, und kann dementsprechend an den Controller zurück gegeben werden.
 
     // TODO (Christian) Checken, welcher Query-Typ der Objectconnection für uns am besten geeignet ist: objectConnection.prepareObjectQuery/.prepareTupleQuery/.prepareQuery
 
     /**
-     * Method to return a Json Representation of an Object with a given ID
      *
-     * @param id
-     * @return
+     * @param id ID of the represented OBJECT
+     * @param className ClassName on which the SPARQL query should be executed on
+     * @return Returns a JSON in Form of a String with all the relevant Information belonging to the Object
+     * @throws IOException
+     * @throws RepositoryException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     * @throws ParseException
+     * @throws ClassNotFoundException
      */
-    public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException {
+    public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException, ClassNotFoundException {
         String directory = "templates";
 
         // TODO (Christian) Bitte allgemeinen generischen Seperator einfügen, damit dies auf anderen Betriebssystemen funktioniert (kann ich für dich testen, wenn fertig)
 
-        String fileName = directory + "\\" + className + ".txt";
+        String fileName = directory + "/" + className + ".txt";
         File file = new File(fileName);
         System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");
         if (new File(directory).isDirectory()) {
@@ -74,59 +86,69 @@ public class ObjectRepository {
         } else {
             System.out.println("File does exist!");
         }
-            String fileContent = this.readFile(fileName);
-            System.out.println("\nFile content is: ");
-            System.out.println(fileContent);
-            String sparqlQuery = this.replaceString(fileContent, "^ADD_ID_HERE$", id);
-            System.out.println("\nNew SparqlQuery: ");
-            System.out.println(sparqlQuery);
-            ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
-            ObjectQuery objectQuery = objectConnection.prepareObjectQuery(sparqlQuery);
-            Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
-            List<RDFObject> rdfObjectList = rdfObjectResult.asList();
-            StringBuilder result = new StringBuilder();
-            for (RDFObject rdfObject : rdfObjectList) {
-                result.append("\n").append(rdfObject.getResource().toString());
-            }
-            return result.toString();
-
+        String fileContent = this.readFile(fileName);
+        System.out.println("\nFile content is: ");
+        System.out.println(fileContent);
+        String sparqlQuery = this.replaceString(fileContent, "^ADD_ID_HERE$", id);
+        System.out.println("\nNew SparqlQuery: ");
+        System.out.println(sparqlQuery);
+        ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
+        /*ObjectQuery objectQuery = objectConnection.(QueryLanguage.SPARQL,sparqlQuery);*/
+        ObjectQuery objectQuery = objectConnection.prepareObjectQuery(QueryLanguage.SPARQL, sparqlQuery);
+        Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
+        List<RDFObject> rdfObjectList = rdfObjectResult.asList();
+        List<String> resultIDs = new LinkedList<>();
+        StringBuilder result = new StringBuilder();
+        for (RDFObject rdfObject : rdfObjectList) {
+            resultIDs.add(rdfObject.getResource().toString());
         }
-        /**
-         * Wrapper Method to read Content of Files
-         *
-         * @param path
-         * @return
-         * @throws IOException
-         */
-        private String readFile (String path) throws IOException {
-            byte[] encoded = Files.readAllBytes(Paths.get(path));
-            return new String(encoded);
-        }
-
-        /**
-         * Wrapper Method to replace content of String with another Substring
-         *
-         * @param base
-         * @param remove
-         * @param replace
-         * @return
-         */
-        private String replaceString (String base, String remove, String replace){
-            return Pattern.compile(Pattern.quote(remove), Pattern.CASE_INSENSITIVE).matcher(base).replaceAll(replace);
+        for (String resultId : resultIDs) {
+            QueryService qs = anno4j.createQueryService();
+            result.append("\n\n\n").append(qs.addCriteria(".",resultId).execute(ResourceObject.class).toString());
         }
 
 
-        /**
-         * ATM mainly here for test purposes. Do not like this, change possibility?
-         */
-        private Anno4jRepository getAnno4jRepository () {
-            return this.anno4jRepository;
-        }
+        System.out.println(result.toString());
+        return result.toString();
 
-        /**
-         * @return
-         */
-        public Anno4j getAnno4j () {
-            return anno4j;
-        }
     }
+
+    /**
+     * Wrapper Method to read Content of Files
+     *
+     * @param path Path for the File.
+     * @return returns a String with the content of the File
+     * @throws IOException
+     */
+    private String readFile(String path) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded);
+    }
+
+    /**
+     * Wrapper Method to replace content of String with another Substring
+     *
+     * @param base String on which the Substring should be removed
+     * @param remove Substring which should be removed
+     * @param replace Replacement for the Substring
+     * @return
+     */
+    private String replaceString(String base, String remove, String replace) {
+        return Pattern.compile(Pattern.quote(remove), Pattern.CASE_INSENSITIVE).matcher(base).replaceAll(replace);
+    }
+
+
+    /**
+     * ATM mainly here for test purposes. Do not like this, change possibility?
+     */
+    private Anno4jRepository getAnno4jRepository() {
+        return this.anno4jRepository;
+    }
+
+    /**
+     * @return
+     */
+    public Anno4j getAnno4j() {
+        return anno4j;
+    }
+}
