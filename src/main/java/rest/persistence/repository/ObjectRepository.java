@@ -103,8 +103,7 @@ public class ObjectRepository {
             resultIDs.add(rdfObject.getResource().toString());
         }
         for (String resultId : resultIDs) {
-            QueryService qs = anno4j.createQueryService();
-            result.append("\n\n\n").append(qs.addCriteria(".",resultId).execute(ResourceObject.class).toString());
+            result.append("\n\n\n").append(resultId);
         }
 
 
