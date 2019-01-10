@@ -71,12 +71,7 @@ public class ObjectRepository {
     public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException, ClassNotFoundException {
         String directory = "templates";
 
-        // TODO (Christian) Bitte allgemeinen generischen Seperator einfügen, damit dies auf anderen Betriebssystemen funktioniert (kann ich für dich testen, wenn fertig)
-
-        // Windows version
-//        String fileName = directory + "\\" + className + ".txt";
-
-        String fileName = directory + "//" + className + ".txt";
+        String fileName = directory + "/" + className + ".txt";
         File file = new File(fileName);
         System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");
         if (new File(directory).isDirectory()) {
@@ -102,10 +97,12 @@ public class ObjectRepository {
         ObjectQuery objectQuery = objectConnection.prepareObjectQuery(sparqlQuery);
         Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
         List<RDFObject> rdfObjectList = rdfObjectResult.asList();
+        List<String> resultIDs = new LinkedList<>();
         StringBuilder result = new StringBuilder();
         for (RDFObject rdfObject : rdfObjectList) {
             result.append("\n").append(rdfObject.getResource().toString());
         }
+
         for (String resultId : resultIDs) {
             result.append("\n\n\n").append(resultId);
         }

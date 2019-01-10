@@ -13,6 +13,8 @@ import rest.BaseWebTest;
 
 import java.io.FileNotFoundException;
 
+import static org.junit.Assert.assertFalse;
+
 /**
  * Test Class for Testing the Object Repository
  */
@@ -39,10 +41,10 @@ public class ObjectRepositoryTest extends BaseWebTest {
      */
     @Test
     public void getRepresenatationofObjectSuccess() throws Exception {
-//        String testClass= "Group";
-//        String testID = this.groupId;
-//        String result = objectRepository.getRepresentationOfObject(testID,testClass);
-//        assertFalse(result.isEmpty());
+        String testClass= "Group";
+        String testID = this.groupId;
+        String result = objectRepository.getRepresentationOfObject(testID,testClass);
+        assertFalse(result.isEmpty());
     }
 
     @Test
