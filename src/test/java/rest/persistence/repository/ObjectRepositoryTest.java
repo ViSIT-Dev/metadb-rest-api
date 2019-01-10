@@ -24,7 +24,7 @@ public class ObjectRepositoryTest extends BaseWebTest {
     private String groupId;
 
     /**
-     * Test to get a Json of the Object with a given Object ID expects Success and a Json  to come
+     * Test to get a Json Represented as a String of the Object with a given Object ID expects a FileNotFoudnException to come
      */
     @Test(expected = FileNotFoundException.class)
     public void getRepresentationOfObjectFailure() throws Exception {
@@ -33,6 +33,10 @@ public class ObjectRepositoryTest extends BaseWebTest {
         this.objectRepository.getRepresentationOfObject(randClass, randID);
     }
 
+    /**
+     * Test to get a Json Represented as a String of the Object with a given Object ID expected to be successfull
+     * @throws Exception
+     */
     @Test
     public void getRepresenatationofObjectSuccess() throws Exception {
 //        String testClass= "Group";
