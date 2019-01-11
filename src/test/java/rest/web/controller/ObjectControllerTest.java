@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.anno4j.Anno4j;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
+import model.vismo.Group;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
 import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
+import rest.Exception.ObjectClassNotFoundException;
 
 import javax.validation.constraints.AssertFalse;
 
@@ -25,17 +28,30 @@ public class ObjectControllerTest extends BaseWebTest {
     private String urlLikeID = "http://visit.de/model/id1";
     private final String standardUrl = "https://database.visit.uni-passau.de/api/";
     private Anno4j anno4j;
+    private String groupId;
 
     @Test
     public void getRepresentationOfObjectSuccess() throws Exception {
-//        String requestURL = standardUrl + "object?id="+objectID;
-//        MvcResult mvcResult =  mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
-//        String mvcResultString =  mvcResult.getResponse().toString();
-//        assertFalse(!mvcResultString.isEmpty());
+        createTestModelForGroup();
+        String requestURL = standardUrl + "object?id=" + this.groupId;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+        assertFalse(mvcResultString.isEmpty());
     }
-    @Test
-    public void getRepresentationOfObjectFileNotFound(){
 
+    @Test
+    public void getRepresentationOfObjectFileNotFound() throws Exception {
+        String random = RandomStringUtils.randomAlphanumeric(47);
+        String requestURL = standardUrl +"object?id="+random;
+        mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound());
+
+    }
+    public void createTestModelForGroup() throws RepositoryException, IllegalAccessException, InstantiationException {
+        Group group = anno4j.createObject(Group.class);
+        group.setIconography("Iconography");
+        group.setKeyword("Keyword");
+
+        this.groupId = group.getResourceAsString();
     }
 
     @Override

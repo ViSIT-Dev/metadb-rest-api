@@ -1,6 +1,8 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.google.gson.JsonParser;
+import jdk.nashorn.internal.parser.JSONParser;
 import model.vismo.Group;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -45,6 +47,8 @@ public class ObjectRepositoryTest extends BaseWebTest {
         String testID = this.groupId;
         String result = objectRepository.getRepresentationOfObject(testID,testClass);
         assertFalse(result.isEmpty());
+        JsonParser jsonParser = new JsonParser();
+        jsonParser.parse(result);
     }
 
     @Test
@@ -71,6 +75,7 @@ public class ObjectRepositoryTest extends BaseWebTest {
             System.out.println("Entity found with the following relationships and properties:");
             for(String binding : next.getBindingNames()) {
                 System.out.println("Key: " + binding + " - With value: " + next.getValue(binding));
+
             }
         }
     }

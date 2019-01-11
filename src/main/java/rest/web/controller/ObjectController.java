@@ -23,7 +23,7 @@ public class ObjectController {
      * Method to return a Json Representation of an Object with a given ID
      *
      * @param id ID of the represented OBJECT
-     * @return
+     * @return returns a JSON represented in a String with all the Information belonging to the Object
      */
     @GetMapping(value = "object")
     public String getRepresentationOfObject(@RequestParam("id") String id) throws ObjectClassNotFoundException {

@@ -3,6 +3,8 @@ package rest.persistence.repository;
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.model.impl.ResourceObject;
 import com.github.anno4j.querying.QueryService;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import model.Resource;
 import org.apache.jena.atlas.lib.Tuple;
 import org.apache.marmotta.ldpath.parser.ParseException;
@@ -57,8 +59,7 @@ public class ObjectRepository {
     // TODO (Christian) Checken, welcher Query-Typ der Objectconnection für uns am besten geeignet ist: objectConnection.prepareObjectQuery/.prepareTupleQuery/.prepareQuery
 
     /**
-     *
-     * @param id ID of the represented OBJECT
+     * @param id        ID of the represented OBJECT
      * @param className ClassName on which the SPARQL query should be executed on
      * @return Returns a JSON in Form of a String with all the relevant Information belonging to the Object
      * @throws IOException
@@ -94,22 +95,20 @@ public class ObjectRepository {
         System.out.println("\nNew SparqlQuery: ");
         System.out.println(sparqlQuery);
         ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
-        ObjectQuery objectQuery = objectConnection.prepareObjectQuery(sparqlQuery);
-        Result<RDFObject> rdfObjectResult = objectQuery.evaluate(RDFObject.class);
-        List<RDFObject> rdfObjectList = rdfObjectResult.asList();
-        List<String> resultIDs = new LinkedList<>();
-        StringBuilder result = new StringBuilder();
-        for (RDFObject rdfObject : rdfObjectList) {
-            result.append("\n").append(rdfObject.getResource().toString());
+        TupleQuery tupleQuery = objectConnection.prepareTupleQuery(sparqlQuery);
+        TupleQueryResult evaluateTupleQuery = tupleQuery.evaluate();
+        JsonObject allBindings = new JsonObject();
+        while (evaluateTupleQuery.hasNext()) {
+            BindingSet currentResult = evaluateTupleQuery.next();
+            System.out.println("Binding sets with Values has been found:");
+            for (String binding : currentResult.getBindingNames()) {
+                System.out.println("Key: " + binding + " With Value: " + currentResult.getValue(binding).stringValue());
+                allBindings.addProperty(binding, currentResult.getValue(binding).stringValue());
+            }
         }
+        System.out.println(allBindings.toString());
+        return allBindings.toString();
 
-        for (String resultId : resultIDs) {
-            result.append("\n\n\n").append(resultId);
-        }
-
-
-        System.out.println(result.toString());
-        return result.toString();
 
     }
 
@@ -128,8 +127,8 @@ public class ObjectRepository {
     /**
      * Wrapper Method to replace content of String with another Substring
      *
-     * @param base String on which the Substring should be removed
-     * @param remove Substring which should be removed
+     * @param base    String on which the Substring should be removed
+     * @param remove  Substring which should be removed
      * @param replace Replacement for the Substring
      * @return
      */
