@@ -49,7 +49,6 @@ public class ObjectRepository {
     // TODO (Christian) In den Templates: Query idR fast fertig, der String (im Template) "ADD_ID_HERE" muss gegen die richtige ID ausgetauscht werden - vmtl. ein String.replace
 
     // TODO (Christian) Diese Query, die Du dann als String brauchst, kannst Du genau wie im Anno4jRepo als Query an das hier autogewirete Anno4j Object weiter geben
-    // Alte TODOs oben
 
     // TODO (Christian) Erweiterungen der Methode:
     // TODO (Christian) 1: "Unterobjekte" der Queries rausfinden: Wenn ein value eines key/value pairs auf eine weitere ID zeigt, dann kann dies in eine weitere Query an die DB aufgelöst werden.
@@ -57,6 +56,14 @@ public class ObjectRepository {
     // TODO (Christian) 2: Schreiben der Ergebnisse als JSON. Dieses kann simpel aussehen und einfach alle key/value Paare als JSON Einträge beinhalten. Bei "Unterobjekten" können diese als Array eingetragen werden. Dieses JSON ist das Ergebnise der Anfrage, und kann dementsprechend an den Controller zurück gegeben werden.
 
     // TODO (Christian) Checken, welcher Query-Typ der Objectconnection für uns am besten geeignet ist: objectConnection.prepareObjectQuery/.prepareTupleQuery/.prepareQuery
+
+    // Alte TODOs oben
+    // TODO (Christian) Template-Methode um Sub-Queries erweitern
+    // TODO (Christian) Dazu: Am Anfang der Methode über alle Templates laufen und Dir eine Liste anlegen, die sich die Namen der Templates als String merkt
+    // TODO (Christian) Beim durchgehen des Bindings-Set: Testen, ob der name eines keys einem Template entspricht und damit in der obigen String-Liste enthalten ist
+    // TODO (Christian) Falls ja: Rekursiver Aufruf Deiner Methode
+
+    // TODO (Christian) Bitte Deine alten erledigten TODOs löschen :)
 
     /**
      * @param id        ID of the represented OBJECT

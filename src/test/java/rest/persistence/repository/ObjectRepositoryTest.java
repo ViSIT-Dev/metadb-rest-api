@@ -4,6 +4,8 @@ import com.github.anno4j.Anno4j;
 import com.google.gson.JsonParser;
 import jdk.nashorn.internal.parser.JSONParser;
 import model.vismo.Group;
+import model.vismo.Reference;
+import model.vismo.ReferenceEntry;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.openrdf.query.*;
@@ -81,13 +83,22 @@ public class ObjectRepositoryTest extends BaseWebTest {
     }
 
 
+    // TODO (Christian) Habe Dir jetzt mal das Modell und die erzeugten Daten hier erweitert, damit müsstest Du die rekursive Funktion testen können
     @Override
     public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException {
         Anno4j anno4j = this.objectRepository.getAnno4j();
 
         Group group = anno4j.createObject(Group.class);
         group.setIconography("Iconography");
-        group.setKeyword("Keyword");
+        group.addKeyword("Keyword");
+
+        ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
+        entry.setPages(5);
+
+        Reference reference = anno4j.createObject(Reference.class);
+
+        group.setEntry(entry);
+        entry.setEntryIn(reference);
 
         this.groupId = group.getResourceAsString();
     }

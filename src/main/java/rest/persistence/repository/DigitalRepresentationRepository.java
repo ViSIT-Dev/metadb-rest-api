@@ -123,6 +123,10 @@ public class DigitalRepresentationRepository {
         }
     }
 
+    // TODO (Christian) Bitte zwei neue Methoden zum Löschen einer DigitalRepresentation implementieren, auch an Service und Controller denken
+    // TODO (Christian) REST: 2x DELETE Methode, einmal mit nur mediaID, einmal mit mediaID+objectID
+    // TODO (Christian) (Anno4j bietet Dir die .delete() Methode auf einem DigitalRepresentation-Objekt)
+    // TODO (Christian) Bitte Tests dazu schreiben, die danach ebenfalls überprüfen, dass das Objekt noch da ist und nicht gelöscht wurde
 
     /**
      * ATM mainly here for test purposes. Do not like this, change possibility?

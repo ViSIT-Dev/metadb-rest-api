@@ -19,6 +19,10 @@ public class VISMO {
 
     public final static String GROUP = NS + "Group";
 
+    public final static String REFERENCE = NS + "Reference";
+
+    public final static String REFERENCE_ENTRY = NS + "ReferenceEntry";
+
     /*
     Relationships
      */
@@ -26,6 +30,10 @@ public class VISMO {
     public final static String HAS_DIGITAL_REPRESENTATION = NS + "hasDigitalRepresentation";
 
     public final static String DIGITALLY_REPRESENTS = NS + "digitallyRepresents";
+
+    public final static String REFERENCED_BY_ENTRY = NS + "referencedByEntry";
+
+    public final static String IS_ENTRY_IN = NS + "isEntryIn";
 
     /*
     Properties
@@ -36,4 +44,6 @@ public class VISMO {
     public final static String ICONOGRAPHY = NS + "iconography";
 
     public final static String KEYWORD = NS + "keyword";
+
+    public final static String ENTRY_PAGES = NS + "entryPages";
 }
