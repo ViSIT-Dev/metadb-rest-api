@@ -49,7 +49,7 @@ public class ObjectControllerTest extends BaseWebTest {
     public void createTestModelForGroup() throws RepositoryException, IllegalAccessException, InstantiationException {
         Group group = anno4j.createObject(Group.class);
         group.setIconography("Iconography");
-        group.setKeyword("Keyword");
+       // group.setKeyword("Keyword");
 
         this.groupId = group.getResourceAsString();
     }

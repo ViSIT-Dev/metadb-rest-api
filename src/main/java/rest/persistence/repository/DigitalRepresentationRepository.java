@@ -1,13 +1,10 @@
 package rest.persistence.repository;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
 import model.Resource;
 import model.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
-import org.apache.jena.atlas.json.JSON;
-import org.apache.jena.atlas.json.JsonObject;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -103,6 +100,7 @@ public class DigitalRepresentationRepository {
 
     /**
      * Method to update the new created/exisitng  media representation node given the JSON String and the mediaID.
+     *
      * @param mediaID
      * @param newDataString
      * @throws RepositoryException
@@ -127,6 +125,58 @@ public class DigitalRepresentationRepository {
     // TODO (Christian) REST: 2x DELETE Methode, einmal mit nur mediaID, einmal mit mediaID+objectID
     // TODO (Christian) (Anno4j bietet Dir die .delete() Methode auf einem DigitalRepresentation-Objekt)
     // TODO (Christian) Bitte Tests dazu schreiben, die danach ebenfalls überprüfen, dass das Objekt noch da ist und nicht gelöscht wurde
+
+    /**
+     * Method to delete a exisitng DigitalRepresentation given the media and Object id.
+     *
+     * @param mediaID
+     * @param objectID
+     * @throws RepositoryException
+     * @throws ParseException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     */
+    public void deleteDigitalRepresentationMediaAndObject(String mediaID, String objectID) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
+        Anno4j anno4j = getAnno4j();
+        QueryService qs = anno4j.createQueryService();
+        qs.addCriteria(".", objectID);
+        List<Resource> resources = qs.execute(Resource.class);
+        if (!resources.isEmpty()) {
+            anno4j.createQueryService();
+            qs.addCriteria(".", mediaID);
+            List<DigitalRepresentation> result = qs.execute(DigitalRepresentation.class);
+            if (!result.isEmpty()) {
+                DigitalRepresentation representationToDelete = result.get(0);
+                representationToDelete.delete();
+            } else {
+                throw new QueryEvaluationException("MediaID " + mediaID + " is not existent!");
+            }
+        } else {
+            throw new QueryEvaluationException("ObjectID " + objectID + " is not existent!");
+        }
+    }
+
+    /**
+     * Method to delete a exisitng DigitalRepresentation given the media id.
+     *
+     * @param mediaID
+     * @throws RepositoryException
+     * @throws ParseException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     */
+    public void deleteDigitalRepresentationMedia(String mediaID) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
+        Anno4j anno4j = getAnno4j();
+        QueryService qs = anno4j.createQueryService();
+        qs.addCriteria(".", mediaID);
+        List<DigitalRepresentation> result = qs.execute(DigitalRepresentation.class);
+        if (!result.isEmpty()) {
+            DigitalRepresentation digitalRepresentationToDelete = result.get(0);
+            digitalRepresentationToDelete.delete();
+        } else {
+            throw new QueryEvaluationException("MediaID " + mediaID + " is not existent!");
+        }
+    }
 
     /**
      * ATM mainly here for test purposes. Do not like this, change possibility?

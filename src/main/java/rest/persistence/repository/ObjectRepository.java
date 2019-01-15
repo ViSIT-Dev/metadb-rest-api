@@ -1,20 +1,11 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
-import com.github.anno4j.model.impl.ResourceObject;
-import com.github.anno4j.querying.QueryService;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import model.Resource;
-import org.apache.jena.atlas.lib.Tuple;
 import org.apache.marmotta.ldpath.parser.ParseException;
-import org.openrdf.OpenRDFException;
 import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
-import org.openrdf.repository.object.ObjectQuery;
-import org.openrdf.repository.object.RDFObject;
-import org.openrdf.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
@@ -39,31 +30,11 @@ public class ObjectRepository {
 
     @Autowired
     private Anno4j anno4j;
-
-    // TODO (Christian) Kein Konstruktor nötig (hab ich bereits rausgenommen)
-
-    // TODO (Christian) Methode hier: Erhält ID und Klassennamen. Mit dem Klassennamen kann das richtige Query-Template ausgewählt werden
-
-    // TODO (Christian) Methode hier: Auslesen der Templates.txt files. Wird vmtl. über ein java File und den richtigen Pfad geschehen. Bitte Funktionalität dafür suchen
-
-    // TODO (Christian) In den Templates: Query idR fast fertig, der String (im Template) "ADD_ID_HERE" muss gegen die richtige ID ausgetauscht werden - vmtl. ein String.replace
-
-    // TODO (Christian) Diese Query, die Du dann als String brauchst, kannst Du genau wie im Anno4jRepo als Query an das hier autogewirete Anno4j Object weiter geben
-
-    // TODO (Christian) Erweiterungen der Methode:
-    // TODO (Christian) 1: "Unterobjekte" der Queries rausfinden: Wenn ein value eines key/value pairs auf eine weitere ID zeigt, dann kann dies in eine weitere Query an die DB aufgelöst werden.
-    //  Hier ist dann der key der Name des Query-Templates, der value beinhaltet die ID, die dann mit der selben Funktionalität angefragt werden kann
-    // TODO (Christian) 2: Schreiben der Ergebnisse als JSON. Dieses kann simpel aussehen und einfach alle key/value Paare als JSON Einträge beinhalten. Bei "Unterobjekten" können diese als Array eingetragen werden. Dieses JSON ist das Ergebnise der Anfrage, und kann dementsprechend an den Controller zurück gegeben werden.
-
-    // TODO (Christian) Checken, welcher Query-Typ der Objectconnection für uns am besten geeignet ist: objectConnection.prepareObjectQuery/.prepareTupleQuery/.prepareQuery
-
     // Alte TODOs oben
     // TODO (Christian) Template-Methode um Sub-Queries erweitern
     // TODO (Christian) Dazu: Am Anfang der Methode über alle Templates laufen und Dir eine Liste anlegen, die sich die Namen der Templates als String merkt
     // TODO (Christian) Beim durchgehen des Bindings-Set: Testen, ob der name eines keys einem Template entspricht und damit in der obigen String-Liste enthalten ist
     // TODO (Christian) Falls ja: Rekursiver Aufruf Deiner Methode
-
-    // TODO (Christian) Bitte Deine alten erledigten TODOs löschen :)
 
     /**
      * @param id        ID of the represented OBJECT
@@ -78,15 +49,10 @@ public class ObjectRepository {
      */
     public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException, ClassNotFoundException {
         String directory = "templates";
-
         String fileName = directory + "/" + className + ".txt";
         File file = new File(fileName);
         System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");
-        if (new File(directory).isDirectory()) {
-            System.out.println("Directory does exist! ");
-        } else {
-            throw new FileNotFoundException("Directory " + new File(directory).getAbsolutePath() + " does not exist!");
-        }
+        List<String> listClasses = this.getTemplateNames(directory);
         if (!file.canRead()) {
             throw new FileNotFoundException("File with Query Template for Class " + className + " has not been found!");
         } else {
@@ -109,14 +75,35 @@ public class ObjectRepository {
             BindingSet currentResult = evaluateTupleQuery.next();
             System.out.println("Binding sets with Values has been found:");
             for (String binding : currentResult.getBindingNames()) {
-                System.out.println("Key: " + binding + " With Value: " + currentResult.getValue(binding).stringValue());
-                allBindings.addProperty(binding, currentResult.getValue(binding).stringValue());
+                if (containsClass(binding, listClasses)) {
+                    System.out.println("Inner Class: " + binding);
+                    allBindings.addProperty(binding, getRepresentationOfObject(id, binding));
+                } else {
+                    System.out.println("Key: " + binding + " With Value: " + currentResult.getValue(binding).stringValue());
+                    allBindings.addProperty(binding, currentResult.getValue(binding).stringValue());
+                }
             }
         }
         System.out.println(allBindings.toString());
         return allBindings.toString();
 
 
+    }
+
+    /**
+     * Wrapper Method to look for a String in a Collection
+     *
+     * @param key    String to search for.
+     * @param search Collection to look in.
+     * @return
+     */
+    public boolean containsClass(String key, List<String> search) {
+        for (String currVal : search) {
+            if (currVal.equals(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -141,6 +128,33 @@ public class ObjectRepository {
      */
     private String replaceString(String base, String remove, String replace) {
         return Pattern.compile(Pattern.quote(remove), Pattern.CASE_INSENSITIVE).matcher(base).replaceAll(replace);
+    }
+
+    /**
+     * Gets a Collection of Strings withc all the filenames shortened representing a ClassName
+     *
+     * @return returns a String List with the filenames.
+     */
+    private List<String> getTemplateNames(String directory) throws FileNotFoundException {
+        List<String> templateNameCollection = new LinkedList<>();
+        File file = new File(directory);
+        if (file.isDirectory()) {
+            try {
+                String[] list = file.list();
+                for (int i = 0; i < list.length; i++) {
+                    String currentClass = this.replaceString(list[i], ".txt", "");
+                    templateNameCollection.add(currentClass);
+                }
+            } catch (NullPointerException e) {
+                throw new FileNotFoundException("Directory " + new File(directory).getAbsolutePath() + " is empty!");
+            }
+            System.out.println("Directory does exist!");
+            System.out.println("Content of the Directory is:\n" + templateNameCollection.toString());
+            return templateNameCollection;
+        } else
+            throw new FileNotFoundException("Directory " + new File(directory).getAbsolutePath() + " does not exist!");
+
+
     }
 
 

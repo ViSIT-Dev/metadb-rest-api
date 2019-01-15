@@ -9,6 +9,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import rest.Exception.CreateNewDigtialRepresentationNodeException;
+import rest.Exception.DeleteDigitalRepresentationException;
 import rest.Exception.DigitalRepositoryException;
 import rest.Exception.UpdateDigitalRepositoryException;
 import rest.persistence.repository.DigitalRepresentationRepository;
@@ -80,6 +81,33 @@ public class DigitalRepresentationService {
             digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newDataString);
         } catch (Exception e) {
             throw new UpdateDigitalRepositoryException(e.getMessage());
+        }
+    }
+
+    /**
+     * Method to delete a exisitng DigitalRepresentation given the media and Object id.
+     *
+     * @param mediaID
+     * @param objectID
+     */
+    public void deleteDigitalRepresentationMediaAndObject(@NonNull String mediaID, @NonNull String objectID) {
+        try {
+            digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(mediaID, objectID);
+
+        } catch (Exception e) {
+            throw new DeleteDigitalRepresentationException(e.getMessage());
+        }
+    }
+
+    /**
+     * Method to delete a exisitng DigitalRepresentation given the media id.
+     * @param mediaID
+     */
+    public void deleteDigitalRepresentationMedia(String mediaID) {
+        try {
+            digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
+        } catch (Exception e) {
+            throw new DeleteDigitalRepresentationException(e.getMessage());
         }
     }
 

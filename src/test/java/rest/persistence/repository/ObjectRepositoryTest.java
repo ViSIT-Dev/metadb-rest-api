@@ -2,7 +2,6 @@ package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
 import com.google.gson.JsonParser;
-import jdk.nashorn.internal.parser.JSONParser;
 import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
@@ -11,7 +10,6 @@ import org.junit.Test;
 import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
-import org.openrdf.repository.object.ObjectQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import rest.BaseWebTest;
 
@@ -90,7 +88,7 @@ public class ObjectRepositoryTest extends BaseWebTest {
 
         Group group = anno4j.createObject(Group.class);
         group.setIconography("Iconography");
-        group.addKeyword("Keyword");
+//        group.addKeyword("Keyword");
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
         entry.setPages(5);
