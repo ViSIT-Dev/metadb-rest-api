@@ -95,9 +95,9 @@ public class ObjectRepository {
      *
      * @param key    String to search for.
      * @param search Collection to look in.
-     * @return
+     * @return true or false.
      */
-    public boolean containsClass(String key, List<String> search) {
+    private boolean containsClass(String key, List<String> search) {
         for (String currVal : search) {
             if (currVal.equals(key)) {
                 return true;

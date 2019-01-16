@@ -88,7 +88,7 @@ public class ObjectRepositoryTest extends BaseWebTest {
 
         Group group = anno4j.createObject(Group.class);
         group.setIconography("Iconography");
-//        group.addKeyword("Keyword");
+        group.addKeyword("Keyword");
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
         entry.setPages(5);
