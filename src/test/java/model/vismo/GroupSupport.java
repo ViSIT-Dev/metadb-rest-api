@@ -1,10 +1,12 @@
 package model.vismo;
 
+import com.github.anno4j.annotations.Partial;
 import com.github.anno4j.model.Target;
 import com.github.anno4j.model.impl.ResourceObjectSupport;
 
 import java.util.HashSet;
 
+@Partial
 public abstract class GroupSupport extends ResourceObjectSupport implements Group {
 
     @Override
