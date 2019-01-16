@@ -81,16 +81,12 @@ public class DigitalRepresentationController {
         digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(mediaID, objectID);
     }
 
-    /**
-     * Method to delete a exisitng DigitalRepresentation given the media id.
-     *
-     * @param mediaID
-     */
+  /*
     @DeleteMapping(value = "media")
     public void deleteDigitalRepresentationMedia(@RequestParam("id") String mediaID) {
         digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
     }
-
+    */
 
 
     /*
