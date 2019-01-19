@@ -73,7 +73,7 @@ public class ObjectRepository {
         JsonObject allBindings = new JsonObject();
         while (evaluateTupleQuery.hasNext()) {
             BindingSet currentResult = evaluateTupleQuery.next();
-            System.out.println("Binding sets with Values has been found:");
+            System.out.println("Binding sets with Values have been found:");
             for (String binding : currentResult.getBindingNames()) {
                 if (containsClass(binding, listClasses)) {
                     System.out.println("Inner Class: " + binding);

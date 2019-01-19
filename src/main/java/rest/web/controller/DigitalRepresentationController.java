@@ -71,23 +71,17 @@ public class DigitalRepresentationController {
         digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
-    /**
-     * Method to delete a exisitng DigitalRepresentation given the media and Object id.
-     *
-     * @param mediaID
-     * @param objectID
-     */
-    @DeleteMapping(value = "media")
+/*    @DeleteMapping(value = "media")
     public void deleteDigitalRepresentationMediaAndObject(@RequestParam("id") String mediaID, @RequestParam("id") String objectID) {
         digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(mediaID, objectID);
     }
+    */
 
-  /*
+
     @DeleteMapping(value = "media")
     public void deleteDigitalRepresentationMedia(@RequestParam("id") String mediaID) {
         digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
     }
-    */
 
 
     /*

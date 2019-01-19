@@ -1,33 +1,21 @@
 package rest.web.controller;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.github.anno4j.Anno4j;
-import com.github.anno4j.querying.QueryService;
-import com.google.gson.Gson;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
-import org.json.JSONObject;
 import org.junit.Test;
-import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rest.BaseWebTest;
 
-import java.util.Random;
-
-import static org.assertj.core.api.Assertions.not;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.Assert.*;
 
 /**
  * Test Class with methods in order to test the DigitalRepresentationController.
@@ -214,6 +202,20 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
+    }
+
+    @Test
+    public void deleteDigitalRepresentationNodeMediaSuccess() throws Exception {
+        String requestURL = standardUrl + "media?id=" + this.mediaID1;
+        mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isOk());
+        mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteDigitalRepresentationNodeMediaFailure() throws Exception {
+        String random = RandomStringUtils.randomAlphanumeric(47);
+        String requestURL = standardUrl + "media?id=" + random;
+        mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isConflict());
     }
 
     @Override

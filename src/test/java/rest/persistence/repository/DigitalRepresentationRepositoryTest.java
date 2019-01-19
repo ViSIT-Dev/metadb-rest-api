@@ -5,18 +5,15 @@ import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.marmotta.ldpath.parser.ParseException;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
-import org.springframework.beans.factory.annotation.Autowired;
 import rest.BaseWebTest;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
 
 public class DigitalRepresentationRepositoryTest extends BaseWebTest {
@@ -79,6 +76,43 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
         this.digitalRepresentationRepository.updateDigitalRepresentationNode(random, "HelloWorld");
         String resultMediaTest = this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(random);
         assertEquals(resultMediaTest, random);
+    }
+
+    @Test(expected = QueryEvaluationException.class)
+    public void deleteDigitalRepresentationNodeMediaSuccess() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        String mediaID = this.mediaID1;
+        this.digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
+        assertThat(this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(objectID), instanceOf(List.class));
+        this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(mediaID);
+    }
+
+    @Test(expected = QueryEvaluationException.class)
+    public void deleteDigitalRepresentationNodeMediaFailure() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        String random = RandomStringUtils.randomAlphanumeric(47);
+        this.digitalRepresentationRepository.deleteDigitalRepresentationMedia(random);
+    }
+
+    @Test(expected = QueryEvaluationException.class)
+    public void deleteDigitalRepresentationNodeMediaAndObjectSuccess() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        String objectId = this.objectID;
+        String mediaId = this.mediaID1;
+        this.digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(mediaId, objectId);
+        assertThat(this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(objectId), instanceOf(List.class));
+        this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(mediaId);
+    }
+
+    @Test(expected = QueryEvaluationException.class)
+    public void deleteDigitalRepresentationNodeMediaAndObjectMediaIdFailure() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        String objectID = this.objectID;
+        String mediaId = RandomStringUtils.randomAlphanumeric(47);
+        this.digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(mediaId, objectID);
+    }
+
+    @Test(expected = QueryEvaluationException.class)
+    public void deleteDigitalRepresentationNodeMediaAndObjectObjectIdFailure() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        String objectID = RandomStringUtils.randomAlphanumeric(47);
+        String mediaId = this.mediaID1;
+        this.digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(mediaId, objectID);
     }
 
     @Override
