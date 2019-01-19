@@ -1,7 +1,5 @@
 package rest.web.controller;
 
-import org.apache.jena.atlas.json.JSON;
-import org.apache.jena.atlas.json.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rest.Exception.DigitalRepositoryException;
@@ -12,6 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/digrep/")//produces = "application/json; charset=utf-8")
 public class DigitalRepresentationController {
+
     @Autowired
     private DigitalRepresentationService digitalRepresentationService;
     // TODO (Christian) Controller für die DigitalRepresentation Requirements. Nimmt alle HTTP Anfragen entgegen und gibt dementsprechend Aufrufe an den Service weiter
@@ -35,6 +34,8 @@ public class DigitalRepresentationController {
 
     // TODO Christian: Controller Methoden auf ID als RequestParameter umschreiben, da wir diese nicht wie bisher als Pfadvariablen benutzen können
     // TODO Hier ist ein Beispiel dafür: https://www.logicbig.com/tutorials/spring-framework/spring-web-mvc/spring-mvc-request-param.html
+
+    // TODO (Christian): Hier fehlt noch die HTTP Methode
     @RequestMapping(value = "media")
     public String getSingleTechnicalMetadataByMediaID(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
