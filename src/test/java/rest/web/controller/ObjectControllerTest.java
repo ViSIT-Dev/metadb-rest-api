@@ -2,6 +2,8 @@ package rest.web.controller;
 
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.anno4j.Anno4j;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
 import model.vismo.Group;
@@ -37,6 +39,9 @@ public class ObjectControllerTest extends BaseWebTest {
         MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertFalse(mvcResultString.isEmpty());
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = (JsonObject) jsonParser.parse(mvcResultString);
+        assertTrue(jsonObject.get("type").getAsString().contains("Group"));
     }
 
     @Test

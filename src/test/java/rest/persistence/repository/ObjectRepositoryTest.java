@@ -1,6 +1,7 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.vismo.Group;
 import model.vismo.Reference;
@@ -16,6 +17,7 @@ import rest.BaseWebTest;
 import java.io.FileNotFoundException;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test Class for Testing the Object Repository
@@ -48,7 +50,8 @@ public class ObjectRepositoryTest extends BaseWebTest {
         String result = objectRepository.getRepresentationOfObject(testID,testClass);
         assertFalse(result.isEmpty());
         JsonParser jsonParser = new JsonParser();
-        jsonParser.parse(result);
+        JsonObject jsonObject = (JsonObject) jsonParser.parse(result);
+        assertTrue(jsonObject.get("type").getAsString().contains("Group"));
     }
 
     @Test
