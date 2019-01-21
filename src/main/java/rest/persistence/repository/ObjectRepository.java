@@ -62,8 +62,7 @@ public class ObjectRepository {
         String fileContent = this.readFile(fileName);
         System.out.println("\nFile content is: ");
         System.out.println(fileContent);
-
-        // Hab hier einen kleinen "Fehler" gefunden: Man darf die beiden Sonderzeichen vor "ADD_ID_HERE" nicht entfernen - Hab's ausgebessert
+        
         String sparqlQuery = this.replaceString(fileContent, "ADD_ID_HERE", id);
         System.out.println("\nNew SparqlQuery: ");
         System.out.println(sparqlQuery);

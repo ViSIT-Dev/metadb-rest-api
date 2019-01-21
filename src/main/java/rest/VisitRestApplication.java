@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"rest"})
-public class VisitRestApplication { // extends SpringBootServletInitializer
+public class VisitRestApplication {
 
     private static Log logger = LogFactory.getLog(VisitRestApplication.class);
 
@@ -54,6 +54,15 @@ public class VisitRestApplication { // extends SpringBootServletInitializer
         SpringApplication.run(VisitRestApplication.class, args);
     }
 
+    /**
+     * Method to create testdata that can be used via the created Tomcat instance. Is only persisted if the boolean
+     * "createTestdata" is set to true in the application.properties.
+     *
+     * @param anno4j    The local Anno4j that is used.
+     * @throws RepositoryException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     private void createTestData(Anno4j anno4j) throws RepositoryException, IllegalAccessException, InstantiationException {
         Resource resource1 = anno4j.createObject(Resource.class);
 

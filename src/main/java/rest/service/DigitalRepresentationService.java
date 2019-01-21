@@ -22,7 +22,6 @@ import java.util.List;
 @Service
 public class DigitalRepresentationService {
 
-    // TODO Ganz wichtig! Autowiring nicht vergessen :)
     @Autowired
     private DigitalRepresentationRepository digitalRepresentationRepository;
 
@@ -52,7 +51,6 @@ public class DigitalRepresentationService {
         } catch (Exception e) {
             throw new DigitalRepositoryException(e.getMessage());
         }
-
     }
 
     /**
@@ -101,6 +99,7 @@ public class DigitalRepresentationService {
 
     /**
      * Method to delete a exisitng DigitalRepresentation given the media id.
+     *
      * @param mediaID
      */
     public void deleteDigitalRepresentationMedia(String mediaID) {

@@ -28,26 +28,10 @@ public class Anno4jRepository {
         return this.anno4j;
     }
 
-    // TODO (Manu) Exchange this, when Anno4j version is updated to 2.4.x, Matthias already implemented this
     public String getLowestClassGivenId(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-        ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
+        String annotation = this.anno4j.getConcept(id).getAnnotations()[0].toString();
 
-        ObjectQuery query = connection.prepareObjectQuery(
-                "SELECT ?c1 {" +
-                        "   <" + id + "> a ?c1 . " +
-                        "   MINUS {" +
-                        "       <" + id + "> a ?c2 . " +
-                        "       ?c2 rdfs:subClassOf+ ?c1 . " +
-                        "       FILTER(?c1 != ?c2)" +
-                        "   }" +
-                        "}"
-        );
-
-        Result<RDFObject> result = query.evaluate(RDFObject.class);
-
-        List<RDFObject> list = result.asList();
-
-        return list.get(0).getResource().toString();
+        return this.selectValue(annotation);
     }
 
     public String getPersonJSON(String id) {
@@ -55,6 +39,18 @@ public class Anno4jRepository {
 
         return null;
 
+    }
+
+    /**
+     * Method get a whole Java-Annotation as input and retrieves and returns its set value.
+     *
+     * @param annotation    The Annotation-String to read the value from.
+     * @return              The value set for the input Annotation-String.
+     */
+    private String selectValue(String annotation) {
+        int value = annotation.indexOf("value=");
+
+        return annotation.substring(value + 6, annotation.length() - 1);
     }
 }
 
