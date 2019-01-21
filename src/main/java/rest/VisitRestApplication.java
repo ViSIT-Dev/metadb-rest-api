@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"rest"})
-public class VisitRestApplication {
+public class VisitRestApplication extends SpringBootServletInitializer {
 
     private static Log logger = LogFactory.getLog(VisitRestApplication.class);
 
