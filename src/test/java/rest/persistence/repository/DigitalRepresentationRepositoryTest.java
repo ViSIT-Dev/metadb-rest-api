@@ -24,9 +24,7 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
 
     @Test
     public void testGetAllTechnicalMetadataStringsByObjectID() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-        List<String> result = this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(this.objectID);
-
-        assertEquals(2, result.size());
+        String result = this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(this.objectID);
         assertTrue(result.contains("test1"));
         assertTrue(result.contains("test2"));
     }

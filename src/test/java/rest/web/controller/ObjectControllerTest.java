@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.anno4j.Anno4j;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
 import model.vismo.Group;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
@@ -39,9 +41,11 @@ public class ObjectControllerTest extends BaseWebTest {
         MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertFalse(mvcResultString.isEmpty());
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(mvcResultString);
-        assertTrue(jsonObject.get("type").getAsString().contains("Group"));
+        JSONObject jsonObject = new JSONObject(mvcResultString);
+        assertTrue(jsonObject.get("type".substring(0,"type".length()-1)).toString().contains("Group"));
+        JSONObject jsonObject1 = jsonObject.getJSONObject("group_refentry");
+        assertTrue(jsonObject1.get("type".substring(0,"type".length()-1)).toString().contains("Group"));
+
     }
 
     @Test

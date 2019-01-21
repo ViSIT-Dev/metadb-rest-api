@@ -36,7 +36,7 @@ public class DigitalRepresentationController {
      * @throws DigitalRepositoryException
      */
     @GetMapping(value = "object")
-    public List<String> getAllTechnicalMetadataStringsByObjectID(@RequestParam("id") String id) throws DigitalRepositoryException {
+    public String getAllTechnicalMetadataStringsByObjectID(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getAllTechnicalMetadataStringsByObjectID(id);
     }
 
@@ -55,18 +55,17 @@ public class DigitalRepresentationController {
     // TODO (christian) Bitte den return ändern auf: ID des DigRep Knotens + (neuen) TechMetadata-String
     //TODO nochmal überprüfen wegen der Übertragung im Body als JSON(für das erfolgreiche Updaten  der Metadaten reicht schon ein einfacher String im Body...)
     @PutMapping(value = "media")
-    public void updateDigitalRepresentationNode(@RequestParam("id") String id, @RequestBody String newData) {
-        digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
+    public String updateDigitalRepresentationNode(@RequestParam("id") String id, @RequestBody String newData) {
+      return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
-/*    @DeleteMapping(value = "media")
-    public void deleteDigitalRepresentationMediaAndObject(@RequestParam("id") String mediaID, @RequestParam("id") String objectID) {
-        digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(mediaID, objectID);
+    @DeleteMapping(value = "object")
+    public String deleteDigitalRepresentationMediaAndObject(@RequestParam("objectid") String objectID,@RequestParam("mediaid") String mediaID) {
+       return digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
     }
-    */
 
     @DeleteMapping(value = "media")
-    public void deleteDigitalRepresentationMedia(@RequestParam("id") String mediaID) {
-        digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
+    public String deleteDigitalRepresentationMedia(@RequestParam("id") String mediaID) {
+      return  digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
     }
 }

@@ -174,10 +174,12 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         digitalRepresentation.setTechnicalMetadata(newData);
         Gson gson = new Gson();
         String digitalRepresenation  =  gson.toJson(digitalRepresentation);*/
-        this.mockMvc.perform(put(requestURL)
+        MvcResult mvcResult = this.mockMvc.perform(put(requestURL)
                 .content(newData))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        assertTrue(contentAsString.contains(this.mediaID1));
         this.performCorrectGetResultTest(requestURL, newData);
     }
 
@@ -207,7 +209,9 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     @Test
     public void deleteDigitalRepresentationNodeMediaSuccess() throws Exception {
         String requestURL = standardUrl + "media?id=" + this.mediaID1;
-        mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        assertTrue(contentAsString.contains(this.mediaID1));
         mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound());
     }
 
@@ -216,6 +220,17 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         String random = RandomStringUtils.randomAlphanumeric(47);
         String requestURL = standardUrl + "media?id=" + random;
         mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isConflict());
+    }
+
+    @Test
+    public void deleteDigitalRepresentationNodeObjectMediaSuccess() throws Exception {
+        String requestURL = standardUrl + "object?objectid=" + this.objectID + "&mediaid=" + this.mediaID1;
+        String requestURL2 = standardUrl + "media?id=" + this.mediaID1;
+        MvcResult mvcResult = mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        assertTrue(contentAsString.contains(this.objectID));
+        assertTrue(contentAsString.contains(this.mediaID1));
+        mockMvc.perform(get(requestURL2)).andDo(print()).andExpect(status().isNotFound());
     }
 
     @Override

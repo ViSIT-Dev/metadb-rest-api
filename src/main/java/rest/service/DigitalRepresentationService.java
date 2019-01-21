@@ -1,7 +1,7 @@
 package rest.service;
 
+import com.google.gson.JsonObject;
 import org.apache.jena.atlas.json.JSON;
-import org.apache.jena.atlas.json.JsonObject;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class DigitalRepresentationService {
      * @param id Gives the Object id for Access on the repository.
      * @return returns a List of Strings of the Metadata found.
      */
-    public List<String> getAllTechnicalMetadataStringsByObjectID(@NonNull String id) {
+    public String getAllTechnicalMetadataStringsByObjectID(@NonNull String id) {
         try {
             return digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(id);
         } catch (Exception e) {
@@ -73,10 +73,14 @@ public class DigitalRepresentationService {
      * @param mediaId
      * @param newData
      */
-    public void updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) {
+    public String updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) {
         String newDataString = newData.toString();
         try {
             digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newDataString);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("mediaId",mediaId);
+            jsonObject.addProperty("newData",newDataString);
+            return jsonObject.toString();
         } catch (Exception e) {
             throw new UpdateDigitalRepositoryException(e.getMessage());
         }
@@ -88,9 +92,13 @@ public class DigitalRepresentationService {
      * @param mediaID
      * @param objectID
      */
-    public void deleteDigitalRepresentationMediaAndObject(@NonNull String mediaID, @NonNull String objectID) {
+    public String deleteDigitalRepresentationMediaAndObject(@NonNull String objectID,@NonNull String mediaID) {
         try {
-            digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(mediaID, objectID);
+            digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("objectId",objectID);
+            jsonObject.addProperty("mediaId",mediaID);
+            return jsonObject.toString();
 
         } catch (Exception e) {
             throw new DeleteDigitalRepresentationException(e.getMessage());
@@ -102,9 +110,12 @@ public class DigitalRepresentationService {
      *
      * @param mediaID
      */
-    public void deleteDigitalRepresentationMedia(String mediaID) {
+    public String deleteDigitalRepresentationMedia(String mediaID) {
         try {
             digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("mediaId",mediaID);
+            return jsonObject.toString();
         } catch (Exception e) {
             throw new DeleteDigitalRepresentationException(e.getMessage());
         }

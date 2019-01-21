@@ -7,6 +7,7 @@ import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
@@ -49,9 +50,10 @@ public class ObjectRepositoryTest extends BaseWebTest {
         String testID = this.groupId;
         String result = objectRepository.getRepresentationOfObject(testID,testClass);
         assertFalse(result.isEmpty());
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(result);
-        assertTrue(jsonObject.get("type").getAsString().contains("Group"));
+        JSONObject jsonObject = new JSONObject(result);
+        assertTrue(jsonObject.get("type".substring(0,"type".length()-1)).toString().contains("Group"));
+        JSONObject jsonObject1 = jsonObject.getJSONObject("group_refentry");
+        assertTrue(jsonObject1.get("type".substring(0,"type".length()-1)).toString().contains("Group"));
     }
 
     @Test

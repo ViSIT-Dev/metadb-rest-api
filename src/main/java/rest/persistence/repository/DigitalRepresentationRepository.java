@@ -2,6 +2,8 @@ package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import model.Resource;
 import model.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
@@ -48,7 +50,7 @@ public class DigitalRepresentationRepository {
      * @param id The ID of the vismo:Resource from which the technicalMetadata is to be queried.
      * @return A list of Strings that represent the technicalMetadata for the searched vismo:Resource entity.
      */
-    public List<String> getAllTechnicalMetadataStringsByObjectID(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    public String getAllTechnicalMetadataStringsByObjectID(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
 
         String queryString = "SELECT ?d\n" +
@@ -60,14 +62,14 @@ public class DigitalRepresentationRepository {
         Result<RDFObject> result = query.evaluate(RDFObject.class);
 
         List<RDFObject> list = result.asList();
-
-        List<String> technicalMetadatas = new LinkedList<>();
-
+        JsonArray jsonElements = new JsonArray();
         for (RDFObject object : list) {
-            technicalMetadatas.add(((DigitalRepresentation) object).getTechnicalMetadata());
+            jsonElements.add(((DigitalRepresentation) object).getTechnicalMetadata());
         }
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("ObjectId",jsonElements);
 
-        return technicalMetadatas;
+        return jsonObject.toString();
     }
 
     /**
@@ -121,11 +123,6 @@ public class DigitalRepresentationRepository {
         }
     }
 
-    // TODO (Christian) Bitte zwei neue Methoden zum Löschen einer DigitalRepresentation implementieren, auch an Service und Controller denken
-    // TODO (Christian) REST: 2x DELETE Methode, einmal mit nur mediaID, einmal mit mediaID+objectID
-    // TODO (Christian) (Anno4j bietet Dir die .delete() Methode auf einem DigitalRepresentation-Objekt)
-    // TODO (Christian) Bitte Tests dazu schreiben, die danach ebenfalls überprüfen, dass das Objekt noch da ist und nicht gelöscht wurde
-
     /**
      * Method to delete a exisitng DigitalRepresentation given the media and Object id.
      *
@@ -136,23 +133,37 @@ public class DigitalRepresentationRepository {
      * @throws MalformedQueryException
      * @throws QueryEvaluationException
      */
-    public void deleteDigitalRepresentationMediaAndObject(String mediaID, String objectID) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
+    public void deleteDigitalRepresentationMediaAndObject(String objectID, String mediaID) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
         Anno4j anno4j = getAnno4j();
         QueryService qs = anno4j.createQueryService();
         qs.addCriteria(".", objectID);
         List<Resource> resources = qs.execute(Resource.class);
         if (!resources.isEmpty()) {
-            anno4j.createQueryService();
-            qs.addCriteria(".", mediaID);
-            List<DigitalRepresentation> result = qs.execute(DigitalRepresentation.class);
-            if (!result.isEmpty()) {
-                DigitalRepresentation representationToDelete = result.get(0);
-                representationToDelete.delete();
-            } else {
-                throw new QueryEvaluationException("MediaID " + mediaID + " is not existent!");
-            }
+            mediaQueryService(mediaID, anno4j);
         } else {
             throw new QueryEvaluationException("ObjectID " + objectID + " is not existent!");
+        }
+    }
+
+    /**
+     * Wrapper Method to Delete a DigitalRepresentation by Media ID returns void or Exception.
+     *
+     * @param mediaID
+     * @param anno4j
+     * @throws RepositoryException
+     * @throws ParseException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     */
+    private void mediaQueryService(String mediaID, Anno4j anno4j) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
+        QueryService qs2 = anno4j.createQueryService();
+        qs2.addCriteria(".", mediaID);
+        List<DigitalRepresentation> result = qs2.execute(DigitalRepresentation.class);
+        if (!result.isEmpty()) {
+            DigitalRepresentation representationToDelete = result.get(0);
+            representationToDelete.delete();
+        } else {
+            throw new QueryEvaluationException("MediaID " + mediaID + " is not existent!");
         }
     }
 
@@ -167,15 +178,7 @@ public class DigitalRepresentationRepository {
      */
     public void deleteDigitalRepresentationMedia(String mediaID) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
         Anno4j anno4j = getAnno4j();
-        QueryService qs = anno4j.createQueryService();
-        qs.addCriteria(".", mediaID);
-        List<DigitalRepresentation> result = qs.execute(DigitalRepresentation.class);
-        if (!result.isEmpty()) {
-            DigitalRepresentation digitalRepresentationToDelete = result.get(0);
-            digitalRepresentationToDelete.delete();
-        } else {
-            throw new QueryEvaluationException("MediaID " + mediaID + " is not existent!");
-        }
+        mediaQueryService(mediaID, anno4j);
     }
 
     /**

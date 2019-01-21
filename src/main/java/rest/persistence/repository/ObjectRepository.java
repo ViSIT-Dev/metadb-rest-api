@@ -2,6 +2,7 @@ package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
@@ -75,18 +76,22 @@ public class ObjectRepository {
             for (String binding : currentResult.getBindingNames()) {
 
                 // TODO (Christian) Bei folgendem Check kann das letzte "s" der bindings ignoriert werden, um auf die Templates zu passen
-
-                if (containsClass(binding, listClasses)) {
-                    System.out.println("Inner Class: " + binding);
-                    allBindings.addProperty(binding, getRepresentationOfObject(id, binding));
+                String bindingSingular = binding.substring(0,binding.length()-1);
+                if (containsClass(bindingSingular, listClasses)) {
+                    System.out.println("Inner Class: " + bindingSingular);
+                    JsonParser jsonParser = new JsonParser();
+                    JsonObject object = (JsonObject) jsonParser.parse(getRepresentationOfObject(id, bindingSingular));
+                    allBindings.add(bindingSingular,object);
                 } else {
-                    System.out.println("Key: " + binding + " With Value: " + currentResult.getValue(binding).stringValue());
-                    allBindings.addProperty(binding, currentResult.getValue(binding).stringValue());
+                    System.out.println("Key: " + bindingSingular + " With Value: " + currentResult.getValue(binding).stringValue());
+                    allBindings.addProperty(bindingSingular, currentResult.getValue(binding).stringValue());
                 }
             }
         }
-        System.out.println(allBindings.toString());
-        return allBindings.toString();
+        String allBindingsAsString = allBindings.toString();
+        allBindingsAsString = replaceString(allBindingsAsString,"\\","");
+        System.out.println(allBindingsAsString);
+        return allBindingsAsString;
 
 
     }
