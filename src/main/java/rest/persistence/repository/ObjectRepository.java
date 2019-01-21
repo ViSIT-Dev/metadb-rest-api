@@ -30,7 +30,6 @@ public class ObjectRepository {
 
     @Autowired
     private Anno4j anno4j;
-    // Alte TODOs oben
     // TODO (Christian) Template-Methode um Sub-Queries erweitern
     // TODO (Christian) Dazu: Am Anfang der Methode über alle Templates laufen und Dir eine Liste anlegen, die sich die Namen der Templates als String merkt
     // TODO (Christian) Beim durchgehen des Bindings-Set: Testen, ob der name eines keys einem Template entspricht und damit in der obigen String-Liste enthalten ist
@@ -62,7 +61,7 @@ public class ObjectRepository {
         String fileContent = this.readFile(fileName);
         System.out.println("\nFile content is: ");
         System.out.println(fileContent);
-        
+
         String sparqlQuery = this.replaceString(fileContent, "ADD_ID_HERE", id);
         System.out.println("\nNew SparqlQuery: ");
         System.out.println(sparqlQuery);
@@ -74,6 +73,9 @@ public class ObjectRepository {
             BindingSet currentResult = evaluateTupleQuery.next();
             System.out.println("Binding sets with Values have been found:");
             for (String binding : currentResult.getBindingNames()) {
+
+                // TODO (Christian) Bei folgendem Check kann das letzte "s" der bindings ignoriert werden, um auf die Templates zu passen
+
                 if (containsClass(binding, listClasses)) {
                     System.out.println("Inner Class: " + binding);
                     allBindings.addProperty(binding, getRepresentationOfObject(id, binding));

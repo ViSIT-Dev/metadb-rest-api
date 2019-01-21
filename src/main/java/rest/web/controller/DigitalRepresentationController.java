@@ -22,12 +22,12 @@ public class DigitalRepresentationController {
      * @throws DigitalRepositoryException
      */
 
-    // TODO (Christian): Hier fehlt noch die HTTP Methode
-    @RequestMapping(value = "media")
+    @GetMapping(value = "media")
     public String getSingleTechnicalMetadataByMediaID(@RequestParam("id") String id) throws DigitalRepositoryException {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
     }
 
+    // TODO (Christian) Bitte den return der Methode umschreiben: Soll zu jedem TechMetadata-String auch die ID des DigRep-Entity zurückgeben (in einer JSON Liste)
     /**
      * Controller Method to get all the media represenatation based on a Object ID
      *
@@ -52,6 +52,7 @@ public class DigitalRepresentationController {
         return digitalRepresentationService.createNewDigitalRepresentationNode(id);
     }
 
+    // TODO (christian) Bitte den return ändern auf: ID des DigRep Knotens + (neuen) TechMetadata-String
     //TODO nochmal überprüfen wegen der Übertragung im Body als JSON(für das erfolgreiche Updaten  der Metadaten reicht schon ein einfacher String im Body...)
     @PutMapping(value = "media")
     public void updateDigitalRepresentationNode(@RequestParam("id") String id, @RequestBody String newData) {
