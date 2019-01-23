@@ -15,6 +15,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import rest.configuration.VisitIDGenerator;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"rest"})
@@ -36,11 +37,12 @@ public class VisitRestApplication extends SpringBootServletInitializer {
         if (!sparqlEndpointQuery.equals("none") && !sparqlEndpointUpdate.equals("none")) {
             logger.info("Connecting to SPARQL endpoint " + sparqlEndpointQuery + " and " + sparqlEndpointUpdate);
             SPARQLRepository sparqlRepository = new SPARQLRepository(sparqlEndpointQuery, sparqlEndpointUpdate);
-            return new Anno4j(sparqlRepository, null, false);
+            return new Anno4j(sparqlRepository, new VisitIDGenerator(), null, false);
         } else {
             logger.info("No SPARQL endpoint configured. Creating In-Memory SPARQL endpoint");
 
-            Anno4j anno4j = new Anno4j();
+            Anno4j anno4j = new Anno4j(false);
+            anno4j.setIdGenerator(new VisitIDGenerator());
 
             if(createTestdata) {
                 this.createTestData(anno4j);
