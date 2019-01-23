@@ -66,6 +66,8 @@ public class DigitalRepresentationRepository {
         for (RDFObject object : list) {
             jsonElements.add(((DigitalRepresentation) object).getTechnicalMetadata());
         }
+
+        // TODO (Christian) Noch falsch aufgedröselt. Bei "ObjectId" sollte die ID des Objekts stehen (im Parameter "id" drin), dann eine Liste als zweites anhängen die z.B. als key "DigitalRepresentations" und als values dann Deine "jsonElements" hat
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("ObjectId",jsonElements);
 

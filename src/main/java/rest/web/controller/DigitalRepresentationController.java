@@ -79,6 +79,7 @@ public class DigitalRepresentationController {
       return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
+    // TODO (Christian) Ich denke beim löschen reicht es, wenn ein 200 Success zurück kommt. D.h. wir können einfach void returnen (bei beiden Methoden)
     @ApiOperation(value = "Delete DigitalRepresentation given object and media ID",
             notes = "Method to delete a DigitalRepresentation node, given both the object and media ID.")
     @DeleteMapping(value = "object")
