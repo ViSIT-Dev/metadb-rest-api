@@ -31,10 +31,6 @@ public class ObjectRepository {
 
     @Autowired
     private Anno4j anno4j;
-    // TODO (Christian) Template-Methode um Sub-Queries erweitern
-    // TODO (Christian) Dazu: Am Anfang der Methode über alle Templates laufen und Dir eine Liste anlegen, die sich die Namen der Templates als String merkt
-    // TODO (Christian) Beim durchgehen des Bindings-Set: Testen, ob der name eines keys einem Template entspricht und damit in der obigen String-Liste enthalten ist
-    // TODO (Christian) Falls ja: Rekursiver Aufruf Deiner Methode
 
     /**
      * @param id        ID of the represented OBJECT
@@ -74,8 +70,6 @@ public class ObjectRepository {
             BindingSet currentResult = evaluateTupleQuery.next();
             System.out.println("Binding sets with Values have been found:");
             for (String binding : currentResult.getBindingNames()) {
-
-                // TODO (Christian) Bei folgendem Check kann das letzte "s" der bindings ignoriert werden, um auf die Templates zu passen
                 String bindingSingular = binding.substring(0,binding.length()-1);
                 if (containsClass(bindingSingular, listClasses)) {
                     System.out.println("Inner Class: " + bindingSingular);
