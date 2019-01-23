@@ -2,6 +2,7 @@ package rest;
 
 import com.github.anno4j.Anno4j;
 import model.Resource;
+import model.technicalMetadata.DigitalRepresentation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.repository.RepositoryException;
@@ -9,7 +10,6 @@ import org.openrdf.repository.config.RepositoryConfigException;
 import org.openrdf.repository.sparql.SPARQLRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +70,30 @@ public class VisitRestApplication extends SpringBootServletInitializer {
 
         Resource resource2 = anno4j.createObject(Resource.class);
 
+        DigitalRepresentation digitalRepresentation1 = anno4j.createObject(DigitalRepresentation.class);
+        digitalRepresentation1.setTechnicalMetadata("Sample Data");
+        resource1.addDigitalRepresentation(digitalRepresentation1);
+
+        DigitalRepresentation digitalRepresentation2 = anno4j.createObject(DigitalRepresentation.class);
+        digitalRepresentation2.setTechnicalMetadata("Another Sample Data");
+        resource1.addDigitalRepresentation(digitalRepresentation2);
+
+        DigitalRepresentation digitalRepresentation3 = anno4j.createObject(DigitalRepresentation.class);
+        digitalRepresentation3.setTechnicalMetadata("Another third Sample Data");
+        resource2.addDigitalRepresentation(digitalRepresentation3);
+
+        DigitalRepresentation digitalRepresentation4 = anno4j.createObject(DigitalRepresentation.class);
+        digitalRepresentation4.setTechnicalMetadata("Another fourth Sample Data");
+        resource2.addDigitalRepresentation(digitalRepresentation4);
+
+
         logger.debug("Resource created with ID: " + resource1.getResourceAsString());
+        logger.debug("Digital Representation with id created: " + digitalRepresentation1.getResourceAsString());
+        logger.debug("Digital Representation with id created: " + digitalRepresentation2.getResourceAsString());
         logger.debug("Resource created with ID: " + resource2.getResourceAsString());
+        logger.debug("Digital Representation with id created: " + digitalRepresentation3.getResourceAsString());
+        logger.debug("Digital Representation with id created: " + digitalRepresentation4.getResourceAsString());
+
+
     }
 }
