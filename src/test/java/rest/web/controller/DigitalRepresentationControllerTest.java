@@ -27,7 +27,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     private String mediaID1;
     private String mediaID2;
     private String urlLikeID = "http://visit.de/model/id1";
-    private final String standardUrl = "https://database.visit.uni-passau.de/api/digrep/";
+    private final String standardUrl = "https://database.visit.uni-passau.de/digrep/";
     private Anno4j anno4j;
 
     /**

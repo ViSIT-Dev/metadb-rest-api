@@ -8,6 +8,7 @@ import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +30,12 @@ public class ObjectRepository {
     @Autowired
     private Anno4jRepository anno4jRepository;
 
+    @Value("${visit.rest.sparql.endpoint.query}")
+    private String sparqlEndpointQuery;
+
+    @Value("${visit.rest.templates.path}")
+    private String pathToTemplates;
+
     @Autowired
     private Anno4j anno4j;
 
@@ -44,7 +51,14 @@ public class ObjectRepository {
      * @throws ClassNotFoundException
      */
     public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException, ClassNotFoundException {
-        String directory = "templates";
+        String directory;
+
+        if(this.sparqlEndpointQuery.equals("none")) {
+            directory = "templates";
+        } else {
+            directory = this.pathToTemplates;
+        }
+
         String fileName = directory + "/" + className + ".txt";
         File file = new File(fileName);
         System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");

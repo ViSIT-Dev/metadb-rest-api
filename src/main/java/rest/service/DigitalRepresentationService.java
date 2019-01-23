@@ -95,6 +95,8 @@ public class DigitalRepresentationService {
     public String deleteDigitalRepresentationMediaAndObject(@NonNull String objectID,@NonNull String mediaID) {
         try {
             digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
+
+            // TODO (Christian) Ich denke, wir sollten hier nicht nochmal die medienId durchgeben - die ist ja gelöscht. Besser evtl. object und restliche digreps..
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("objectId",objectID);
             jsonObject.addProperty("mediaId",mediaID);
