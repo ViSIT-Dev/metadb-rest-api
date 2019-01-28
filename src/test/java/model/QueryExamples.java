@@ -1,21 +1,16 @@
 package model;
 
 import com.github.anno4j.Anno4j;
-import com.github.anno4j.model.Annotation;
-import com.github.anno4j.model.impl.targets.SpecificResource;
-import com.github.anno4j.model.namespaces.OADM;
 import com.github.anno4j.querying.QueryService;
+import model.namespace.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.marmotta.ldpath.parser.ParseException;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
-import org.springframework.beans.factory.annotation.Autowired;
-import rest.persistence.repository.Anno4jRepository;
 
 import java.util.LinkedList;
 import java.util.List;

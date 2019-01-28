@@ -1,7 +1,7 @@
 package model;
 
 import com.github.anno4j.model.impl.ResourceObject;
-import model.VISMO;
+import model.namespace.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
 import org.openrdf.annotations.Iri;
 

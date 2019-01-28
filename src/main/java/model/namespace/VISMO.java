@@ -1,4 +1,4 @@
-package model;
+package model.namespace;
 
 /**
  * (Use Case-eeduced) Static namespace Class for the VISMO ontology.

@@ -1,4 +1,4 @@
-package model;
+package model.namespace;
 
 /**
  * Created by Manu on 18.12.18.

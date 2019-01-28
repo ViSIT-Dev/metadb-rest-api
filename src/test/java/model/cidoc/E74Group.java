@@ -1,6 +1,6 @@
 package model.cidoc;
 
-import model.CIDOC;
+import model.namespace.CIDOC;
 import org.openrdf.annotations.Iri;
 
 @Iri(CIDOC.E74_GROUP)

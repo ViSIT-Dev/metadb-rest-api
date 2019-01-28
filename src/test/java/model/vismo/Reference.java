@@ -1,6 +1,6 @@
 package model.vismo;
 
-import model.VISMO;
+import model.namespace.VISMO;
 import org.openrdf.annotations.Iri;
 
 @Iri(VISMO.REFERENCE)

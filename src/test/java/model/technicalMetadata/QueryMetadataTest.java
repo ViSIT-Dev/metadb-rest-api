@@ -2,7 +2,7 @@ package model.technicalMetadata;
 
 import com.github.anno4j.Anno4j;
 import model.Resource;
-import model.VISMO;
+import model.namespace.VISMO;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;

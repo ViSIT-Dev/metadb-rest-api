@@ -5,7 +5,8 @@ import com.github.anno4j.querying.QueryService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import model.Resource;
-import model.VISMO;
+import model.namespace.JSONVISMO;
+import model.namespace.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
@@ -18,7 +19,6 @@ import org.openrdf.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Repository
@@ -42,34 +42,35 @@ public class DigitalRepresentationRepository {
         }
     }
 
-    // TODO (Manu) Rewrite this to Anno4j? No direct SPARQL needed
-
     /**
      * Private method that queries the technicalMetadata Strings given an ID of a vismo:Resource entity.
      *
      * @param id The ID of the vismo:Resource from which the technicalMetadata is to be queried.
      * @return A list of Strings that represent the technicalMetadata for the searched vismo:Resource entity.
      */
-    public String getAllTechnicalMetadataStringsByObjectID(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-        ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
+    public String getAllTechnicalMetadataStringsByObjectID(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException {
+        QueryService qs = this.anno4j.createQueryService();
+        qs.addCriteria(".", id);
 
-        String queryString = "SELECT ?d\n" +
-                "   WHERE { <" + id + "> a <" + VISMO.RESOURCE + "> .\n" +
-                "   <" + id + "> <" + VISMO.HAS_DIGITAL_REPRESENTATION + "> ?d }";
+        List<Resource> result = qs.execute(Resource.class);
 
-        ObjectQuery query = connection.prepareObjectQuery(queryString);
+        Resource resource = result.get(0);
 
-        Result<RDFObject> result = query.evaluate(RDFObject.class);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(JSONVISMO.OBJECT_ID, id);
 
-        List<RDFObject> list = result.asList();
-        JsonArray jsonElements = new JsonArray();
-        for (RDFObject object : list) {
-            jsonElements.add(((DigitalRepresentation) object).getTechnicalMetadata());
+        JsonArray jsonArray = new JsonArray();
+
+        for(DigitalRepresentation digrep : resource.getDigitalRepresentations()) {
+            JsonObject digrepObject = new JsonObject();
+
+            digrepObject.addProperty(JSONVISMO.MEDIA_ID, digrep.getResourceAsString());
+            digrepObject.addProperty(JSONVISMO.TECHNICAL_METADATA_STRING, digrep.getTechnicalMetadata());
+
+            jsonArray.add(digrepObject);
         }
 
-        // TODO (Christian) Noch falsch aufgedröselt. Bei "ObjectId" sollte die ID des Objekts stehen (im Parameter "id" drin), dann eine Liste als zweites anhängen die z.B. als key "DigitalRepresentations" und als values dann Deine "jsonElements" hat
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.add("ObjectId",jsonElements);
+        jsonObject.add(JSONVISMO.DIGITAL_REPRESENTATIONS, jsonArray);
 
         return jsonObject.toString();
     }

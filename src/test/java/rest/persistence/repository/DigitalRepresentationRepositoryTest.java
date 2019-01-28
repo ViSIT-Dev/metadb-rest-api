@@ -23,7 +23,7 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
     private String mediaID2;
 
     @Test
-    public void testGetAllTechnicalMetadataStringsByObjectID() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    public void testGetAllTechnicalMetadataStringsByObjectID() throws RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException {
         String result = this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(this.objectID);
         assertTrue(result.contains("test1"));
         assertTrue(result.contains("test2"));

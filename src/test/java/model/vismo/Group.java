@@ -2,7 +2,7 @@ package model.vismo;
 
 
 import model.Resource;
-import model.VISMO;
+import model.namespace.VISMO;
 import model.cidoc.E74Group;
 import org.openrdf.annotations.Iri;
 
