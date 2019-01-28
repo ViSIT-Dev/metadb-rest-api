@@ -4,7 +4,13 @@ import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.marmotta.ldpath.parser.ParseException;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rest.Exception.DigitalRepositoryException;
 import rest.service.DigitalRepresentationService;
@@ -34,7 +40,6 @@ public class DigitalRepresentationController {
         return digitalRepresentationService.getSingleTechnicalMetadataByMediaID(id);
     }
 
-    // TODO (Christian) Bitte den return der Methode umschreiben: Soll zu jedem TechMetadata-String auch die ID des DigRep-Entity zurückgeben (in einer JSON Liste)
     /**
      * Controller Method to get all the media represenatation based on a Object ID
      *
@@ -77,27 +82,30 @@ public class DigitalRepresentationController {
             @RequestParam("id") String id,
             @ApiParam(value = "The new Technical Metadata String")
             @RequestBody String newData) {
-      return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
+        return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
-    // TODO (Christian) Ich denke beim löschen reicht es, wenn ein 200 Success zurück kommt. D.h. wir können einfach void returnen (bei beiden Methoden)
     @ApiOperation(value = "Delete DigitalRepresentation given object and media ID",
             notes = "Method to delete a DigitalRepresentation node, given both the object and media ID.")
     @DeleteMapping(value = "object")
-    public String deleteDigitalRepresentationMediaAndObject(
+    public ResponseEntity deleteDigitalRepresentationMediaAndObject(
             @ApiParam(required = true, value = "The ID of the object node")
             @RequestParam("objectid") String objectID,
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
-            @RequestParam("mediaid") String mediaID) {
-       return digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
+            @RequestParam("mediaid") String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        this.digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @ApiOperation(value = "Delete DigitalRepresentation given its media ID",
             notes = "Method to delete a DigitalRepresentation node, given the media ID.")
     @DeleteMapping(value = "media")
-    public String deleteDigitalRepresentationMedia(
+    public ResponseEntity deleteDigitalRepresentationMedia (
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
-            @RequestParam("id") String mediaID) {
-      return  digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
+            @RequestParam("id") String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        this.digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

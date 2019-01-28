@@ -59,7 +59,6 @@ public abstract class BaseWebTest {
 
     @After
     public void destroy() throws RepositoryException {
-        // TODO (Manu) Check if this does clear everything
         this.digitalRepresentationRepository.getAnno4j().getObjectRepository().getConnection().close();
         this.anno4jRepository.getAnno4j().getObjectRepository().getConnection().close();
     }

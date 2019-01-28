@@ -11,8 +11,6 @@ import java.util.Set;
 @Iri(VISMO.GROUP)
 public interface Group extends E74Group, Resource {
 
-    // TODO (Manu) Change these to multiple entries for better testability
-
     @Iri(VISMO.KEYWORD)
     Set<String> getKeywords();
 

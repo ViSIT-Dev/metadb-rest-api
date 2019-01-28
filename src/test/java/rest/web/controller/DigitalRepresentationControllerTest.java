@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class DigitalRepresentationControllerTest extends BaseWebTest {
 
-    // TODO (Christian) Bitte hier tests entwickeln, die die Funktionalitäten um die DigitalRepresentation Requirements abdecken
     private String objectID;
     private String mediaID1;
     private String mediaID2;
@@ -209,9 +208,9 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     @Test
     public void deleteDigitalRepresentationNodeMediaSuccess() throws Exception {
         String requestURL = standardUrl + "media?id=" + this.mediaID1;
-        MvcResult mvcResult = mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isNoContent()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertTrue(contentAsString.contains(this.mediaID1));
+        assertTrue(contentAsString.isEmpty());
         mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound());
     }
 
@@ -226,10 +225,9 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     public void deleteDigitalRepresentationNodeObjectMediaSuccess() throws Exception {
         String requestURL = standardUrl + "object?objectid=" + this.objectID + "&mediaid=" + this.mediaID1;
         String requestURL2 = standardUrl + "media?id=" + this.mediaID1;
-        MvcResult mvcResult = mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = mockMvc.perform(delete(requestURL)).andDo(print()).andExpect(status().isNoContent()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertTrue(contentAsString.contains(this.objectID));
-        assertTrue(contentAsString.contains(this.mediaID1));
+        assertTrue(contentAsString.isEmpty());
         mockMvc.perform(get(requestURL2)).andDo(print()).andExpect(status().isNotFound());
     }
 

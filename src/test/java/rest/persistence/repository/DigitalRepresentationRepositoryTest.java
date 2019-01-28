@@ -80,7 +80,6 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
     public void deleteDigitalRepresentationNodeMediaSuccess() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
         String mediaID = this.mediaID1;
         this.digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
-        // TODO (Christian) Bitte überprüfen. Vorher war auf List.class verglichen, lässt Test fehlschlagen
         assertThat(this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(objectID), instanceOf(String.class));
         this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(mediaID);
     }

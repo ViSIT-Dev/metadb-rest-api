@@ -85,8 +85,6 @@ public class ObjectRepositoryTest extends BaseWebTest {
         }
     }
 
-
-    // TODO (Christian) Habe Dir jetzt mal das Modell und die erzeugten Daten hier erweitert, damit müsstest Du die rekursive Funktion testen können
     @Override
     public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException {
         Anno4j anno4j = this.objectRepository.getAnno4j();

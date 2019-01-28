@@ -4,6 +4,9 @@ import com.google.gson.JsonObject;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -67,6 +70,7 @@ public class DigitalRepresentationService {
         }
     }
 
+    // TODO Update this method, code should not be done in Service but rather in the Repository
     /**
      * Service Method to update a Media Representation by given media ID and the new Dataset.
      *
@@ -92,19 +96,8 @@ public class DigitalRepresentationService {
      * @param mediaID
      * @param objectID
      */
-    public String deleteDigitalRepresentationMediaAndObject(@NonNull String objectID,@NonNull String mediaID) {
-        try {
-            digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
-
-            // TODO (Christian) Ich denke, wir sollten hier nicht nochmal die medienId durchgeben - die ist ja gelöscht. Besser evtl. object und restliche digreps..
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("objectId",objectID);
-            jsonObject.addProperty("mediaId",mediaID);
-            return jsonObject.toString();
-
-        } catch (Exception e) {
-            throw new DeleteDigitalRepresentationException(e.getMessage());
-        }
+    public void deleteDigitalRepresentationMediaAndObject(@NonNull String objectID,@NonNull String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        this.digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
     }
 
     /**
@@ -112,15 +105,8 @@ public class DigitalRepresentationService {
      *
      * @param mediaID
      */
-    public String deleteDigitalRepresentationMedia(String mediaID) {
-        try {
-            digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("mediaId",mediaID);
-            return jsonObject.toString();
-        } catch (Exception e) {
-            throw new DeleteDigitalRepresentationException(e.getMessage());
-        }
+    public void deleteDigitalRepresentationMedia(String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        this.digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
     }
 
 }

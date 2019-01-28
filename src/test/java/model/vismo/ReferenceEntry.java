@@ -1,10 +1,11 @@
 package model.vismo;
 
+import com.github.anno4j.model.impl.ResourceObject;
 import model.namespace.VISMO;
 import org.openrdf.annotations.Iri;
 
 @Iri(VISMO.REFERENCE_ENTRY)
-public interface ReferenceEntry {
+public interface ReferenceEntry extends ResourceObject {
 
     @Iri(VISMO.ENTRY_PAGES)
     int getPages();
