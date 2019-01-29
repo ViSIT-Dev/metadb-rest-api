@@ -1,13 +1,13 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.querying.QueryService;
+import model.Resource;
+import model.namespace.VISMO;
+import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.object.ObjectConnection;
-import org.openrdf.repository.object.ObjectQuery;
-import org.openrdf.repository.object.RDFObject;
-import org.openrdf.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,11 +34,22 @@ public class Anno4jRepository {
         return this.selectValue(annotation);
     }
 
-    public String getPersonJSON(String id) {
-        
+    /**
+     * Method queries for the ID of the superordinate vismo:Resource of the DigitalRepresentation defined by the supported digRepId.
+     *
+     * @param digRepId  The Id of the DigitalRepresentation node.
+     * @return          The Id of the superordinate vismo:Resource.
+     */
+    public String getResourceIdByDigitalRepresentation (String digRepId) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
+        QueryService queryService = this.anno4j.createQueryService();
 
-        return null;
+        queryService.addPrefix(VISMO.PREFIX, VISMO.NS);
 
+        queryService.addCriteria("<" + VISMO.HAS_DIGITAL_REPRESENTATION + ">", digRepId);
+
+        List<Resource> result = queryService.execute(Resource.class);
+
+        return result.get(0).getResourceAsString();
     }
 
     /**

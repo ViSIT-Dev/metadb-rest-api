@@ -1,6 +1,7 @@
 package rest.service;
 
 import com.google.gson.JsonObject;
+import model.namespace.JSONVISMO;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
@@ -15,6 +16,7 @@ import rest.Exception.CreateNewDigtialRepresentationNodeException;
 import rest.Exception.DeleteDigitalRepresentationException;
 import rest.Exception.DigitalRepositoryException;
 import rest.Exception.UpdateDigitalRepositoryException;
+import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.DigitalRepresentationRepository;
 
 import java.util.List;
@@ -27,6 +29,9 @@ public class DigitalRepresentationService {
 
     @Autowired
     private DigitalRepresentationRepository digitalRepresentationRepository;
+
+    @Autowired
+    private Anno4jRepository anno4jRepository;
 
     /**
      * Service Method to get a media representation with given media id.
@@ -71,19 +76,22 @@ public class DigitalRepresentationService {
     }
 
     // TODO Update this method, code should not be done in Service but rather in the Repository
+
     /**
      * Service Method to update a Media Representation by given media ID and the new Dataset.
      *
      * @param mediaId
      * @param newData
      */
-    public String updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) {
-        String newDataString = newData.toString();
+    public String updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
         try {
-            digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newDataString);
+            this.digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newData);
+            String resourceId = this.anno4jRepository.getResourceIdByDigitalRepresentation(mediaId);
+
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("mediaId",mediaId);
-            jsonObject.addProperty("newData",newDataString);
+            jsonObject.addProperty(JSONVISMO.OBJECT_ID, resourceId);
+            jsonObject.addProperty(JSONVISMO.MEDIA_ID, mediaId);
+            jsonObject.addProperty(JSONVISMO.TECHNICAL_METADATA_STRING, newData);
             return jsonObject.toString();
         } catch (Exception e) {
             throw new UpdateDigitalRepositoryException(e.getMessage());
@@ -96,8 +104,12 @@ public class DigitalRepresentationService {
      * @param mediaID
      * @param objectID
      */
-    public void deleteDigitalRepresentationMediaAndObject(@NonNull String objectID,@NonNull String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
-        this.digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
+    public void deleteDigitalRepresentationMediaAndObject(@NonNull String objectID, @NonNull String mediaID) {
+        try {
+            this.digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
+        } catch (Exception e) {
+            throw new DeleteDigitalRepresentationException(e.getMessage());
+        }
     }
 
     /**
@@ -105,8 +117,12 @@ public class DigitalRepresentationService {
      *
      * @param mediaID
      */
-    public void deleteDigitalRepresentationMedia(String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
-        this.digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
+    public void deleteDigitalRepresentationMedia(String mediaID) {
+        try {
+            this.digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
+        } catch (Exception e) {
+            throw new DeleteDigitalRepresentationException(e.getMessage());
+        }
     }
 
 }

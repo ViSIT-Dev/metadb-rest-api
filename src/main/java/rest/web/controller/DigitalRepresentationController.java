@@ -81,7 +81,7 @@ public class DigitalRepresentationController {
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
             @RequestParam("id") String id,
             @ApiParam(value = "The new Technical Metadata String")
-            @RequestBody String newData) {
+            @RequestBody String newData) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
         return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
@@ -92,7 +92,7 @@ public class DigitalRepresentationController {
             @ApiParam(required = true, value = "The ID of the object node")
             @RequestParam("objectid") String objectID,
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
-            @RequestParam("mediaid") String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+            @RequestParam("mediaid") String mediaID) {
         this.digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -103,7 +103,7 @@ public class DigitalRepresentationController {
     @DeleteMapping(value = "media")
     public ResponseEntity deleteDigitalRepresentationMedia (
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
-            @RequestParam("id") String mediaID) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+            @RequestParam("id") String mediaID) {
         this.digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);

@@ -202,7 +202,6 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         this.mockMvc.perform(get(requestURL))
                 .andDo(print())
                 .andExpect(status().isNotFound());
-
     }
 
     @Test
