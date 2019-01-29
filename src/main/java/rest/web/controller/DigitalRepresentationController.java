@@ -72,7 +72,6 @@ public class DigitalRepresentationController {
         return digitalRepresentationService.createNewDigitalRepresentationNode(id);
     }
 
-    // TODO (christian) Bitte den return ändern auf: ID des DigRep Knotens + (neuen) TechMetadata-String
     //TODO nochmal überprüfen wegen der Übertragung im Body als JSON(für das erfolgreiche Updaten  der Metadaten reicht schon ein einfacher String im Body...)
     @ApiOperation(value = "Update DigitalRepresentation node",
             notes = "Method to update a given DigitalRepresentation node, defined by the supported mediaID, by exchanging its Technical Metadata String with the one supported by newData.")

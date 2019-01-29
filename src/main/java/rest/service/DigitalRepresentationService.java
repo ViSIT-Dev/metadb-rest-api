@@ -75,8 +75,6 @@ public class DigitalRepresentationService {
         }
     }
 
-    // TODO Update this method, code should not be done in Service but rather in the Repository
-
     /**
      * Service Method to update a Media Representation by given media ID and the new Dataset.
      *

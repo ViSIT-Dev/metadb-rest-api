@@ -35,8 +35,6 @@ public class ObjectService {
             String toRemoveChar = "http://visit.de/ontologies/vismo/";
             String classGetFile = this.withoutString(className, toRemoveChar);
             result = objectRepository.getRepresentationOfObject(id, classGetFile);
-
-            // TODO (Christian) Müssen überlegen, ob wir die Exceptions nicht nach "oben" geben sollten. Wenn was schief läuft, bekommt das sonst der Client nicht mit
         } catch (OpenRDFException | IOException | ClassNotFoundException | ParseException e ) {
             throw new ObjectClassNotFoundException(e.getMessage());
         }
