@@ -35,6 +35,10 @@ public class VISMO {
 
     public final static String IS_ENTRY_IN = NS + "isEntryIn";
 
+    public final static String CONTAINS_ENTRY = NS + "containsEntry";
+
+    public final static String ENTRY_IS_ABOUT = NS + "entryIsAbout";
+
     /*
     Properties
      */

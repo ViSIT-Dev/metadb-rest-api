@@ -36,7 +36,6 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
      */
     @Test
     public void getSingleTechnicalMetadataByFalseMediaIDTest() throws Exception {
-        /*Erstelle einen zufälligen Alphanumerischen String mit Länge 47*/
         String random = RandomStringUtils.randomAlphanumeric(47);
         String requestURL = standardUrl + "media?id=" + random;
         mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound());

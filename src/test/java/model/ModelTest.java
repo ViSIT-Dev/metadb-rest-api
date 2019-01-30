@@ -44,10 +44,12 @@ public class ModelTest {
 
         ReferenceEntry entry = this.anno4j.createObject(ReferenceEntry.class);
 
-        group.setEntry(entry);
+        entry.setIsAbout(group);
+        group.addEntry(entry);
 
         Reference reference = this.anno4j.createObject(Reference.class);
 
+        reference.addEntry(entry);
         entry.setEntryIn(reference);
 
         QueryService queryService = this.anno4j.createQueryService();
@@ -59,7 +61,7 @@ public class ModelTest {
 
         Group resultGroup = result.get(0);
 
-        assertEquals(entry.getResourceAsString(), resultGroup.getEntry().getResourceAsString());
+        assertEquals(entry.getResourceAsString(), ((ReferenceEntry) resultGroup.getEntries().toArray()[0]).getResourceAsString());
         assertEquals(ICONOGRAPHY, resultGroup.getIconography());
         assertTrue(group.getKeywords().contains(KEYWORD));
         assertTrue(group.getKeywords().contains(KEYWORD2));

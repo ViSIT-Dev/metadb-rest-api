@@ -37,7 +37,6 @@ public class DigitalRepresentationRepository {
         if (!result.isEmpty()) {
             return result.get(0).getTechnicalMetadata();
         } else {
-            // Exchange this to own exception
             throw new QueryEvaluationException("ID " + id + "  not existent!");
         }
     }

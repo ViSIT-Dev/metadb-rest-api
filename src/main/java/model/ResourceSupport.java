@@ -7,7 +7,7 @@ import model.technicalMetadata.DigitalRepresentation;
 import java.util.HashSet;
 
 @Partial
-public abstract class ResourceSupport extends ResourceObjectSupport implements Resource{
+public abstract class ResourceSupport extends ResourceObjectSupport implements Resource {
 
     public void addDigitalRepresentation(DigitalRepresentation representation) {
         HashSet<DigitalRepresentation> representations = new HashSet<>();

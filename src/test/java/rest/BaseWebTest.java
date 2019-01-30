@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.config.RepositoryConfigException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.DigitalRepresentationRepository;
+import rest.persistence.repository.ObjectRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -46,6 +48,9 @@ public abstract class BaseWebTest {
     @Autowired
     protected Anno4jRepository anno4jRepository;
 
+    @Autowired
+    protected ObjectRepository objectRepository;
+
     @Before
     public void setUp() throws Exception {
         Assume.assumeTrue(this.isOfflineCheck());
@@ -63,7 +68,7 @@ public abstract class BaseWebTest {
         this.anno4jRepository.getAnno4j().getObjectRepository().getConnection().close();
     }
 
-    public abstract void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException;
+    public abstract void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException, RepositoryConfigException;
 
     @Test
     public void testSomething() {

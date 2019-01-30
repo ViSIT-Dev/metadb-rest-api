@@ -3,6 +3,9 @@ package rest.persistence.repository;
 import com.github.anno4j.Anno4j;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import model.namespace.JSONVISMO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+import rest.VisitRestApplication;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,9 +31,6 @@ import java.util.regex.Pattern;
 @Repository
 public class ObjectRepository {
 
-    @Autowired
-    private Anno4jRepository anno4jRepository;
-
     @Value("${visit.rest.sparql.endpoint.query}")
     private String sparqlEndpointQuery;
 
@@ -38,6 +39,11 @@ public class ObjectRepository {
 
     @Autowired
     private Anno4j anno4j;
+
+    @Autowired
+    private Anno4jRepository anno4jRepository;
+
+    private static Log logger = LogFactory.getLog(VisitRestApplication.class);
 
     /**
      * @param id        ID of the represented OBJECT
@@ -51,9 +57,10 @@ public class ObjectRepository {
      * @throws ClassNotFoundException
      */
     public String getRepresentationOfObject(@NonNull String id, @NonNull String className) throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException, ClassNotFoundException {
+        // Find the directory of the templates (local vs. productive with a set path to templates)
         String directory;
 
-        if(this.sparqlEndpointQuery.equals("none")) {
+        if (this.sparqlEndpointQuery.equals("none")) {
             directory = "templates";
         } else {
             directory = this.pathToTemplates;
@@ -61,47 +68,77 @@ public class ObjectRepository {
 
         String fileName = directory + "/" + className + ".txt";
         File file = new File(fileName);
-        System.out.println("Checking, if " + file.getAbsolutePath() + " does exist...");
-        List<String> listClasses = this.getTemplateNames(directory);
+        logger.debug("Checking, if " + file.getAbsolutePath() + " does exist...");
         if (!file.canRead()) {
             throw new FileNotFoundException("File with Query Template for Class " + className + " has not been found!");
         } else {
-            System.out.println("File does exist!");
+            logger.debug("File does exist!");
         }
 
         String fileContent = this.readFile(fileName);
-        System.out.println("\nFile content is: ");
-        System.out.println(fileContent);
+        logger.debug("\nFile content is: " + fileContent);
 
+        // Create a list of template names
+        List<String> listClasses = this.getTemplateNames(directory);
+
+        // Adapt the SPARQL query read from the template
         String sparqlQuery = this.replaceString(fileContent, "ADD_ID_HERE", id);
-        System.out.println("\nNew SparqlQuery: ");
-        System.out.println(sparqlQuery);
+        logger.debug("\nNew SPARQL Query: " + sparqlQuery);
+
+        // Issue the query
         ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
         TupleQuery tupleQuery = objectConnection.prepareTupleQuery(sparqlQuery);
         TupleQueryResult evaluateTupleQuery = tupleQuery.evaluate();
-        JsonObject allBindings = new JsonObject();
-        while (evaluateTupleQuery.hasNext()) {
-            BindingSet currentResult = evaluateTupleQuery.next();
-            System.out.println("Binding sets with Values have been found:");
-            for (String binding : currentResult.getBindingNames()) {
-                String bindingSingular = binding.substring(0,binding.length()-1);
-                if (containsClass(bindingSingular, listClasses)) {
-                    System.out.println("Inner Class: " + bindingSingular);
-                    JsonParser jsonParser = new JsonParser();
-                    JsonObject object = (JsonObject) jsonParser.parse(getRepresentationOfObject(id, bindingSingular));
-                    allBindings.add(bindingSingular,object);
-                } else {
-                    System.out.println("Key: " + bindingSingular + " With Value: " + currentResult.getValue(binding).stringValue());
-                    allBindings.addProperty(bindingSingular, currentResult.getValue(binding).stringValue());
+
+        // Create result JSON from the query results
+        JsonObject jsonObject = new JsonObject();
+        BindingSet currentResult = evaluateTupleQuery.next();
+
+        for (String binding : currentResult.getBindingNames()) {
+            // Check if the current binding represents a subclass
+            String bindingSingular = binding.substring(0, binding.length() - 1);
+            if (containsClass(bindingSingular, listClasses)) {
+                logger.debug("Inner Class found: " + bindingSingular + ". Recursive call to template queries done.");
+                String subId = currentResult.getValue(binding).stringValue();
+
+                // Issue recursive call to this method with sub-node
+                JsonParser jsonParser = new JsonParser();
+                JsonObject subObject = (JsonObject) jsonParser.parse(getRepresentationOfObject(id, bindingSingular));
+
+                // Make two adaptions of values for sub-template query results
+                if(subObject.has(JSONVISMO.ID)) {
+                    // Change query id (which is the id of the top-level object) to the id of the sub-template object
+                    subObject.remove(JSONVISMO.ID);
+                    subObject.addProperty(JSONVISMO.ID, subId);
+                }
+
+                if(subObject.has(JSONVISMO.TYPE)) {
+                    subObject.remove(JSONVISMO.TYPE);
+                    subObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(subId));
+                }
+
+                jsonObject.add(bindingSingular, subObject);
+            } else {
+                // Query works with placeholder ?x for the current ID, exchange this with id
+                switch(binding) {
+                    case "x":
+                        jsonObject.addProperty(JSONVISMO.ID, currentResult.getValue(binding).stringValue());
+                        break;
+                    case "type":
+                        jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(id));
+                        break;
+                    default:
+                        jsonObject.addProperty(binding, currentResult.getValue(binding).stringValue());
+                        break;
                 }
             }
         }
-        String allBindingsAsString = allBindings.toString();
-        allBindingsAsString = replaceString(allBindingsAsString,"\\","");
-        System.out.println(allBindingsAsString);
-        return allBindingsAsString;
 
+        String jsonObjectString = jsonObject.toString();
+        jsonObjectString = replaceString(jsonObjectString, "\\", "");
+        logger.debug("Created output JSON: " + jsonObjectString);
 
+        return jsonObjectString;
     }
 
     /**
@@ -169,14 +206,6 @@ public class ObjectRepository {
             throw new FileNotFoundException("Directory " + new File(directory).getAbsolutePath() + " does not exist!");
 
 
-    }
-
-
-    /**
-     * ATM mainly here for test purposes. Do not like this, change possibility?
-     */
-    private Anno4jRepository getAnno4jRepository() {
-        return this.anno4jRepository;
     }
 
     /**

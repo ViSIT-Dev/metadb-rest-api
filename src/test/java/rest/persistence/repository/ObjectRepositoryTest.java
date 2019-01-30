@@ -3,6 +3,7 @@ package rest.persistence.repository;
 import com.github.anno4j.Anno4j;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import model.namespace.JSONVISMO;
 import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
@@ -24,9 +25,6 @@ import static org.junit.Assert.assertTrue;
  * Test Class for Testing the Object Repository
  */
 public class ObjectRepositoryTest extends BaseWebTest {
-
-    @Autowired
-    private ObjectRepository objectRepository;
 
     private String groupId;
 
@@ -51,9 +49,9 @@ public class ObjectRepositoryTest extends BaseWebTest {
         String result = objectRepository.getRepresentationOfObject(testID,testClass);
         assertFalse(result.isEmpty());
         JSONObject jsonObject = new JSONObject(result);
-        assertTrue(jsonObject.get("type".substring(0,"type".length()-1)).toString().contains("Group"));
+        assertTrue(jsonObject.get(JSONVISMO.TYPE).toString().contains("Group"));
         JSONObject jsonObject1 = jsonObject.getJSONObject("group_refentry");
-        assertTrue(jsonObject1.get("type".substring(0,"type".length()-1)).toString().contains("Group"));
+        assertTrue(jsonObject1.get(JSONVISMO.TYPE).toString().contains("ReferenceEntry"));
     }
 
     @Test
@@ -98,7 +96,7 @@ public class ObjectRepositoryTest extends BaseWebTest {
 
         Reference reference = anno4j.createObject(Reference.class);
 
-        group.setEntry(entry);
+        group.addEntry(entry);
         entry.setEntryIn(reference);
 
         this.groupId = group.getResourceAsString();

@@ -37,11 +37,11 @@ public class VisitRestApplication extends SpringBootServletInitializer {
         if (!sparqlEndpointQuery.equals("none") && !sparqlEndpointUpdate.equals("none")) {
             logger.info("Connecting to SPARQL endpoint " + sparqlEndpointQuery + " and " + sparqlEndpointUpdate);
             SPARQLRepository sparqlRepository = new SPARQLRepository(sparqlEndpointQuery, sparqlEndpointUpdate);
-            return new Anno4j(sparqlRepository, new VisitIDGenerator(), null, false);
+            return new Anno4j(sparqlRepository, new VisitIDGenerator(), null, true);
         } else {
             logger.info("No SPARQL endpoint configured. Creating In-Memory SPARQL endpoint");
 
-            Anno4j anno4j = new Anno4j(false);
+            Anno4j anno4j = new Anno4j(true);
             anno4j.setIdGenerator(new VisitIDGenerator());
 
             if(createTestdata) {

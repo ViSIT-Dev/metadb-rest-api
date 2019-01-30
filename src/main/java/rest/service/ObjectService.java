@@ -19,6 +19,7 @@ public class ObjectService {
 
     @Autowired
     private ObjectRepository objectRepository;
+
     @Autowired
     private Anno4jRepository anno4jRepository;
 

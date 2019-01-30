@@ -80,7 +80,7 @@ public class DigitalRepresentationController {
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
             @RequestParam("id") String id,
             @ApiParam(value = "The new Technical Metadata String")
-            @RequestBody String newData) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+            @RequestBody String newData) {
         return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 

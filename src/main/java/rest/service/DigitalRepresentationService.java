@@ -81,7 +81,7 @@ public class DigitalRepresentationService {
      * @param mediaId
      * @param newData
      */
-    public String updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+    public String updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) {
         try {
             this.digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newData);
             String resourceId = this.anno4jRepository.getResourceIdByDigitalRepresentation(mediaId);
@@ -91,7 +91,7 @@ public class DigitalRepresentationService {
             jsonObject.addProperty(JSONVISMO.MEDIA_ID, mediaId);
             jsonObject.addProperty(JSONVISMO.TECHNICAL_METADATA_STRING, newData);
             return jsonObject.toString();
-        } catch (Exception e) {
+        } catch (RepositoryException | MalformedQueryException | ParseException | QueryEvaluationException e) {
             throw new UpdateDigitalRepositoryException(e.getMessage());
         }
     }

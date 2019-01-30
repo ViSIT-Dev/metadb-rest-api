@@ -9,7 +9,7 @@ import org.openrdf.annotations.Iri;
 import java.util.Set;
 
 @Iri(VISMO.GROUP)
-public interface Group extends E74Group, Resource {
+public interface Group extends Resource, E74Group {
 
     @Iri(VISMO.KEYWORD)
     Set<String> getKeywords();
@@ -26,8 +26,10 @@ public interface Group extends E74Group, Resource {
     void setIconography(String iconography);
 
     @Iri(VISMO.REFERENCED_BY_ENTRY)
-    ReferenceEntry getEntry();
+    Set<ReferenceEntry> getEntries();
 
     @Iri(VISMO.REFERENCED_BY_ENTRY)
-    void setEntry(ReferenceEntry entry);
+    void setEntries(Set<ReferenceEntry> entries);
+
+    void addEntry(ReferenceEntry entry);
 }

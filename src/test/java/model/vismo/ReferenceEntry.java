@@ -1,6 +1,7 @@
 package model.vismo;
 
 import com.github.anno4j.model.impl.ResourceObject;
+import model.Resource;
 import model.namespace.VISMO;
 import org.openrdf.annotations.Iri;
 
@@ -18,4 +19,10 @@ public interface ReferenceEntry extends ResourceObject {
 
     @Iri(VISMO.IS_ENTRY_IN)
     void setEntryIn(Reference reference);
+
+    @Iri(VISMO.ENTRY_IS_ABOUT)
+    Resource getIsAbout();
+
+    @Iri(VISMO.ENTRY_IS_ABOUT)
+    void setIsAbout(Resource resource);
 }
