@@ -1,6 +1,7 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.namespace.JSONVISMO;
@@ -98,6 +99,8 @@ public class ObjectRepository {
             // Check if the current binding represents a subclass
             String bindingSingular = binding.substring(0, binding.length() - 1);
             if (containsClass(bindingSingular, listClasses)) {
+
+
                 logger.debug("Inner Class found: " + bindingSingular + ". Recursive call to template queries done.");
                 String subId = currentResult.getValue(binding).stringValue();
 
@@ -106,21 +109,23 @@ public class ObjectRepository {
                 JsonObject subObject = (JsonObject) jsonParser.parse(getRepresentationOfObject(id, bindingSingular));
 
                 // Make two adaptions of values for sub-template query results
-                if(subObject.has(JSONVISMO.ID)) {
+                if (subObject.has(JSONVISMO.ID)) {
                     // Change query id (which is the id of the top-level object) to the id of the sub-template object
                     subObject.remove(JSONVISMO.ID);
                     subObject.addProperty(JSONVISMO.ID, subId);
                 }
 
-                if(subObject.has(JSONVISMO.TYPE)) {
+                if (subObject.has(JSONVISMO.TYPE)) {
                     subObject.remove(JSONVISMO.TYPE);
                     subObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(subId));
                 }
 
-                jsonObject.add(bindingSingular, subObject);
+                JsonArray jsonArray = this.splitMultipleJsonObject(subObject);
+
+                jsonObject.add(bindingSingular, jsonArray);
             } else {
                 // Query works with placeholder ?x for the current ID, exchange this with id
-                switch(binding) {
+                switch (binding) {
                     case "x":
                         jsonObject.addProperty(JSONVISMO.ID, currentResult.getValue(binding).stringValue());
                         break;
@@ -139,6 +144,43 @@ public class ObjectRepository {
         logger.debug("Created output JSON: " + jsonObjectString);
 
         return jsonObjectString;
+    }
+
+    private JsonArray splitMultipleJsonObject(JsonObject jsonObject) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+        JsonArray jsonArray = new JsonArray();
+
+        // Find out, if jsonObject represents "more" single objects
+        if (jsonObject.get(JSONVISMO.ID).toString().contains(",")) {
+            String[] split = jsonObject.get(JSONVISMO.ID).getAsString().split(",");
+
+            for (int i = 0; i < split.length; ++i) {
+                JsonObject splitObject = new JsonObject();
+
+                for (String binding : jsonObject.keySet()) {
+                    if (!binding.equals(JSONVISMO.TYPE)) {
+
+                        String[] bindingSplit = jsonObject.get(binding).getAsString().split(",");
+                        if (bindingSplit.length > 1) {
+                            splitObject.addProperty(binding, bindingSplit[i]);
+                            if (binding.equals(JSONVISMO.ID)) {
+                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(bindingSplit[i]));
+                            }
+                        } else {
+                            splitObject.addProperty(binding, bindingSplit[0]);
+                            if (binding.equals(JSONVISMO.ID)) {
+                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(bindingSplit[0]));
+                            }
+                        }
+                    }
+                }
+
+                jsonArray.add(splitObject);
+            }
+        } else {
+            jsonArray.add(jsonObject);
+        }
+
+        return jsonArray;
     }
 
     /**

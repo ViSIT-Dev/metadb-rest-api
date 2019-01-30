@@ -31,8 +31,8 @@ public class ObjectControllerTest extends BaseWebTest {
         assertFalse(mvcResultString.isEmpty());
         JSONObject jsonObject = new JSONObject(mvcResultString);
         assertTrue(jsonObject.get("type").toString().contains("Group"));
-        JSONObject jsonObject1 = jsonObject.getJSONObject("group_refentry");
-        assertTrue(jsonObject1.get("type").toString().contains("ReferenceEntry"));
+//        JSONObject jsonObject1 = jsonObject.getJSONObject("group_refentry");
+//        assertTrue(jsonObject1.get("type").toString().contains("ReferenceEntry"));
     }
 
     @Test
@@ -53,16 +53,25 @@ public class ObjectControllerTest extends BaseWebTest {
         group.addKeyword("Keyword 2");
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
-        entry.setPages(5);
+        entry.setPages(11);
 
         entry.setIsAbout(group);
         group.addEntry(entry);
+
+        ReferenceEntry entry2 = anno4j.createObject(ReferenceEntry.class);
+        entry2.setPages(22);
+
+        entry2.setIsAbout(group);
+        group.addEntry(entry2);
 
         Reference reference = anno4j.createObject(Reference.class);
         reference.setKeyword("ReferenceKeyword");
 
         reference.addEntry(entry);
         entry.setEntryIn(reference);
+
+        reference.addEntry(entry2);
+        entry2.setEntryIn(reference);
 
         this.groupId = group.getResourceAsString();
 
