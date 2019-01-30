@@ -1,23 +1,23 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import model.namespace.JSONVISMO;
+import model.namespace.VISMO;
 import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
-import org.springframework.beans.factory.annotation.Autowired;
 import rest.BaseWebTest;
 
 import java.io.FileNotFoundException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -27,6 +27,10 @@ import static org.junit.Assert.assertTrue;
 public class ObjectRepositoryTest extends BaseWebTest {
 
     private String groupId;
+
+    private String iconographyString;
+    private String keywordString1;
+    private String keywordString2;
 
     /**
      * Test to get a Json Represented as a String of the Object with a given Object ID expects a FileNotFoudnException to come
@@ -49,9 +53,18 @@ public class ObjectRepositoryTest extends BaseWebTest {
         String result = objectRepository.getRepresentationOfObject(testID,testClass);
         assertFalse(result.isEmpty());
         JSONObject jsonObject = new JSONObject(result);
-        assertTrue(jsonObject.get(JSONVISMO.TYPE).toString().contains("Group"));
-//        JSONObject jsonObject1 = jsonObject.getJSONObject("group_refentry");
-//        assertTrue(jsonObject1.get(JSONVISMO.TYPE).toString().contains("ReferenceEntry"));
+        assertTrue(jsonObject.getString(JSONVISMO.TYPE).equals(VISMO.GROUP));
+        assertEquals(this.groupId, jsonObject.getString(JSONVISMO.ID));
+        assertEquals(this.iconographyString, jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY));
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains(this.keywordString1));
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains(this.keywordString2));
+
+        JSONArray jsonRefEntries = jsonObject.getJSONArray(JSONVISMO.GROUP_REFENTRY);
+        assertEquals(2, jsonRefEntries.length());
+
+        JSONObject jsonRefEntry = (JSONObject) jsonRefEntries.get(0);
+        assertEquals(11, jsonRefEntry.getInt(JSONVISMO.GROUP_REFENTRY_PAGES));
+        assertEquals(VISMO.REFERENCE_ENTRY, jsonRefEntry.getString(JSONVISMO.TYPE));
     }
 
     @Test
@@ -88,16 +101,33 @@ public class ObjectRepositoryTest extends BaseWebTest {
         Anno4j anno4j = this.objectRepository.getAnno4j();
 
         Group group = anno4j.createObject(Group.class);
-        group.setIconography("Iconography");
-        group.addKeyword("Keyword");
+        this.iconographyString = "Iconography";
+        group.setIconography(this.iconographyString);
+        this.keywordString1 = "Keyword";
+        this.keywordString2 = "Keyword2";
+        group.addKeyword(this.keywordString1);
+        group.addKeyword(this.keywordString2);
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
-        entry.setPages(5);
+        entry.setPages(11);
+
+        entry.setIsAbout(group);
+        group.addEntry(entry);
+
+        ReferenceEntry entry2 = anno4j.createObject(ReferenceEntry.class);
+        entry2.setPages(22);
+
+        entry2.setIsAbout(group);
+        group.addEntry(entry2);
 
         Reference reference = anno4j.createObject(Reference.class);
+        reference.setKeyword("ReferenceKeyword");
 
-        group.addEntry(entry);
+        reference.addEntry(entry);
         entry.setEntryIn(reference);
+
+        reference.addEntry(entry2);
+        entry2.setEntryIn(reference);
 
         this.groupId = group.getResourceAsString();
     }

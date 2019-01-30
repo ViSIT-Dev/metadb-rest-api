@@ -1,10 +1,13 @@
 package rest.web.controller;
 
 import com.github.anno4j.Anno4j;
+import model.namespace.JSONVISMO;
+import model.namespace.VISMO;
 import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.openrdf.repository.RepositoryException;
@@ -12,6 +15,7 @@ import org.openrdf.repository.config.RepositoryConfigException;
 import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,7 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ObjectControllerTest extends BaseWebTest {
 
     private final String standardUrl = "https://database.visit.uni-passau.de/";
+
     private String groupId;
+    private String iconographyString;
+    private String keywordString1;
+    private String keywordString2;
 
     @Test
     public void getRepresentationOfObjectSuccess() throws Exception {
@@ -30,9 +38,18 @@ public class ObjectControllerTest extends BaseWebTest {
         String mvcResultString = mvcResult.getResponse().getContentAsString();
         assertFalse(mvcResultString.isEmpty());
         JSONObject jsonObject = new JSONObject(mvcResultString);
-        assertTrue(jsonObject.get("type").toString().contains("Group"));
-//        JSONObject jsonObject1 = jsonObject.getJSONObject("group_refentry");
-//        assertTrue(jsonObject1.get("type").toString().contains("ReferenceEntry"));
+        assertTrue(jsonObject.getString(JSONVISMO.TYPE).equals(VISMO.GROUP));
+        assertEquals(this.groupId, jsonObject.getString(JSONVISMO.ID));
+        assertEquals(this.iconographyString, jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY));
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains(this.keywordString1));
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains(this.keywordString2));
+
+        JSONArray jsonRefEntries = jsonObject.getJSONArray(JSONVISMO.GROUP_REFENTRY);
+        assertEquals(2, jsonRefEntries.length());
+
+        JSONObject jsonRefEntry = (JSONObject) jsonRefEntries.get(0);
+        assertEquals(11, jsonRefEntry.getInt(JSONVISMO.GROUP_REFENTRY_PAGES));
+        assertEquals(VISMO.REFERENCE_ENTRY, jsonRefEntry.getString(JSONVISMO.TYPE));
     }
 
     @Test
@@ -48,9 +65,12 @@ public class ObjectControllerTest extends BaseWebTest {
         Anno4j anno4j = this.objectRepository.getAnno4j();
 
         Group group = anno4j.createObject(Group.class);
-        group.setIconography("Iconography");
-        group.addKeyword("Keyword");
-        group.addKeyword("Keyword 2");
+        this.iconographyString = "Iconography";
+        group.setIconography(this.iconographyString);
+        this.keywordString1 = "Keyword";
+        this.keywordString2 = "Keyword2";
+        group.addKeyword(this.keywordString1);
+        group.addKeyword(this.keywordString2);
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
         entry.setPages(11);
