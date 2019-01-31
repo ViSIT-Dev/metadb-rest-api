@@ -23,6 +23,8 @@ public class VISMO {
 
     public final static String REFERENCE_ENTRY = NS + "ReferenceEntry";
 
+    public final static String TITLE = NS + "Title";
+
     /*
     Relationships
      */
@@ -50,4 +52,6 @@ public class VISMO {
     public final static String KEYWORD = NS + "keyword";
 
     public final static String ENTRY_PAGES = NS + "entryPages";
+
+    public final static String SUPERORDINATE_TITLE = NS + "superordinateTitle";
 }

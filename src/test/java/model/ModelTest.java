@@ -6,6 +6,7 @@ import model.technicalMetadata.DigitalRepresentation;
 import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
+import model.vismo.Title;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,9 +27,55 @@ public class ModelTest {
     private final static String KEYWORD2 = "KEYWORD2";
     private final static String ICONOGRAPHY = "iconography";
 
+    private final static String REFERENCE_TITLE = "Title";
+    private final static String REFERENCE_SUPERORDINATE_TITLE = "SuperordinateTitle";
+
     @Before
     public void setUp() throws Exception {
         this.anno4j = new Anno4j();
+    }
+
+    @Test
+    public void testReference() throws RepositoryException, IllegalAccessException, InstantiationException, ParseException, MalformedQueryException, QueryEvaluationException {
+        Reference reference = this.anno4j.createObject(Reference.class);
+
+        Title title = this.anno4j.createObject(Title.class);
+        title.setTitle(REFERENCE_TITLE);
+        title.setSuperordinateTitle(REFERENCE_SUPERORDINATE_TITLE);
+        reference.setTitle(title);
+
+        reference.addKeyword(KEYWORD);
+        reference.addKeyword(KEYWORD2);
+
+        Group group = this.anno4j.createObject(Group.class);
+
+        ReferenceEntry entry = this.anno4j.createObject(ReferenceEntry.class);
+        entry.setEntryIn(reference);
+        reference.addEntry(entry);
+
+        entry.setIsAbout(group);
+        entry.setPages(11);
+
+        QueryService qs = this.anno4j.createQueryService();
+        qs.addCriteria(".", reference.getResourceAsString());
+
+        List<Reference> result = qs.execute(Reference.class);
+
+        assertEquals(1, result.size());
+
+        Reference resultReference = result.get(0);
+        assertEquals(REFERENCE_TITLE, resultReference.getTitle().getTitle());
+        assertEquals(REFERENCE_SUPERORDINATE_TITLE, resultReference.getTitle().getSuperordinateTitle());
+
+        assertTrue(resultReference.getKeywords().contains(KEYWORD));
+        assertTrue(resultReference.getKeywords().contains(KEYWORD2));
+
+        assertEquals(1, resultReference.getEntries().size());
+
+        ReferenceEntry resultEntry = (ReferenceEntry) resultReference.getEntries().toArray()[0];
+
+        assertEquals(11, resultEntry.getPages());
+        assertEquals(group.getResourceAsString(), resultEntry.getIsAbout().getResourceAsString());
     }
 
     @Test

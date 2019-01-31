@@ -19,4 +19,17 @@ public abstract class ReferenceSupport extends ResourceObjectSupport implements 
         entries.add(entry);
         this.setEntries(entries);
     }
+
+    @Override
+    public void addKeyword(String keyword) {
+
+        HashSet<String> keywords = new HashSet<>();
+
+        if (this.getKeywords() != null) {
+            keywords.addAll(this.getKeywords());
+        }
+
+        keywords.add(keyword);
+        this.setKeywords(keywords);
+    }
 }

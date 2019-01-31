@@ -6,6 +6,7 @@ import model.namespace.VISMO;
 import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
+import model.vismo.Title;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,9 +28,40 @@ public class ObjectControllerTest extends BaseWebTest {
     private final String standardUrl = "https://database.visit.uni-passau.de/";
 
     private String groupId;
+    private String referenceId;
     private String iconographyString;
     private String keywordString1;
     private String keywordString2;
+    private String entryId1;
+    private String referenceKeyword;
+    private String referenceTitle;
+    private String referenceSuperordinateTitle;
+
+    @Test
+    public void testGetRepresentationOfReferenceSuccess() throws Exception {
+        String requestURL = standardUrl + "object?id=" + this.referenceId;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+
+        assertFalse(mvcResultString.isEmpty());
+        JSONObject jsonObject = new JSONObject(mvcResultString);
+
+        assertEquals(VISMO.REFERENCE, jsonObject.getString(JSONVISMO.TYPE));
+        assertEquals(this.referenceId, jsonObject.getString(JSONVISMO.ID));
+        assertEquals(this.referenceKeyword, jsonObject.getString(JSONVISMO.REFERENCE_KEYWORD));
+
+        JSONObject titleObject = jsonObject.getJSONObject(JSONVISMO.REFERENCE_TITLE);
+        assertEquals(this.referenceTitle, titleObject.getString(JSONVISMO.REFERENCE_TITLE_TITLE));
+        assertEquals(this.referenceSuperordinateTitle, titleObject.getString(JSONVISMO.REFERENCE_TITLE_SUPERORDINATETITLE));
+
+        JSONArray jsonRefEntries = jsonObject.getJSONArray(JSONVISMO.REFERENCE_ENTRY);
+        assertEquals(2, jsonRefEntries.length());
+
+        JSONObject jsonRefEntry = (JSONObject) jsonRefEntries.get(0);
+        assertEquals(11, jsonRefEntry.getInt(JSONVISMO.REFERENCE_ENTRY_PAGES));
+        assertEquals(VISMO.REFERENCE_ENTRY, jsonRefEntry.getString(JSONVISMO.TYPE));
+        assertEquals(this.entryId1, jsonRefEntry.getString(JSONVISMO.ID));
+    }
 
     @Test
     public void getRepresentationOfObjectSuccess() throws Exception {
@@ -73,6 +105,7 @@ public class ObjectControllerTest extends BaseWebTest {
         group.addKeyword(this.keywordString2);
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
+        this.entryId1 = entry.getResourceAsString();
         entry.setPages(11);
 
         entry.setIsAbout(group);
@@ -85,7 +118,15 @@ public class ObjectControllerTest extends BaseWebTest {
         group.addEntry(entry2);
 
         Reference reference = anno4j.createObject(Reference.class);
-        reference.setKeyword("ReferenceKeyword");
+        this.referenceKeyword = "ReferenceKeyword";
+        reference.addKeyword(this.referenceKeyword);
+
+        Title title = anno4j.createObject(Title.class);
+        this.referenceTitle = "ReferenceTitle";
+        title.setTitle(this.referenceTitle);
+        this.referenceSuperordinateTitle = "ReferenceSuperordinateTitle";
+        title.setSuperordinateTitle(this.referenceSuperordinateTitle);
+        reference.setTitle(title);
 
         reference.addEntry(entry);
         entry.setEntryIn(reference);
@@ -94,7 +135,6 @@ public class ObjectControllerTest extends BaseWebTest {
         entry2.setEntryIn(reference);
 
         this.groupId = group.getResourceAsString();
-
-//        this.anno4jRepository.getAnno4j().setRepository(this.objectRepository.getAnno4j().getObjectRepository());
+        this.referenceId = reference.getResourceAsString();
     }
 }

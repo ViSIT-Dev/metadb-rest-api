@@ -25,11 +25,13 @@ public class CIDOC {
     Relationships
      */
 
+    public final static String P1_IS_IDENTIFIED_BY = NS + "P1_is_identified_by";
 
 
     /*
     Properties
      */
 
+    public final static String P3_HAS_NOTE = NS + "P3_has_note";
 
 }

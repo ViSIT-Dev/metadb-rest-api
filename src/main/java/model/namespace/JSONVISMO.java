@@ -32,4 +32,24 @@ public class JSONVISMO {
      */
 
     public final static String GROUP_REFENTRY_PAGES = "group_refentry_pagess";
+
+    /*
+    Reference
+     */
+
+    public final static String REFERENCE_KEYWORD = "reference_keywords";
+
+    public final static String REFERENCE_TITLE = "reference_title";
+
+    public final static String REFERENCE_ENTRY = "reference_entry";
+
+    public final static String REFERENCE_ENTRY_PAGES = "reference_entry_pagess";
+
+    /*
+    Reference_Title
+     */
+
+    public final static String REFERENCE_TITLE_TITLE = "reference_title_titles";
+
+    public final static String REFERENCE_TITLE_SUPERORDINATETITLE = "reference_title_superordinates";
 }

@@ -2,6 +2,7 @@ package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.namespace.JSONVISMO;
@@ -37,6 +38,9 @@ public class ObjectRepository {
 
     @Value("${visit.rest.templates.path}")
     private String pathToTemplates;
+
+    @Value("${visit.rest.templates.fullresult}")
+    private boolean fullResult;
 
     @Autowired
     private Anno4j anno4j;
@@ -96,45 +100,48 @@ public class ObjectRepository {
         BindingSet currentResult = evaluateTupleQuery.next();
 
         for (String binding : currentResult.getBindingNames()) {
-            // Check if the current binding represents a subclass
-            String bindingSingular = binding.substring(0, binding.length() - 1);
-            if (containsClass(bindingSingular, listClasses)) {
 
+            if (this.fullResult || !currentResult.getValue(binding).stringValue().isEmpty()) {
 
-                logger.debug("Inner Class found: " + bindingSingular + ". Recursive call to template queries done.");
-                String subId = currentResult.getValue(binding).stringValue();
+                // Check if the current binding represents a subclass
+                String bindingSingular = binding.substring(0, binding.length() - 1);
+                if (containsClass(bindingSingular, listClasses)) {
 
-                // Issue recursive call to this method with sub-node
-                JsonParser jsonParser = new JsonParser();
-                JsonObject subObject = (JsonObject) jsonParser.parse(getRepresentationOfObject(id, bindingSingular));
+                    logger.debug("Inner Class found: " + bindingSingular + ". Recursive call to template queries done.");
+                    String subId = currentResult.getValue(binding).stringValue();
 
-                // Make two adaptions of values for sub-template query results
-                if (subObject.has(JSONVISMO.ID)) {
-                    // Change query id (which is the id of the top-level object) to the id of the sub-template object
-                    subObject.remove(JSONVISMO.ID);
-                    subObject.addProperty(JSONVISMO.ID, subId);
-                }
+                    // Issue recursive call to this method with sub-node
+                    JsonParser jsonParser = new JsonParser();
+                    JsonObject subObject = (JsonObject) jsonParser.parse(getRepresentationOfObject(id, bindingSingular));
 
-                if (subObject.has(JSONVISMO.TYPE)) {
-                    subObject.remove(JSONVISMO.TYPE);
-                    subObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(subId));
-                }
+                    // Make two adaptions of values for sub-template query results
+                    if (subObject.has(JSONVISMO.ID)) {
+                        // Change query id (which is the id of the top-level object) to the id of the sub-template object
+                        subObject.remove(JSONVISMO.ID);
+                        subObject.addProperty(JSONVISMO.ID, subId);
+                    }
 
-                JsonArray jsonArray = this.splitMultipleJsonObject(subObject);
+                    if (!subId.isEmpty() && subObject.get(JSONVISMO.ID).getAsString().split(",").length == 1 && subObject.has(JSONVISMO.TYPE)) {
+                        subObject.remove(JSONVISMO.TYPE);
+                        subObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(subId));
+                    }
 
-                jsonObject.add(bindingSingular, jsonArray);
-            } else {
-                // Query works with placeholder ?x for the current ID, exchange this with id
-                switch (binding) {
-                    case "x":
-                        jsonObject.addProperty(JSONVISMO.ID, currentResult.getValue(binding).stringValue());
-                        break;
-                    case "type":
-                        jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(id));
-                        break;
-                    default:
-                        jsonObject.addProperty(binding, currentResult.getValue(binding).stringValue());
-                        break;
+                    JsonElement jsonElement = this.splitMultipleJsonObject(subObject);
+
+                    jsonObject.add(bindingSingular, jsonElement);
+                } else {
+                    // Query works with placeholder ?x for the current ID, exchange this with id
+                    switch (binding) {
+                        case "x":
+                            jsonObject.addProperty(JSONVISMO.ID, currentResult.getValue(binding).stringValue());
+                            break;
+                        case "type":
+                            jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(id));
+                            break;
+                        default:
+                            jsonObject.addProperty(binding, currentResult.getValue(binding).stringValue());
+                            break;
+                    }
                 }
             }
         }
@@ -146,7 +153,7 @@ public class ObjectRepository {
         return jsonObjectString;
     }
 
-    private JsonArray splitMultipleJsonObject(JsonObject jsonObject) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    private JsonElement splitMultipleJsonObject(JsonObject jsonObject) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         JsonArray jsonArray = new JsonArray();
 
         // Find out, if jsonObject represents "more" single objects
@@ -177,7 +184,7 @@ public class ObjectRepository {
                 jsonArray.add(splitObject);
             }
         } else {
-            jsonArray.add(jsonObject);
+            return jsonObject;
         }
 
         return jsonArray;
