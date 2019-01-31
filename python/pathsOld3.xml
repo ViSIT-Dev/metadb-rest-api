@@ -6139,6 +6139,31 @@
 			<name>Reference_Title_superordinate</name>
 		</path>
 		<path>
+			<id>reference_idby_title</id>
+			<weight>1</weight>
+			<enabled>0</enabled>
+			<group_id>reference</group_id>
+			<bundle>b605d4e6e5abbb61525e20aaf6397838</bundle>
+			<field>ff3dcddf20933cab37dea18d6ea732b2</field>
+			<fieldtype>string</fieldtype>
+			<displaywidget>string_textfield</displaywidget>
+			<formatterwidget>string</formatterwidget>
+			<cardinality>-1</cardinality>
+			<field_type_informative>string</field_type_informative>
+			<path_array>
+				<x>http://visit.de/ontologies/vismo/Reference</x>
+				<y>http://erlangen-crm.org/170309/P1_is_identified_by</y>
+				<x>http://visit.de/ontologies/vismo/Title</x>
+			</path_array>
+			<datatype_property>http://erlangen-crm.org/170309/P3_has_note</datatype_property>
+			<short_name/>
+			<disamb>2</disamb>
+			<description/>
+			<uuid>631271fd-b55d-4d12-b0d1-d26ad7a0597f</uuid>
+			<is_group>0</is_group>
+			<name>Reference_idBy_Title</name>
+		</path>
+		<path>
 			<id>reference_keyword</id>
 			<weight>2</weight>
 			<enabled>1</enabled>

@@ -1,18 +1,14 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
-SELECT ?x ?type (group_concat(distinct ?reference_idby_title;separator=",") as ?reference_idby_titles) (group_concat(distinct ?reference_keyword;separator=",") as ?reference_keywords) (group_concat(distinct ?reference_has_type;separator=",") as ?reference_has_types) (group_concat(distinct ?reference_publisher;separator=",") as ?reference_publishers) (group_concat(distinct ?reference_series;separator=",") as ?reference_seriess) (group_concat(distinct ?reference_volume;separator=",") as ?reference_volumes) (group_concat(distinct ?reference_pages;separator=",") as ?reference_pagess) (group_concat(distinct ?reference_catalog_owner;separator=",") as ?reference_catalog_owners) (group_concat(distinct ?reference_catalog_location;separator=",") as ?reference_catalog_locations) (group_concat(distinct ?reference_title;separator=",") as ?reference_titles) (group_concat(distinct ?reference_producedby_production;separator=",") as ?reference_producedby_productions) (group_concat(distinct ?reference_entry;separator=",") as ?reference_entrys) (group_concat(distinct ?reference_catalog_dating;separator=",") as ?reference_catalog_datings) 
+SELECT ?x ?type (group_concat(distinct ?reference_keyword;separator=",") as ?reference_keywords) (group_concat(distinct ?reference_has_type;separator=",") as ?reference_has_types) (group_concat(distinct ?reference_publisher;separator=",") as ?reference_publishers) (group_concat(distinct ?reference_series;separator=",") as ?reference_seriess) (group_concat(distinct ?reference_volume;separator=",") as ?reference_volumes) (group_concat(distinct ?reference_pages;separator=",") as ?reference_pagess) (group_concat(distinct ?reference_catalog_owner;separator=",") as ?reference_catalog_owners) (group_concat(distinct ?reference_catalog_location;separator=",") as ?reference_catalog_locations) (group_concat(distinct ?reference_title;separator=",") as ?reference_titles) (group_concat(distinct ?reference_producedby_production;separator=",") as ?reference_producedby_productions) (group_concat(distinct ?reference_entry;separator=",") as ?reference_entrys) (group_concat(distinct ?reference_catalog_dating;separator=",") as ?reference_catalog_datings) 
 WHERE { ?x rdf:type ?type .
-OPTIONAL {
-	?x <http://erlangen-crm.org/170309/P1_is_identified_by> ?y1 .
-	?y1 rdf:type <http://visit.de/ontologies/vismo/Title> .
-	?y1 <http://erlangen-crm.org/170309/P3_has_note> ?reference_idby_title . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P3_has_note> ?reference_keyword}
 OPTIONAL {
-	?x <http://erlangen-crm.org/170309/P2_has_type> ?y3 .
-	?y3 rdf:type <http://visit.de/ontologies/vismo/ReferenceType> .
-	?y3 <http://erlangen-crm.org/170309/P3_has_note> ?reference_has_type . }
+	?x <http://erlangen-crm.org/170309/P2_has_type> ?y2 .
+	?y2 rdf:type <http://visit.de/ontologies/vismo/ReferenceType> .
+	?y2 <http://erlangen-crm.org/170309/P3_has_note> ?reference_has_type . }
 OPTIONAL {
 	?x <http://visit.de/ontologies/vismo/publisher> ?reference_publisher}
 OPTIONAL {
