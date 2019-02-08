@@ -3,6 +3,10 @@ package rest;
 import com.github.anno4j.Anno4j;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
+import model.vismo.Group;
+import model.vismo.Reference;
+import model.vismo.ReferenceEntry;
+import model.vismo.Title;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.repository.RepositoryException;
@@ -86,6 +90,36 @@ public class VisitRestApplication extends SpringBootServletInitializer {
         digitalRepresentation4.setTechnicalMetadata("Another fourth Sample Data");
         resource2.addDigitalRepresentation(digitalRepresentation4);
 
+        Group group = anno4j.createObject(Group.class);
+        group.setIconography("Iconography");
+        group.addKeyword("Keyword");
+        group.addKeyword("Keyword2");
+
+        ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
+        entry.setPages(11);
+
+        entry.setIsAbout(group);
+        group.addEntry(entry);
+
+        ReferenceEntry entry2 = anno4j.createObject(ReferenceEntry.class);
+        entry2.setPages(22);
+
+        entry2.setIsAbout(group);
+        group.addEntry(entry2);
+
+        Reference reference = anno4j.createObject(Reference.class);
+        reference.addKeyword("ReferenceKeyword");
+
+        Title title = anno4j.createObject(Title.class);
+        title.setTitle("ReferenceTitle");
+        title.setSuperordinateTitle("ReferenceSuperordinateTitle");
+        reference.setTitle(title);
+
+        reference.addEntry(entry);
+        entry.setEntryIn(reference);
+
+        reference.addEntry(entry2);
+        entry2.setEntryIn(reference);
 
         logger.debug("Resource created with ID: " + resource1.getResourceAsString());
         logger.debug("Digital Representation with id created: " + digitalRepresentation1.getResourceAsString());
@@ -93,7 +127,7 @@ public class VisitRestApplication extends SpringBootServletInitializer {
         logger.debug("Resource created with ID: " + resource2.getResourceAsString());
         logger.debug("Digital Representation with id created: " + digitalRepresentation3.getResourceAsString());
         logger.debug("Digital Representation with id created: " + digitalRepresentation4.getResourceAsString());
-
+        logger.debug("Group entity created with id: " + group.getResourceAsString());
 
     }
 }
