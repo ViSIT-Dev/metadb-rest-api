@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rest.Exception.DeleteDigitalRepresentationException;
 import rest.Exception.DigitalRepositoryException;
 import rest.service.DigitalRepresentationService;
 
@@ -80,7 +81,7 @@ public class DigitalRepresentationController {
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
             @RequestParam("id") String id,
             @ApiParam(value = "The new Technical Metadata String")
-            @RequestBody String newData) {
+            @RequestBody String newData) throws DigitalRepositoryException {
         return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 
@@ -91,7 +92,7 @@ public class DigitalRepresentationController {
             @ApiParam(required = true, value = "The ID of the object node")
             @RequestParam("objectid") String objectID,
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
-            @RequestParam("mediaid") String mediaID) {
+            @RequestParam("mediaid") String mediaID) throws DeleteDigitalRepresentationException {
         this.digitalRepresentationService.deleteDigitalRepresentationMediaAndObject(objectID, mediaID);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -102,7 +103,7 @@ public class DigitalRepresentationController {
     @DeleteMapping(value = "media")
     public ResponseEntity deleteDigitalRepresentationMedia (
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
-            @RequestParam("id") String mediaID) {
+            @RequestParam("id") String mediaID)  throws DeleteDigitalRepresentationException {
         this.digitalRepresentationService.deleteDigitalRepresentationMedia(mediaID);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
