@@ -170,16 +170,23 @@ soup = BeautifulSoup(contents,'xml')
 # Preprocess the XML
 preprocess(soup)
 
+print("Preprocessing done!")
+
 # Find all paths
 paths = soup.find_all('path')
+
+print("Finding done!")
 
 # Find all top-level groups
 groups = []
 for path in paths:
     if path.is_group.get_text() == '1' and path.group_id.get_text() == '0':
         groups.append(path.pathName.get_text())
-        
+
+print("Extraction done!")
+
 # Write to template files
 for group in groups:
     createTemplate(group, paths)
 
+print("Writing done!")

@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.DigitalRepresentationRepository;
 import rest.persistence.repository.ObjectRepository;
+import rest.persistence.repository.TemplateRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -50,6 +51,9 @@ public abstract class BaseWebTest {
 
     @Autowired
     protected ObjectRepository objectRepository;
+
+    @Autowired
+    protected TemplateRepository templateRepository;
 
     @Before
     public void setUp() throws Exception {
