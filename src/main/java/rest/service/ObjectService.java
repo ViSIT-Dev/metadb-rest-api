@@ -4,7 +4,7 @@ import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rest.Exception.ObjectClassNotFoundException;
+import rest.application.exception.ObjectClassNotFoundException;
 import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.ObjectRepository;
 

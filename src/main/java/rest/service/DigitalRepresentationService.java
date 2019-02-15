@@ -2,24 +2,19 @@ package rest.service;
 
 import com.google.gson.JsonObject;
 import model.namespace.JSONVISMO;
-import org.apache.jena.atlas.json.JSON;
 import org.apache.marmotta.ldpath.parser.ParseException;
-import org.openrdf.OpenRDFException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import rest.Exception.CreateNewDigtialRepresentationNodeException;
-import rest.Exception.DeleteDigitalRepresentationException;
-import rest.Exception.DigitalRepositoryException;
-import rest.Exception.UpdateDigitalRepositoryException;
+import rest.application.exception.CreateNewDigtialRepresentationNodeException;
+import rest.application.exception.DeleteDigitalRepresentationException;
+import rest.application.exception.DigitalRepositoryException;
+import rest.application.exception.UpdateDigitalRepositoryException;
 import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.DigitalRepresentationRepository;
-
-import java.util.List;
 
 /**
  * Service which does the access on the DigitalRepresentationRepository.

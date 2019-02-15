@@ -1,22 +1,14 @@
 package rest.web.controller;
 
-import com.google.gson.JsonObject;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.marmotta.ldpath.parser.ParseException;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rest.Exception.DeleteDigitalRepresentationException;
-import rest.Exception.DigitalRepositoryException;
+import rest.application.exception.DeleteDigitalRepresentationException;
+import rest.application.exception.DigitalRepositoryException;
 import rest.service.DigitalRepresentationService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/digrep/")//produces = "application/json; charset=utf-8")
