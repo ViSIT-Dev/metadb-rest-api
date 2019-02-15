@@ -18,10 +18,18 @@ OPTIONAL {
 	?y4 <http://erlangen-crm.org/170309/P106_is_composed_of> ?y5 .
 	 ?y5 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_signature . }
 OPTIONAL {
-	?x <http://erlangen-crm.org/170309/P128_carries> ?y7 .
-	?y7 rdf:type <http://erlangen-crm.org/170309/E34_Inscription> .
-	?y7 <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y8 .
-	 ?y8 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_date . }
+	?x <http://erlangen-crm.org/170309/P128_carries> ?y6 .
+	?y6 rdf:type <http://erlangen-crm.org/170309/E34_Inscription> .
+	?y6 <http://erlangen-crm.org/170309/P106_is_composed_of> ?y7 .
+	?y7 rdf:type <http://erlangen-crm.org/170309/E37_Mark> .
+	?y7 <http://erlangen-crm.org/170309/P2_has_type> ?y8 .
+	?y8 rdf:type <http://erlangen-crm.org/170309/E55_Type> .
+	?y8 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_mounting . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P128_carries> ?y9 .
+	?y9 rdf:type <http://erlangen-crm.org/170309/E34_Inscription> .
+	?y9 <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y10 .
+	 ?y10 <http://erlangen-crm.org/170309/P3_has_note> ?inscription_date . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

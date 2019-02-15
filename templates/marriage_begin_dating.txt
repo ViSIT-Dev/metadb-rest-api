@@ -3,6 +3,38 @@ PREFIX cidoc: <http://erlangen-crm.org/170309/>
 PREFIX vismo: <http://visit.de/ontologies/vismo/>
 SELECT ?x ?type (group_concat(distinct ?marriage_begin_dating_exact;separator=",") as ?marriage_begin_dating_exacts) (group_concat(distinct ?marriage_begin_dating_start;separator=",") as ?marriage_begin_dating_starts) (group_concat(distinct ?marriage_begin_dating_end;separator=",") as ?marriage_begin_dating_ends) (group_concat(distinct ?marriage_begin_dating_sometime;separator=",") as ?marriage_begin_dating_sometimes) 
 WHERE { ?x rdf:type ?type .
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?y1 .
+	?y1 rdf:type <http://visit.de/ontologies/vismo/Marriage> .
+	?y1 <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y2 .
+	?y2 rdf:type <http://erlangen-crm.org/170309/E63_Beginning_of_Existence> .
+	?y2 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y3 .
+	?y3 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y3 <http://erlangen-crm.org/170309/P3_has_note> ?marriage_begin_dating_exact . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?y4 .
+	?y4 rdf:type <http://visit.de/ontologies/vismo/Marriage> .
+	?y4 <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y5 .
+	?y5 rdf:type <http://erlangen-crm.org/170309/E63_Beginning_of_Existence> .
+	?y5 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y6 .
+	?y6 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y6 <http://erlangen-crm.org/170309/P79_beginning_is_qualified_by> ?marriage_begin_dating_start . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?y7 .
+	?y7 rdf:type <http://visit.de/ontologies/vismo/Marriage> .
+	?y7 <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y8 .
+	?y8 rdf:type <http://erlangen-crm.org/170309/E63_Beginning_of_Existence> .
+	?y8 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y9 .
+	?y9 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y9 <http://erlangen-crm.org/170309/P80_end_is_qualified_by> ?marriage_begin_dating_end . }
+OPTIONAL {
+	?x <http://erlangen-crm.org/170309/P107i_is_current_or_former_member_of> ?y10 .
+	?y10 rdf:type <http://visit.de/ontologies/vismo/Marriage> .
+	?y10 <http://erlangen-crm.org/170309/P92i_was_brought_into_existence_by> ?y11 .
+	?y11 rdf:type <http://erlangen-crm.org/170309/E63_Beginning_of_Existence> .
+	?y11 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y12 .
+	?y12 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y12 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?marriage_begin_dating_sometime . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 
