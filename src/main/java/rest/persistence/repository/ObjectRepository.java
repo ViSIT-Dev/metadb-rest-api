@@ -48,7 +48,7 @@ public class ObjectRepository {
     @Autowired
     private Anno4jRepository anno4jRepository;
 
-    private static Log logger = LogFactory.getLog(VisitRestApplication.class);
+    private static Log logger = LogFactory.getLog(ObjectRepository.class);
 
     /**
      * @param id        ID of the represented OBJECT
