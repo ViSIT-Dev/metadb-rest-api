@@ -7,22 +7,26 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P93i_was_taken_out_of_existence_by> ?y1 .
 	?y1 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
 	?y1 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y2 .
-	 ?y2 <http://erlangen-crm.org/170309/P3_has_note> ?person_death_dating_exact . }
+	?y2 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y2 <http://erlangen-crm.org/170309/P3_has_note> ?person_death_dating_exact . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P93i_was_taken_out_of_existence_by> ?y3 .
 	?y3 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
 	?y3 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y4 .
-	 ?y4 <http://erlangen-crm.org/170309/P79_beginning_is_qualified_by> ?person_death_dating_start . }
+	?y4 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y4 <http://erlangen-crm.org/170309/P79_beginning_is_qualified_by> ?person_death_dating_start . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P93i_was_taken_out_of_existence_by> ?y5 .
 	?y5 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
 	?y5 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y6 .
-	 ?y6 <http://erlangen-crm.org/170309/P80_end_is_qualified_by> ?person_death_dating_end . }
+	?y6 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y6 <http://erlangen-crm.org/170309/P80_end_is_qualified_by> ?person_death_dating_end . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P93i_was_taken_out_of_existence_by> ?y7 .
 	?y7 rdf:type <http://erlangen-crm.org/170309/E69_Death> .
 	?y7 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y8 .
-	 ?y8 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?person_death_dating_sometime . }
+	?y8 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y8 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?person_death_dating_sometime . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

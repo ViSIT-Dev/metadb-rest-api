@@ -11,12 +11,14 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y2 .
 	?y2 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
 	?y2 <http://erlangen-crm.org/170309/P160_has_temporal_projection> ?y3 .
-	 ?y3 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?production_year . }
+	?y3 rdf:type <http://visit.de/ontologies/vismo/Dating> .
+	?y3 <http://erlangen-crm.org/170309/P82_at_some_time_within> ?production_year . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P108i_was_produced_by> ?y4 .
 	?y4 rdf:type <http://erlangen-crm.org/170309/E12_Production> .
 	?y4 <http://erlangen-crm.org/170309/P7_took_place_at> ?y5 .
-	 ?y5 <http://erlangen-crm.org/170309/P3_has_note> ?ref_production_placeofpub . }
+	?y5 rdf:type <http://erlangen-crm.org/170309/E53_Place> .
+	?y5 <http://erlangen-crm.org/170309/P3_has_note> ?ref_production_placeofpub . }
 
 FILTER regex(str(?x), "^ADD_ID_HERE$", "")}
 GROUP BY ?x ?type 

@@ -7,7 +7,8 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y1 .
 	?y1 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
 	?y1 <http://erlangen-crm.org/170309/P1_is_identified_by> ?y2 .
-	 ?y2 <http://erlangen-crm.org/170309/P3_has_note> ?structuralevolution_idby_title . }
+	?y2 rdf:type <http://erlangen-crm.org/170309/E35_Title> .
+	?y2 <http://erlangen-crm.org/170309/P3_has_note> ?structuralevolution_idby_title . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y3 .
 	?y3 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
@@ -20,7 +21,8 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y5 .
 	?y5 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .
 	?y5 <http://erlangen-crm.org/170309/P137_exemplifies> ?y6 .
-	 ?y6 <http://erlangen-crm.org/170309/P3_has_note> ?structevol_exemplifies_function . }
+	?y6 rdf:type <http://visit.de/ontologies/vismo/Function> .
+	?y6 <http://erlangen-crm.org/170309/P3_has_note> ?structevol_exemplifies_function . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P31i_was_modified_by> ?y7 .
 	?y7 rdf:type <http://visit.de/ontologies/vismo/StructuralEvolution> .

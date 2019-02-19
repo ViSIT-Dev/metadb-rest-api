@@ -7,7 +7,8 @@ OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P43_has_dimension> ?y1 .
 	?y1 rdf:type <http://erlangen-crm.org/170309/E54_Dimension> .
 	?y1 <http://erlangen-crm.org/170309/P91_has_unit> ?y2 .
-	 ?y2 <http://erlangen-crm.org/170309/P3_has_note> ?dimension_has_measurementunit . }
+	?y2 rdf:type <http://erlangen-crm.org/170309/E58_Measurement_Unit> .
+	?y2 <http://erlangen-crm.org/170309/P3_has_note> ?dimension_has_measurementunit . }
 OPTIONAL {
 	?x <http://erlangen-crm.org/170309/P43_has_dimension> ?y3 .
 	?y3 rdf:type <http://erlangen-crm.org/170309/E54_Dimension> .
