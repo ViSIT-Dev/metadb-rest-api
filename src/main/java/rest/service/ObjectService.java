@@ -29,7 +29,9 @@ public class ObjectService {
 
     public String getObjectIdByWisskiPath(String wisskiPath) throws MetadataQueryException {
         try {
-            return this.anno4jRepository.getObjectIdByWisskiPath(wisskiPath);
+            String id = this.anno4jRepository.getObjectIdByWisskiPath(wisskiPath);
+
+            return this.getRepresentationOfObject(id);
         } catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
             throw new MetadataQueryException("Wisski Path: " + wisskiPath + " non-existent or not mapped to a vismo:Resource.");
         }

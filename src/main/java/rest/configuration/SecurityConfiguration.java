@@ -28,13 +28,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${visit.rest.auth.role}")
     private String role;
 
-    @Value("visit.rest.sparql.endpoint.query=none")
+    @Value("${visit.rest.sparql.endpoint.query}")
     private String query;
 
-    @Value("visit.rest.sparql.endpoint.update=none")
+    @Value("${visit.rest.sparql.endpoint.update}")
     private String update;
 
-    @Value("visit.rest.templates.basepath")
+    @Value("${visit.rest.templates.basepath}")
     private String basepath;
 
     private final static String REALM = "Visit";

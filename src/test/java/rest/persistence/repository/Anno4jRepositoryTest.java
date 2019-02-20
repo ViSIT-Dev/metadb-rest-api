@@ -12,10 +12,15 @@ import org.apache.marmotta.ldpath.parser.ParseException;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.Update;
 import org.openrdf.repository.RepositoryException;
+import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
 
 import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class Anno4jRepositoryTest extends BaseWebTest {
 
@@ -25,6 +30,29 @@ public class Anno4jRepositoryTest extends BaseWebTest {
 
     private String resourceID;
     private String digRepID;
+
+    private final static String WISSKI_VIEW_PATH = "https://database.visit.uni-passau.de/drupal/wisski/navigate/177/view";
+
+    @Test
+    public void testGetObjectRepresentationByWissKIViewPath() throws Exception {
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        // Test data for the getObjectIdByWisskiPath method
+        Resource someResource = anno4j.createObject(Resource.class);
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + someResource.getResourceAsString() + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String objectIdByWisskiPath = this.anno4jRepository.getObjectIdByWisskiPath(WISSKI_VIEW_PATH);
+
+        assertEquals(someResource.getResourceAsString(), objectIdByWisskiPath);
+    }
 
     @Test
     public void getLowestClassGivenId() throws IllegalAccessException, InstantiationException, MalformedQueryException, RepositoryException, QueryEvaluationException {

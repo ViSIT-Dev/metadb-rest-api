@@ -33,7 +33,7 @@ public class ObjectControllerTest extends BaseWebTest {
 
     private final String standardUrl = "https://database.visit.uni-passau.de/";
 
-    private final static String WISSKI_VIEW_PATH = "https://database.visit.uni-passau.de/drupal/wisski/navigate/177/view";
+    private final static String WISSKI_VIEW_PATH = "https://database.visit.uni-passau.de/drupal/wisski/navigate/178/view";
 
     private String groupId;
     private String referenceId;
@@ -47,15 +47,16 @@ public class ObjectControllerTest extends BaseWebTest {
 
     @Test
     public void testGetObjectRepresentationByWissKIViewPath() throws Exception {
-
-        Anno4j anno4j = this.objectRepository.getAnno4j();
-
         // Test data for the getObjectIdByWisskiPath method
-        Resource someResource = anno4j.createObject(Resource.class);
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        Group group = anno4j.createObject(Group.class);
+        group.addKeyword("Keyword");
+        group.setIconography("Iconography");
 
         String updateQuery = "INSERT DATA\n" +
                 "{ \n" +
-                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + someResource.getResourceAsString() + "> ." +
+                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + group.getResourceAsString() + "> ." +
                 "}";
 
         Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
@@ -66,7 +67,12 @@ public class ObjectControllerTest extends BaseWebTest {
         MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
 
-        assertEquals(someResource.getResourceAsString(), mvcResultString);
+        assertFalse(mvcResultString.isEmpty());
+        JSONObject jsonObject = new JSONObject(mvcResultString);
+        assertTrue(jsonObject.getString(JSONVISMO.TYPE).equals(VISMO.GROUP));
+        assertEquals(group.getResourceAsString(), jsonObject.getString(JSONVISMO.ID));
+        assertEquals("Iconography", jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY));
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains("Keyword"));
     }
 
     @Test
