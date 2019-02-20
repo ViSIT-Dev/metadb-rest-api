@@ -1,6 +1,7 @@
 package rest.web.controller;
 
 import com.github.anno4j.Anno4j;
+import model.Resource;
 import model.namespace.JSONVISMO;
 import model.namespace.VISMO;
 import model.vismo.Group;
@@ -11,6 +12,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.openrdf.model.Statement;
+import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,6 +33,8 @@ public class ObjectControllerTest extends BaseWebTest {
 
     private final String standardUrl = "https://database.visit.uni-passau.de/";
 
+    private final static String WISSKI_VIEW_PATH = "https://database.visit.uni-passau.de/drupal/wisski/navigate/177/view";
+
     private String groupId;
     private String referenceId;
     private String iconographyString;
@@ -36,6 +44,30 @@ public class ObjectControllerTest extends BaseWebTest {
     private String referenceKeyword;
     private String referenceTitle;
     private String referenceSuperordinateTitle;
+
+    @Test
+    public void testGetObjectRepresentationByWissKIViewPath() throws Exception {
+
+        Anno4j anno4j = this.objectRepository.getAnno4j();
+
+        // Test data for the getObjectIdByWisskiPath method
+        Resource someResource = anno4j.createObject(Resource.class);
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + someResource.getResourceAsString() + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String requestURL = standardUrl + "wisskiobject?wisskipath=" + WISSKI_VIEW_PATH;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+
+        assertEquals(someResource.getResourceAsString(), mvcResultString);
+    }
 
     @Test
     public void testGetRepresentationOfReferenceSuccess() throws Exception {
@@ -93,7 +125,7 @@ public class ObjectControllerTest extends BaseWebTest {
     }
 
     @Override
-    public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException, RepositoryConfigException {
+    public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException, RepositoryConfigException, MalformedQueryException, UpdateExecutionException {
         Anno4j anno4j = this.objectRepository.getAnno4j();
 
         Group group = anno4j.createObject(Group.class);

@@ -2,8 +2,12 @@ package rest.service;
 
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.OpenRDFException;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rest.application.exception.MetadataQueryException;
 import rest.application.exception.ObjectClassNotFoundException;
 import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.ObjectRepository;
@@ -22,6 +26,14 @@ public class ObjectService {
 
     @Autowired
     private Anno4jRepository anno4jRepository;
+
+    public String getObjectIdByWisskiPath(String wisskiPath) throws MetadataQueryException {
+        try {
+            return this.anno4jRepository.getObjectIdByWisskiPath(wisskiPath);
+        } catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
+            throw new MetadataQueryException("Wisski Path: " + wisskiPath + " non-existent or not mapped to a vismo:Resource.");
+        }
+    }
 
     /**
      * Method to return a Json Representation of an Object with a given ID

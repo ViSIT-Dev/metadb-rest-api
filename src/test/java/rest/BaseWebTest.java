@@ -5,6 +5,8 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +70,7 @@ public abstract class BaseWebTest {
         this.anno4jRepository.getAnno4j().getObjectRepository().getConnection().close();
     }
 
-    public abstract void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException, RepositoryConfigException;
+    public abstract void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException, RepositoryConfigException, MalformedQueryException, UpdateExecutionException;
 
     @Test
     public void testSomething() {

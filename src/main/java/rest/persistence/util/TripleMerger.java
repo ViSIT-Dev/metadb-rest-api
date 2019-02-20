@@ -9,7 +9,7 @@ import java.util.*;
  * Class that supports a method to merge several given RDF triples within their common parts.
  */
 public class TripleMerger {
-    
+
     public static String mergeTriples(List<String> wrapperQueries) {
 
         LinkedList<String> singleTriples = extractSingleTriples(wrapperQueries);

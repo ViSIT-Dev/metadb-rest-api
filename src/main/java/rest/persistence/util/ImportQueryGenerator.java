@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 @Component
 public class ImportQueryGenerator {
@@ -36,13 +37,13 @@ public class ImportQueryGenerator {
     public String createUpdateQueryFromJSON(String json) throws QueryGenerationException {
         JSONObject jsonObject = new JSONObject(json);
 
-        for(String rootObjectName : jsonObject.keySet()) {
-            if(this.basicGroupNames.contains(rootObjectName)) {
+        for (String rootObjectName : jsonObject.keySet()) {
+            if (this.basicGroupNames.contains(rootObjectName)) {
                 Object rootObject = jsonObject.get(rootObjectName);
 
-                if(rootObject instanceof JSONArray) {
+                if (rootObject instanceof JSONArray) {
 
-                } else if(rootObject instanceof JSONObject) {
+                } else if (rootObject instanceof JSONObject) {
 
                 } else {
                     // TODO Can this happen?
@@ -61,28 +62,45 @@ public class ImportQueryGenerator {
 
         String query = "";
 
-        for(String id : jsonObject.keySet()) {
-            String value = jsonObject.getString(id);
+        for (String id : jsonObject.keySet()) {
 
-            // Check if id is given in the supported model
-            if(this.idnames.contains(id)) {
-                // Check if id stands for a property/relationship or for a subgroup
-                if(this.subGroups.keySet().contains(id)) {
-                    // Subgroup
+            if (id.equals("type")) {
+
+            } else {
+                String value = jsonObject.getString(id);
+
+                // Check if id is given in the supported model
+                if (this.idnames.contains(id)) {
+                    // Check if id stands for a property/relationship or for a subgroup
+                    if (this.subGroups.keySet().contains(id)) {
+                        // Subgroup
+                        HashMap<String, String> subGroupIds = this.subGroups.get(id);
+
+                        LinkedList<String> wrapperQueries = new LinkedList<String>();
+
+                        for(String subGroupId : subGroupIds.keySet()) {
+                            if(subGroupId.equals("type")) {
+
+                            } else {
+                                wrapperQueries.add(subGroupIds.get(subGroupId));
+                            }
+                        }
 
 
-                } else {
-                    // Normal id, check if multiple or single value supported
-                    if(this.isSingleValue(value)) {
-                        query += this.createQueryAddition(groupName, value, id);
+
                     } else {
-                        for(String split : value.split(",")) {
-                            query += this.createQueryAddition(groupName, split, id);
+                        // Normal id, check if multiple or single value supported
+                        if (this.isSingleValue(value)) {
+                            query += this.createQueryAddition(groupName, value, id);
+                        } else {
+                            for (String split : value.split(",")) {
+                                query += this.createQueryAddition(groupName, split, id);
+                            }
                         }
                     }
+                } else {
+                    this.errors += "The given id " + id + " is not supported in the underlying model and thereby ignored.\n";
                 }
-            } else {
-                this.errors += "The given id " + id + " is not supported in the underlying model and thereby ignored.\n";
             }
         }
 
@@ -122,9 +140,9 @@ public class ImportQueryGenerator {
             while ((line = reader.readNext()) != null) {
                 String group = line[2];
 
-                if(Character.isUpperCase(group.charAt(0))) {
+                if (Character.isUpperCase(group.charAt(0))) {
                     // Basic group
-                    if(!this.basicGroups.containsKey(group)) {
+                    if (!this.basicGroups.containsKey(group)) {
                         this.basicGroups.put(group, new HashMap<String, String>());
                         this.basicGroupNames.add(group);
                     }
@@ -132,7 +150,7 @@ public class ImportQueryGenerator {
                     this.basicGroups.get(group).put(line[1], line[3]);
                 } else {
                     // Subgroup
-                    if(!this.subGroups.containsKey(group)) {
+                    if (!this.subGroups.containsKey(group)) {
                         this.subGroups.put(group, new HashMap<String, String>());
                     }
 
