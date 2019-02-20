@@ -1,5 +1,6 @@
 package rest.configuration;
 
+import com.opencsv.CSVReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
 
 @Configuration
 @EnableWebSecurity
@@ -23,11 +28,40 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${visit.rest.auth.role}")
     private String role;
 
+    @Value("visit.rest.sparql.endpoint.query=none")
+    private String query;
+
+    @Value("visit.rest.sparql.endpoint.update=none")
+    private String update;
+
+    @Value("visit.rest.templates.basepath")
+    private String basepath;
+
     private final static String REALM = "Visit";
 
     @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser(this.user).password("{noop}" + this.password).roles(this.role);
+        if(this.query.equals("none") && this.update.equals("none")) {
+            // Non-productive system
+            auth.inMemoryAuthentication().withUser(this.user).password("{noop}" + this.password).roles(this.role);
+        } else {
+            // Productive System, read out tokens from csv
+            String csv = this.basepath + "users.csv";
+
+            CSVReader reader = null;
+
+            try {
+                reader = new CSVReader(new FileReader(csv));
+
+                String line[];
+
+                while ((line = reader.readNext()) != null) {
+                    auth.inMemoryAuthentication().withUser(line[0]).password("{noop}" + line[1]).roles(line[2]);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
