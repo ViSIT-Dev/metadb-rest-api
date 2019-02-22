@@ -136,7 +136,8 @@ public class ObjectRepository {
                             jsonObject.addProperty(JSONVISMO.ID, currentResult.getValue(binding).stringValue());
                             break;
                         case "type":
-                            jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(id));
+//                            jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(id));
+                            jsonObject.addProperty(JSONVISMO.TYPE, currentResult.getValue("type").stringValue());
                             break;
                         default:
                             jsonObject.addProperty(binding, currentResult.getValue(binding).stringValue());
