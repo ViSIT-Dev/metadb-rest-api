@@ -15,7 +15,7 @@ public class ImportQueryGeneratorTest {
 
     @Test
     public void testInitialisation() {
-        ImportQueryGenerator generator = new ImportQueryGenerator();
+        ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
 
         assertEquals(8, generator.getBasicGroups().size());
 

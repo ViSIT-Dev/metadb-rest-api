@@ -23,6 +23,18 @@ public class VISMO {
 
     public final static String REFERENCE_ENTRY = NS + "ReferenceEntry";
 
+    public final static String ACTIVITY = NS + "Activity";
+
+    public final static String ARCHITECTURE = NS + "Architecture";
+
+    public final static String INSTITUTION = NS + "Institution";
+
+    public final static String OBJECT = NS + "Object";
+
+    public final static String PERSON = NS + "Person";
+
+    public final static String PLACE = NS + "Place";
+
     public final static String TITLE = NS + "Title";
 
     /*

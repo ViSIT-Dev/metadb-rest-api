@@ -2,6 +2,9 @@ package rest.web.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +64,7 @@ public class DigitalRepresentationController {
     @PostMapping(value = "object")
     public String createNewDigitalRepresentationNode(
             @ApiParam(required = true, value = "The ID for the object node.")
-            @RequestParam("id") String id) throws DigitalRepositoryException {
+            @RequestParam("id") String id) throws DigitalRepositoryException, RepositoryException, MalformedQueryException, QueryEvaluationException {
         return digitalRepresentationService.createNewDigitalRepresentationNode(id);
     }
 

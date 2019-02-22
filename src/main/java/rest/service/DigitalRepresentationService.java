@@ -2,9 +2,11 @@ package rest.service;
 
 import com.google.gson.JsonObject;
 import model.namespace.JSONVISMO;
+import model.namespace.VISMO;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -62,12 +64,27 @@ public class DigitalRepresentationService {
      * @param id
      * @return
      */
-    public String createNewDigitalRepresentationNode(@NonNull String id) {
-        try {
-            return digitalRepresentationRepository.createNewDigitalRepresentationNode(id);
-        } catch (Exception e) {
-            throw new CreateNewDigtialRepresentationNodeException(e.getMessage());
+    public String createNewDigitalRepresentationNode(@NonNull String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+        String resourceType = this.anno4jRepository.getLowestClassGivenId(id);
+
+        if (resourceType.equals(VISMO.RESOURCE) ||
+                resourceType.equals(VISMO.ACTIVITY) ||
+                resourceType.equals(VISMO.ARCHITECTURE) ||
+                resourceType.equals(VISMO.GROUP) ||
+                resourceType.equals(VISMO.INSTITUTION) ||
+                resourceType.equals(VISMO.OBJECT) ||
+                resourceType.equals(VISMO.PERSON) ||
+                resourceType.equals(VISMO.PLACE)) {
+            try {
+                return digitalRepresentationRepository.createNewDigitalRepresentationNode(id, resourceType);
+            } catch (RepositoryException | InstantiationException | MalformedQueryException | UpdateExecutionException | IllegalAccessException e) {
+                throw new CreateNewDigtialRepresentationNodeException("Something went wrong with the creation of a DigitalRepresentation object.");
+            }
+
+        } else {
+            throw new CreateNewDigtialRepresentationNodeException("Entity with id " + id + " is not a known vismo:Resource Class.");
         }
+
     }
 
     /**

@@ -1,6 +1,7 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.model.impl.ResourceObject;
 import com.github.anno4j.querying.QueryService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -11,6 +12,8 @@ import model.technicalMetadata.DigitalRepresentation;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
 import org.openrdf.repository.object.ObjectQuery;
@@ -18,6 +21,8 @@ import org.openrdf.repository.object.RDFObject;
 import org.openrdf.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import rest.application.exception.DigitalRepositoryException;
+import rest.configuration.VisitIDGenerator;
 
 import java.util.List;
 
@@ -86,20 +91,25 @@ public class DigitalRepresentationRepository {
      * @throws MalformedQueryException
      * @throws QueryEvaluationException
      */
-    public String createNewDigitalRepresentationNode(String resourceId) throws RepositoryException, IllegalAccessException, InstantiationException, ParseException, MalformedQueryException, QueryEvaluationException {
-        Anno4j anno4j = getAnno4j();
-        //Resource resource = anno4j.createObject(Resource.class);
-        QueryService qs = anno4j.createQueryService();
-        qs.addCriteria(".", resourceId);
-        List<Resource> resources = qs.execute(Resource.class);
-        if (!resources.isEmpty()) {
-            DigitalRepresentation digitalRepresentation = anno4j.createObject(DigitalRepresentation.class);
-            Resource resource = resources.get(0);
-            resource.addDigitalRepresentation(digitalRepresentation);
-            return digitalRepresentation.getResourceAsString();
-        } else {
-            throw new QueryEvaluationException("ID " + resourceId + " is not existent!");
-        }
+    public String createNewDigitalRepresentationNode(String resourceId, String resourceType) throws RepositoryException, InstantiationException, MalformedQueryException, UpdateExecutionException, IllegalAccessException {
+        return this.createDigitalRepresentationWithSPARQL(resourceId);
+
+//        Anno4j anno4j = getAnno4j();
+//        //Resource resource = anno4j.createObject(Resource.class);
+//        QueryService qs = anno4j.createQueryService();
+//        qs.addCriteria(".", resourceId);
+//        List<Resource> resources = qs.execute(Resource.class);
+
+//        if (!resources.isEmpty()) {
+//            DigitalRepresentation digitalRepresentation = anno4j.createObject(DigitalRepresentation.class);
+//            Resource resource = resources.get(0);
+//            resource.addDigitalRepresentation(digitalRepresentation);
+//            return digitalRepresentation.getResourceAsString();
+
+//            return this.createDigitalRepresentationWithSPARQL(resourceId);
+//        } else {
+//            throw new QueryEvaluationException("ID " + resourceId + " is not existent!");
+//        }
     }
 
     /**
@@ -181,6 +191,32 @@ public class DigitalRepresentationRepository {
     public void deleteDigitalRepresentationMedia(String mediaID) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
         Anno4j anno4j = getAnno4j();
         mediaQueryService(mediaID, anno4j);
+    }
+
+    private String createDigitalRepresentationWithSPARQL(String objectId) throws RepositoryException, IllegalAccessException, InstantiationException, MalformedQueryException, UpdateExecutionException {
+        DigitalRepresentation digRep = this.anno4j.createObject(DigitalRepresentation.class);
+        String digRepId = digRep.getResourceAsString();
+
+        String query = "INSERT DATA {\n" +
+                "\t<" + objectId + "> <http://visit.de/ontologies/vismo/hasDigitalRepresentation> <" + digRepId + "> .\n" +
+                "  \t<" + digRepId + "> rdf:type <http://visit.de/ontologies/vismo/DigitalRepresentation> .\n" +
+                "  \t<" + digRepId + "> <http://visit.de/ontologies/vismo/digitallyRepresents> <" + objectId + "> ." +
+                "}";
+
+        ObjectConnection connection = this.anno4j.getObjectRepository().getConnection();
+
+        Update update = connection.prepareUpdate(query);
+
+        update.execute();
+
+        return digRep.getResourceAsString();
+    }
+
+    private boolean checkVismoResourceType(String objectId) {
+
+
+
+        return false;
     }
 
     /**

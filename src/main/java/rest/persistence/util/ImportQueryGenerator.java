@@ -5,6 +5,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import rest.VisitRestApplication;
 import rest.application.exception.QueryGenerationException;
@@ -15,8 +17,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-@Component
 public class ImportQueryGenerator {
+
+    private String sparqlEndpointQuery;
+
+    private String sparqlEndpointUpdate;
+
+    private String pathToTemplates;
 
     private HashMap<String, HashMap<String, String>> basicGroups;
     private HashMap<String, HashMap<String, String>> subGroups;
@@ -28,8 +35,12 @@ public class ImportQueryGenerator {
 
     private static Log logger = LogFactory.getLog(VisitRestApplication.class);
 
-    public ImportQueryGenerator() {
+    public ImportQueryGenerator(String sparqlEndpointQuery, String sparqlEndpointUpdate, String pathToTemplates) {
         this.errors = "The following errors are contained in the supported JSON input:\n";
+
+        this.sparqlEndpointQuery = sparqlEndpointQuery;
+        this.sparqlEndpointUpdate = sparqlEndpointUpdate;
+        this.pathToTemplates = pathToTemplates;
 
         this.initialiseQueryWrappers();
     }
@@ -127,8 +138,13 @@ public class ImportQueryGenerator {
         this.basicGroupNames = new HashSet<String>();
         this.idnames = new HashSet<String>();
 
-        // TODO Change this to also productive version, path checking etc.
-        String csv = "templates/wrapper.csv";
+        String csv = "";
+
+        if(this.sparqlEndpointUpdate.equals("none") && this.sparqlEndpointQuery.equals("none")) {
+            csv = "templates/wrapper.csv";
+        } else {
+            csv = this.pathToTemplates + "/wrapper.csv";
+        }
 
         CSVReader reader = null;
 

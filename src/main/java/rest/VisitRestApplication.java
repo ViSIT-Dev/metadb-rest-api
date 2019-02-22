@@ -18,8 +18,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import rest.configuration.VisitIDGenerator;
+import rest.persistence.util.ImportQueryGenerator;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"rest"})
@@ -35,6 +35,9 @@ public class VisitRestApplication extends SpringBootServletInitializer {
 
     @Value("${visit.rest.sparql.endpoint.testdata}")
     private boolean createTestdata;
+
+    @Value("${visit.rest.templates.path}")
+    private String pathToTemplates;
 
     @Bean
     public Anno4j anno4j() throws RepositoryConfigException, RepositoryException, InstantiationException, IllegalAccessException {
@@ -54,6 +57,11 @@ public class VisitRestApplication extends SpringBootServletInitializer {
 
             return anno4j;
         }
+    }
+
+    @Bean
+    public ImportQueryGenerator importQueryGenerator() {
+        return new ImportQueryGenerator(this.sparqlEndpointQuery, this.sparqlEndpointUpdate, this.pathToTemplates);
     }
 
     public static void main(String[] args) {

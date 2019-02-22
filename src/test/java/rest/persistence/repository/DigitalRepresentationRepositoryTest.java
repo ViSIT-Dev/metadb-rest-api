@@ -2,16 +2,20 @@ package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
 import model.Resource;
+import model.namespace.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import rest.BaseWebTest;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
@@ -19,6 +23,7 @@ import static org.junit.Assert.*;
 public class DigitalRepresentationRepositoryTest extends BaseWebTest {
 
     private String objectID;
+    private Resource resource;
     private String mediaID1;
     private String mediaID2;
 
@@ -47,17 +52,18 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
     }
 
     @Test
-    public void createNewDigitalRepresentationNodeWithExisitingObjectId() throws IllegalAccessException, MalformedQueryException, RepositoryException, InstantiationException, ParseException, QueryEvaluationException {
+    public void createNewDigitalRepresentationNodeWithExisitingObjectId() throws IllegalAccessException, MalformedQueryException, RepositoryException, InstantiationException, ParseException, QueryEvaluationException, UpdateExecutionException {
         String objectId = objectID;
-        String newNodeId = this.digitalRepresentationRepository.createNewDigitalRepresentationNode(objectId);
-        String resultMediaTest = this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(newNodeId);
-        assertNull(resultMediaTest);
-    }
+        String newNodeId = this.digitalRepresentationRepository.createNewDigitalRepresentationNode(objectId, VISMO.RESOURCE);
 
-    @Test(expected = QueryEvaluationException.class)
-    public void createNewDigitalRepresentationNodeWithNonExisitingObjectId() throws IllegalAccessException, MalformedQueryException, RepositoryException, InstantiationException, ParseException, QueryEvaluationException {
-        String random = RandomStringUtils.randomAlphanumeric(47);
-        String newNodeId = this.digitalRepresentationRepository.createNewDigitalRepresentationNode(random);
+        Set<DigitalRepresentation> digitalRepresentations = this.resource.getDigitalRepresentations();
+        LinkedList<String> digRepIds = new LinkedList<String>();
+
+        for(DigitalRepresentation digRep : digitalRepresentations) {
+            digRepIds.add(digRep.getResourceAsString());
+        }
+
+        assertTrue(digRepIds.contains(newNodeId));
     }
 
     @Test
@@ -118,6 +124,7 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
         Anno4j anno4j = this.digitalRepresentationRepository.getAnno4j();
 
         Resource resource = anno4j.createObject(Resource.class);
+        this.resource = resource;
         this.objectID = resource.getResourceAsString();
 
         DigitalRepresentation rep1 = anno4j.createObject(DigitalRepresentation.class);

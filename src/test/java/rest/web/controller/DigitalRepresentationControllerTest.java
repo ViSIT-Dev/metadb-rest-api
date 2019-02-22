@@ -139,7 +139,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
      */
     @Test
     public void createNewDigitalRepresentationFailure() throws Exception {
-        String random = RandomStringUtils.randomAlphanumeric(47);
+        String random = "http://someuri.com";
         String requestURL = standardUrl + "object?id=" + random;
         MvcResult mvcResult = this.mockMvc.perform(post(requestURL))
                 .andDo(print()).andExpect(status().isConflict()).andReturn();

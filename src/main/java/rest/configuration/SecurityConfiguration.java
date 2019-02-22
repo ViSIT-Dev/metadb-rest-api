@@ -1,6 +1,8 @@
 package rest.configuration;
 
 import com.opencsv.CSVReader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import rest.VisitRestApplication;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,7 +49,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             auth.inMemoryAuthentication().withUser(this.user).password("{noop}" + this.password).roles(this.role);
         } else {
             // Productive System, read out tokens from csv
-            String csv = this.basepath + "users.csv";
+            String csv = this.basepath + "/users.csv";
 
             CSVReader reader = null;
 
@@ -56,7 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 String line[];
 
                 while ((line = reader.readNext()) != null) {
-                    auth.inMemoryAuthentication().withUser(line[0]).password("{noop}" + line[1]).roles(line[2]);
+                    auth.inMemoryAuthentication().withUser(line[1]).password("{noop}" + line[2]).roles(line[3]);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -68,7 +71,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/digrep/**").hasRole(this.role)
+                .antMatchers("/digrep/**").hasRole("api")
                 .and().httpBasic().realmName(this.REALM).authenticationEntryPoint(this.getBasicAuthEntryPoint())
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
