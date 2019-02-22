@@ -7,6 +7,8 @@
 from bs4 import BeautifulSoup
 import os.path as ospath
 import os as os
+import json as json
+import pandas as pandas
 
 HEADERS = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX cidoc: <http://erlangen-crm.org/170309/>\nPREFIX vismo: <http://visit.de/ontologies/vismo/>"
 
@@ -46,10 +48,10 @@ def preprocess(soup):
             path.string.replace_with(path.get_text()[:-1])
 
 
-# In[3]:
+# In[7]:
 
 
-def createTemplate(groupName, paths):
+def createOptionalQueryTemplate(groupName, paths):
     query = ''
     
     query += HEADERS + "\n"
@@ -75,6 +77,9 @@ def createTemplate(groupName, paths):
        
     # Counter for termporary variables
     counter = 0
+    
+    optionalPart = ''
+    
     # Work simple paths
     for path in simplePaths:
         identifier = '?' + path.id.get_text()
@@ -90,18 +95,15 @@ def createTemplate(groupName, paths):
             # 1-step Path, Ending in a Property
             optionalPart = 'OPTIONAL {\n\t?x <' + path.datatype_property.get_text() + '> ' + identifier + '}\n'
             
-            optionals += optionalPart
         elif(len(path.path_array.contents) == 7):
             if(path.datatype_property.get_text() == 'empty'):
                 # 3-step Path, Ending in a Reference
                 optionalPart = 'OPTIONAL {\n\t?x <' + path.path_array.y.get_text() + '> ' + identifier + ' .\n\t' + identifier + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . }\n'
                 
-                optionals += optionalPart
             else:
                 # 3-step Path, Ending in a Property
                 optionalPart = 'OPTIONAL {\n\t?x <' + path.path_array.y.get_text() + '> ?y' + str(counter) + ' .\n\t?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> .\n\t?y' + str(counter) + ' <' + path.datatype_property.get_text() + '> ' + identifier + ' . }\n'
                 
-                optionals += optionalPart
         elif(len(path.path_array.contents) == 11):  
             if(path.datatype_property.get_text() == 'empty'):
                 # 5-step Path, Ending in a Reference
@@ -110,16 +112,40 @@ def createTemplate(groupName, paths):
                                 + '\t' + '?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ' + identifier + ' .\n'
                                 + '\t' + identifier + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '> . }\n')
                 
-                optionals += optionalPart
             else:
                 # 5-step Path, Ending in a Property
                 optionalPart = ('OPTIONAL {\n\t?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' .\n'
                                 + '\t' + '?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> .\n'
                                 + '\t' + '?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ?y' + str(counter + 1) + ' .\n'
-                                + '\t ?y' + str(counter + 1) + ' <' + path.datatype_property.get_text() + '> '  + identifier + ' . }\n')
+                                + '\t' + '?y' + str(counter + 1) + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '> .\n'
+                                + '\t' + '?y' + str(counter + 1) + ' <' + path.datatype_property.get_text() + '> '  + identifier + ' . }\n')
                 
                 counter += 1
-                optionals += optionalPart
+        elif(len(path.path_array.contents) == 15):
+            if(path.datatype_property.get_text() == 'empty'):
+                # 7-step Path, Ending in a Reference
+                optionalPart = ('OPTIONAL {\n\t?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' .\n'
+                                + '\t?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> .\n'
+                                + '\t?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ?y' + str(counter + 1) + ' .\n'
+                                + '\t?y' + str(counter + 1) + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '>' + ' .\n'
+                                + '\t?y' + str(counter + 1) + '<' + path.path_array.find_all('y')[2].get_text() + '> ' + identifier + ' .\n'
+                                + '\t' + identifier + ' rdf:type <' + path.path_array.find_all('x')[3].get_text() + '> . }\n')
+                
+                counter += 1
+            else:
+                # 7-step Path, Ending in a Property
+                optionalPart = ('OPTIONAL {\n\t?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' .\n'
+                                + '\t?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> .\n'
+                                + '\t?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ?y' + str(counter + 1) + ' .\n'
+                                + '\t?y' + str(counter + 1) + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '>' + ' .\n'
+                                + '\t?y' + str(counter + 1) + ' <' + path.path_array.find_all('y')[2].get_text() + '> ' + '?y' + str(counter + 2) + ' .\n'
+                                + '\t?y' + str(counter + 2) + ' rdf:type <' + path.path_array.find_all('x')[3].get_text() + '> .\n'
+                                + '\t?y' + str(counter + 2) + ' <' + path.datatype_property.get_text() + '> '  + identifier + ' . }\n')
+                                 
+                counter += 2
+                
+        optionals += optionalPart
+        
     for path in subGroupPaths:
         identifier = '?' + path.id.get_text()
         select += '(group_concat(distinct ' + identifier + ';separator=\",\") as ' + identifier + 's) '
@@ -134,7 +160,7 @@ def createTemplate(groupName, paths):
         # Find all paths that are associated with the subgroup
         subGroupId = path.id.get_text()
         
-        createTemplate(subGroupId, paths)
+        createOptionalQueryTemplate(subGroupId, paths)
         
         #currentGroupPaths = []
         #for subPath in paths:
@@ -160,7 +186,163 @@ def createTemplate(groupName, paths):
         print('Wrong path provided')
 
 
-# In[4]:
+# In[8]:
+
+
+def createJSONTemplate(groupName, paths, jsonString):
+    
+    jsonAddition = {}
+    
+    # Find paths with and without sub-groups
+    simplePaths = []
+    subGroupPaths = []
+    for path in paths:
+        if(path.id.get_text() == groupName.lower() and path.is_group.get_text() == '1'):
+            # Add type to json
+            if(len(path.path_array.contents) == 3):
+                # Standard group
+                jsonAddition['type'] = path.path_array.x.get_text()
+            elif(len(path.path_array.contents) == 7):
+                # Subgroup
+                jsonAddition['type'] = path.path_array.find_all('x')[1].get_text()
+        elif(path.group_id.get_text() == groupName.lower() and path.is_group.get_text() == '0'):
+            simplePaths.append(path)
+        elif(path.group_id.get_text() == groupName.lower() and path.is_group.get_text() == '1'):
+            subGroupPaths.append(path)
+    
+    # Work simple paths
+    for path in simplePaths:
+        
+        # Check for path length
+        if(len(path.path_array.contents) == 3):
+            # 1-step Path, Ending in a Property            
+            jsonAddition[path.id.get_text()] = path.field_type_informative.get_text()
+
+        elif(len(path.path_array.contents) == 7):
+            if(path.datatype_property.get_text() == 'empty'):
+                # 3-step Path, Ending in a Reference
+                jsonAddition[path.id.get_text()] = path.field_type_informative.get_text() + ' (' + path.path_array.find_all('x')[1].get_text() + ')'
+            else:
+                # 3-step Path, Ending in a Property
+                jsonAddition[path.id.get_text()] = path.field_type_informative.get_text()
+        elif(len(path.path_array.contents) == 11):  
+            if(path.datatype_property.get_text() == 'empty'):
+                # 5-step Path, Ending in a Reference
+                jsonAddition[path.id.get_text()] = path.field_type_informative.get_text() + ' (' + path.path_array.find_all('x')[2].get_text() + ')'
+            else:
+                # 5-step Path, Ending in a Property
+                jsonAddition[path.id.get_text()] = path.field_type_informative.get_text()
+        elif(len(path.path_array.contents) == 15):
+            if(path.datatype_property.get_text() == 'empty'):
+                # 7-step Path, Ending in a Reference
+                jsonAddition[path.id.get_text()] = path.field_type_informative.get_text() + ' (' + path.path_array.find_all('x')[3].get_text() + ')'
+            else:
+                # 7-step Path, Ending in a Property
+                jsonAddition[path.id.get_text()] = path.field_type_informative.get_text()
+                
+    for path in subGroupPaths:
+        subGroupId = path.id.get_text()
+        createJSONTemplate(subGroupId, paths, jsonAddition)
+        
+        # Check subgroups for subgroups!
+       
+    jsonString[groupName] = jsonAddition
+
+
+# In[9]:
+
+
+def createWrapperTemplate(groupName, paths, wrapper):
+   
+    # Find paths with and without sub-groups
+    simplePaths = []
+    subGroupPaths = []
+    for path in paths:
+        if(path.group_id.get_text() == groupName.lower() and path.is_group.get_text() == '0'):
+            simplePaths.append(path)
+        elif(path.group_id.get_text() == groupName.lower() and path.is_group.get_text() == '1'):
+            subGroupPaths.append(path)
+       
+    # Counter for termporary variables
+    counter = 0
+    # Work simple paths
+    for path in simplePaths:
+        identifier = '?' + path.id.get_text()
+
+        counter += 1
+        
+        queryPart = ''
+        
+        # Check for path length
+        if(len(path.path_array.contents) == 3):
+            # 1-step Path, Ending in a Property
+            queryPart = '?x <' + path.datatype_property.get_text() + '> ' + identifier
+            
+        elif(len(path.path_array.contents) == 7):
+            if(path.datatype_property.get_text() == 'empty'):
+                # 3-step Path, Ending in a Reference
+                queryPart = '?x <' + path.path_array.y.get_text() + '> ' + identifier + ' . ' + identifier + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '>'
+            
+            else:
+                # 3-step Path, Ending in a Property                
+                queryPart = '?x <' + path.path_array.y.get_text() + '> ?y' + str(counter) + ' . ?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . ?y' + str(counter) + ' <' + path.datatype_property.get_text() + '> ' + identifier
+            
+        elif(len(path.path_array.contents) == 11):  
+            if(path.datatype_property.get_text() == 'empty'):
+                # 5-step Path, Ending in a Reference
+                queryPart = ('?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' . '
+                                + '?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . '
+                                + '?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ' + identifier + ' . '
+                                + identifier + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '>')
+                            
+            else:
+                # 5-step Path, Ending in a Property
+                queryPart = ('?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' . '
+                                + '?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . '
+                                + '?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ?y' + str(counter + 1) + ' . '
+                                + '?y' + str(counter + 1) + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '> . '
+                                + '?y' + str(counter + 1) + ' <' + path.datatype_property.get_text() + '> '  + identifier)
+                
+                counter += 1
+        elif(len(path.path_array.contents) == 15):
+            if(path.datatype_property.get_text() == 'empty'):
+                # 7-step Path, Ending in a Reference
+                queryPart = ('?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' . '
+                                + '?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . '
+                                + '?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ?y' + str(counter + 1) + ' . '
+                                + '?y' + str(counter + 1) + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '>' + ' . '
+                                + '?y' + str(counter + 1) + '<' + path.path_array.find_all('y')[2].get_text() + '> ' + identifier + ' . '
+                                + identifier + ' rdf:type <' + path.path_array.find_all('x')[3].get_text() + '>')
+                
+                counter += 1
+            else:
+                # 7-step Path, Ending in a Property
+                queryPart = ('?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' . '
+                                + '?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . '
+                                + '?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ?y' + str(counter + 1) + ' . '
+                                + '?y' + str(counter + 1) + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '>' + ' . '
+                                + '?y' + str(counter + 1) + ' <' + path.path_array.find_all('y')[2].get_text() + '> ' + '?y' + str(counter + 2) + ' . '
+                                + '?y' + str(counter + 2) + ' rdf:type <' + path.path_array.find_all('x')[3].get_text() + '> . '
+                                + '?y' + str(counter + 2) + ' <' + path.datatype_property.get_text() + '> '  + identifier)
+                                 
+                
+                counter += 2
+                
+        wrapper = wrapper.append({'id' : path.id.get_text() , 'group' : groupName , 'query' : queryPart} , ignore_index=True)
+        
+    for path in subGroupPaths:        
+        # Create sub-templates for the sub-groups of a top-level group 
+        # Find all paths that are associated with the subgroup
+        subGroupId = path.id.get_text()
+        
+        wrapper = createWrapperTemplate(subGroupId, paths, wrapper)
+        
+        # Check subgroups for subgroups!
+
+    return wrapper
+
+
+# In[10]:
 
 
 infile = open("paths.xml","r")
@@ -179,7 +361,22 @@ for path in paths:
     if path.is_group.get_text() == '1' and path.group_id.get_text() == '0':
         groups.append(path.pathName.get_text())
         
+# Create the content files
+jsonString = {}
+wrapper = pandas.DataFrame(columns=['id','group','query'])
+    
 # Write to template files
 for group in groups:
-    createTemplate(group, paths)
+    createOptionalQueryTemplate(group, paths)
+    createJSONTemplate(group, paths, jsonString)
+    wrapper = createWrapperTemplate(group, paths, wrapper)
+    
+# Write files
+filename = "json.txt"
+filepath = ospath.join(here, subdir, filename)
+
+with open(filepath, 'w') as outfile:
+    json.dump(jsonString, outfile)
+    
+wrapper.to_csv(ospath.join(here, subdir, 'wrapper.csv'))
 
