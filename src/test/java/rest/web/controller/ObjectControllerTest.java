@@ -33,7 +33,7 @@ public class ObjectControllerTest extends BaseWebTest {
 
     private final String standardUrl = "https://database.visit.uni-passau.de/";
 
-    private final static String WISSKI_VIEW_PATH = "https://database.visit.uni-passau.de/drupal/wisski/navigate/178/view";
+    private final static String WISSKI_VIEW_PATH = "http://database.visit.uni-passau.de/drupal/wisski/navigate/178/view";
 
     private String groupId;
     private String referenceId;

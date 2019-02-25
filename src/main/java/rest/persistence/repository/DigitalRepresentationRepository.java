@@ -34,6 +34,16 @@ public class DigitalRepresentationRepository {
     @Autowired
     private Anno4j anno4j;
 
+    /**
+     * Method to query a single vismo:DigitalRepresentation technical metadata String, defined by a supported mediaId.
+     *
+     * @param id    The Id of the vismo:DigitalRepresentation entity whose technical metadata is to be requested.
+     * @return      The technical metadata String persisted for the vismo:DigitalRepresentation object defined by the supported id.
+     * @throws RepositoryException
+     * @throws ParseException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     */
     public String getSingleTechnicalMetadataByMediaID(String id) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
         QueryService qs = this.anno4j.createQueryService();
 

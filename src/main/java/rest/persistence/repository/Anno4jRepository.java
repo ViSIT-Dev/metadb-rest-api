@@ -31,6 +31,16 @@ public class Anno4jRepository {
         return this.anno4j;
     }
 
+    /**
+     * Method to query an object Id by supporting a WissKI view path that corresponds to the object from the underlying triplestore.
+     * This path is connected to the respective RDF resource via an owl:sameAs relationship.
+     *
+     * @param wisskiPath    The WissKI view path for the object to query for.
+     * @return              The Id of the object that corresponds to the supported WissKI view path.
+     * @throws RepositoryException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     */
     public String getObjectIdByWisskiPath(String wisskiPath) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 
         String query = "SELECT ?id\n" +
@@ -51,12 +61,26 @@ public class Anno4jRepository {
         return String.valueOf(currentResult.getValue("id"));
     }
 
+    /**
+     * Method to retrieve the most specified Class/rdf:Class as String of a resource or entity that is defined by the supported id.
+     *
+     * @param id    The id of the entity/resource for which the most specific type or class (as String) is to be found.
+     * @return      The most specific class or type as String for the resource defined by the supported id.
+     * @throws RepositoryException
+     */
     public String getLowestClassGivenIdAsString(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         String annotation = this.anno4j.getConcept(id).getAnnotations()[0].toString();
 
         return this.selectValue(annotation);
     }
 
+    /**
+     * Method to retrieve the most specified Class/rdf:Class of a resource or entity that is defined by the supported id.
+     *
+     * @param id    The id of the entity/resource for which the most specific type or class is to be found.
+     * @return      The most specific class or type for the resource defined by the supported id.
+     * @throws RepositoryException
+     */
     public Class<? extends ResourceObject> getLowestClassGivenId(String id) throws RepositoryException {
         return this.anno4j.getConcept(id);
     }
@@ -79,6 +103,13 @@ public class Anno4jRepository {
         return result.get(0).getResourceAsString();
     }
 
+    /**
+     * Method to retrieve the objectId of the entity that is connected to the vismo:DigitalRepresentation entity defined by the supported digRepId.
+     *
+     * @param digRepId  The id that defines the vismo:DigitalRepresentation entity, for which the associated object entity is to be found.
+     * @return          The id of the object entity that is connected to the supported vismo:DigitalRepresentation.
+     * @throws MetadataQueryException
+     */
     public String getResourceIdByDigitalRepresentationSPARQL(String digRepId) throws MetadataQueryException {
         String query = "SELECT ?resource\n" +
                 "WHERE { ?resource <http://visit.de/ontologies/vismo/hasDigitalRepresentation> <" + digRepId + "> }";

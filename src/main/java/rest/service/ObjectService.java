@@ -27,8 +27,20 @@ public class ObjectService {
     @Autowired
     private Anno4jRepository anno4jRepository;
 
+    /**
+     * Service method that requests the representation by a WissKI entity of the underlying repository.
+     *
+     * @param wisskiPath    The WissKI view path of the object to represent.
+     * @return              A JSON representation of the requested object defined by the supported WissKI view path.
+     * @throws MetadataQueryException
+     */
     public String getObjectIdByWisskiPath(String wisskiPath) throws MetadataQueryException {
         try {
+            // Strip https from the given wisskiPath (resource Ids are saved with http by WissKI/Drupal)
+            if(wisskiPath.startsWith("https")) {
+                String input = wisskiPath.replace("https", "http");
+            }
+
             String id = this.anno4jRepository.getObjectIdByWisskiPath(wisskiPath);
 
             return this.getRepresentationOfObject(id);
