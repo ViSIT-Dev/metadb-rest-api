@@ -46,7 +46,7 @@ public class ObjectService {
     public String getRepresentationOfObject(String id) {
         String result = null;
         try {
-            String className = anno4jRepository.getLowestClassGivenId(id);
+            String className = anno4jRepository.getLowestClassGivenIdAsString(id);
             String toRemoveChar = "http://visit.de/ontologies/vismo/";
             String classGetFile = this.withoutString(className, toRemoveChar);
             result = objectRepository.getRepresentationOfObject(id, classGetFile);

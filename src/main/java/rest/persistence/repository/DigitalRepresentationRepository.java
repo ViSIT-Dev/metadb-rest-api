@@ -26,6 +26,8 @@ import rest.configuration.VisitIDGenerator;
 
 import java.util.List;
 
+import static javafx.scene.input.KeyCode.T;
+
 @Repository
 public class DigitalRepresentationRepository {
 
@@ -52,20 +54,20 @@ public class DigitalRepresentationRepository {
      * @param id The ID of the vismo:Resource from which the technicalMetadata is to be queried.
      * @return A list of Strings that represent the technicalMetadata for the searched vismo:Resource entity.
      */
-    public String getAllTechnicalMetadataStringsByObjectID(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException {
+    public String getAllTechnicalMetadataStringsByObjectID(String id, Class clazz) throws RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException {
         QueryService qs = this.anno4j.createQueryService();
         qs.addCriteria(".", id);
 
-        List<Resource> result = qs.execute(Resource.class);
+        List result = qs.execute(clazz);
 
-        Resource resource = result.get(0);
+        Object resource = result.get(0);
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty(JSONVISMO.OBJECT_ID, id);
 
         JsonArray jsonArray = new JsonArray();
 
-        for(DigitalRepresentation digrep : resource.getDigitalRepresentations()) {
+        for(DigitalRepresentation digrep : ((Resource) resource).getDigitalRepresentations()) {
             JsonObject digrepObject = new JsonObject();
 
             digrepObject.addProperty(JSONVISMO.MEDIA_ID, digrep.getResourceAsString());

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rest.application.exception.DeleteDigitalRepresentationException;
 import rest.application.exception.DigitalRepositoryException;
+import rest.application.exception.MetadataQueryException;
 import rest.service.DigitalRepresentationService;
 
 @RestController
@@ -76,7 +77,7 @@ public class DigitalRepresentationController {
             @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
             @RequestParam("id") String id,
             @ApiParam(value = "The new Technical Metadata String")
-            @RequestBody String newData) throws DigitalRepositoryException {
+            @RequestBody String newData) throws DigitalRepositoryException, MetadataQueryException {
         return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
     }
 

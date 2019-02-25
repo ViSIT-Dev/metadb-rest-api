@@ -1,5 +1,6 @@
 package rest.service;
 
+import com.github.anno4j.model.impl.ResourceObject;
 import com.google.gson.JsonObject;
 import model.namespace.JSONVISMO;
 import model.namespace.VISMO;
@@ -11,10 +12,7 @@ import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import rest.application.exception.CreateNewDigtialRepresentationNodeException;
-import rest.application.exception.DeleteDigitalRepresentationException;
-import rest.application.exception.DigitalRepositoryException;
-import rest.application.exception.UpdateDigitalRepositoryException;
+import rest.application.exception.*;
 import rest.persistence.repository.Anno4jRepository;
 import rest.persistence.repository.DigitalRepresentationRepository;
 
@@ -52,7 +50,9 @@ public class DigitalRepresentationService {
      */
     public String getAllTechnicalMetadataStringsByObjectID(@NonNull String id) {
         try {
-            return digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(id);
+            Class<? extends ResourceObject> clazz = this.anno4jRepository.getLowestClassGivenId(id);
+
+            return digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(id, clazz);
         } catch (Exception e) {
             throw new DigitalRepositoryException(e.getMessage());
         }
@@ -65,7 +65,7 @@ public class DigitalRepresentationService {
      * @return
      */
     public String createNewDigitalRepresentationNode(@NonNull String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-        String resourceType = this.anno4jRepository.getLowestClassGivenId(id);
+        String resourceType = this.anno4jRepository.getLowestClassGivenIdAsString(id);
 
         if (resourceType.equals(VISMO.RESOURCE) ||
                 resourceType.equals(VISMO.ACTIVITY) ||
@@ -93,10 +93,10 @@ public class DigitalRepresentationService {
      * @param mediaId
      * @param newData
      */
-    public String updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) {
+    public String updateDigitalRepresentationNode(@NonNull String mediaId, @NonNull String newData) throws MetadataQueryException {
         try {
             this.digitalRepresentationRepository.updateDigitalRepresentationNode(mediaId, newData);
-            String resourceId = this.anno4jRepository.getResourceIdByDigitalRepresentation(mediaId);
+            String resourceId = this.anno4jRepository.getResourceIdByDigitalRepresentationSPARQL(mediaId);
 
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty(JSONVISMO.OBJECT_ID, resourceId);

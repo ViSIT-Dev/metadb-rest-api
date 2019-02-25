@@ -29,7 +29,7 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
 
     @Test
     public void testGetAllTechnicalMetadataStringsByObjectID() throws RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException {
-        String result = this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(this.objectID);
+        String result = this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(this.objectID, Resource.class);
         assertTrue(result.contains("test1"));
         assertTrue(result.contains("test2"));
     }
@@ -86,7 +86,7 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
     public void deleteDigitalRepresentationNodeMediaSuccess() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
         String mediaID = this.mediaID1;
         this.digitalRepresentationRepository.deleteDigitalRepresentationMedia(mediaID);
-        assertThat(this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(objectID), instanceOf(String.class));
+        assertThat(this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(objectID, Resource.class), instanceOf(String.class));
         this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(mediaID);
     }
 
@@ -101,7 +101,7 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
         String objectId = this.objectID;
         String mediaId = this.mediaID1;
         this.digitalRepresentationRepository.deleteDigitalRepresentationMediaAndObject(mediaId, objectId);
-        assertThat(this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(objectId), instanceOf(List.class));
+        assertThat(this.digitalRepresentationRepository.getAllTechnicalMetadataStringsByObjectID(objectId, Resource.class), instanceOf(List.class));
         this.digitalRepresentationRepository.getSingleTechnicalMetadataByMediaID(mediaId);
     }
 

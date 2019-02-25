@@ -1,6 +1,7 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.model.impl.ResourceObject;
 import com.github.anno4j.querying.QueryService;
 import model.Resource;
 import model.namespace.VISMO;
@@ -10,6 +11,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import rest.application.exception.MetadataQueryException;
 
 import java.util.List;
 
@@ -49,10 +51,14 @@ public class Anno4jRepository {
         return String.valueOf(currentResult.getValue("id"));
     }
 
-    public String getLowestClassGivenId(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    public String getLowestClassGivenIdAsString(String id) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         String annotation = this.anno4j.getConcept(id).getAnnotations()[0].toString();
 
         return this.selectValue(annotation);
+    }
+
+    public Class<? extends ResourceObject> getLowestClassGivenId(String id) throws RepositoryException {
+        return this.anno4j.getConcept(id);
     }
 
     /**
@@ -71,6 +77,27 @@ public class Anno4jRepository {
         List<Resource> result = queryService.execute(Resource.class);
 
         return result.get(0).getResourceAsString();
+    }
+
+    public String getResourceIdByDigitalRepresentationSPARQL(String digRepId) throws MetadataQueryException {
+        String query = "SELECT ?resource\n" +
+                "WHERE { ?resource <http://visit.de/ontologies/vismo/hasDigitalRepresentation> <" + digRepId + "> }";
+
+        ObjectConnection connection = null;
+        try {
+            connection = this.anno4j.getObjectRepository().getConnection();
+
+            TupleQuery tupleQuery = connection.prepareTupleQuery(query);
+
+            TupleQueryResult result = tupleQuery.evaluate();
+
+            BindingSet next = result.next();
+
+            return String.valueOf(next.getValue("resource"));
+        } catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
+            throw new MetadataQueryException("Somethin went wrong when querying the objectId of a resource, given a mediaId.");
+        }
+
     }
 
     /**

@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
-import rest.VisitRestApplication;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -123,7 +122,7 @@ public class ObjectRepository {
 
                     if (!subId.isEmpty() && subObject.get(JSONVISMO.ID).getAsString().split(",").length == 1 && subObject.has(JSONVISMO.TYPE)) {
                         subObject.remove(JSONVISMO.TYPE);
-                        subObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(subId));
+                        subObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(subId));
                     }
 
                     JsonElement jsonElement = this.splitMultipleJsonObject(subObject);
@@ -136,8 +135,7 @@ public class ObjectRepository {
                             jsonObject.addProperty(JSONVISMO.ID, currentResult.getValue(binding).stringValue());
                             break;
                         case "type":
-//                            jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(id));
-                            jsonObject.addProperty(JSONVISMO.TYPE, currentResult.getValue("type").stringValue());
+                            jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(id));
                             break;
                         default:
                             jsonObject.addProperty(binding, currentResult.getValue(binding).stringValue());
@@ -171,12 +169,12 @@ public class ObjectRepository {
                         if (bindingSplit.length > 1) {
                             splitObject.addProperty(binding, bindingSplit[i]);
                             if (binding.equals(JSONVISMO.ID)) {
-                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(bindingSplit[i]));
+                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(bindingSplit[i]));
                             }
                         } else {
                             splitObject.addProperty(binding, bindingSplit[0]);
                             if (binding.equals(JSONVISMO.ID)) {
-                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenId(bindingSplit[0]));
+                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(bindingSplit[0]));
                             }
                         }
                     }

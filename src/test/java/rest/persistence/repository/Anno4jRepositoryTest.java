@@ -14,13 +14,11 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.Update;
 import org.openrdf.repository.RepositoryException;
-import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class Anno4jRepositoryTest extends BaseWebTest {
 
@@ -56,21 +54,21 @@ public class Anno4jRepositoryTest extends BaseWebTest {
 
     @Test
     public void getLowestClassGivenId() throws IllegalAccessException, InstantiationException, MalformedQueryException, RepositoryException, QueryEvaluationException {
-        String resource = this.anno4jRepository.getLowestClassGivenId(this.annotationID);
+        String resource = this.anno4jRepository.getLowestClassGivenIdAsString(this.annotationID);
 
         assertEquals(OADM.ANNOTATION, resource);
     }
 
     @Test
     public void getLowestClassGivenId2() throws RepositoryException, IllegalAccessException, InstantiationException, QueryEvaluationException, MalformedQueryException {
-        String resource = this.anno4jRepository.getLowestClassGivenId(this.specificResourceID);
+        String resource = this.anno4jRepository.getLowestClassGivenIdAsString(this.specificResourceID);
 
         assertEquals(OADM.SPECIFIC_RESOURCE, resource);
     }
 
     @Test
     public void getLowestClassGivenIdWithVismoGroup() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-        String resource = this.anno4jRepository.getLowestClassGivenId(this.groupID);
+        String resource = this.anno4jRepository.getLowestClassGivenIdAsString(this.groupID);
 
         assertEquals(VISMO.GROUP, resource);
     }
