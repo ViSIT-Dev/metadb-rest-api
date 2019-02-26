@@ -13,8 +13,14 @@ import java.util.UUID;
  */
 public class VisitIDGenerator implements IDGenerator {
 
+    private final static String VISIT_BASE_URI = "http://visit.de/data/";
+
     @Override
     public Resource generateID(Set<URI> types) {
         return new MemValueFactory().createURI("http://visit.de/metadb/" + UUID.randomUUID());
+    }
+
+    public static String generateVisitDBID() {
+        return VISIT_BASE_URI + UUID.randomUUID();
     }
 }

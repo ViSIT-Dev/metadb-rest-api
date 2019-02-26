@@ -1,6 +1,7 @@
 package rest.persistence.util;
 
 import rest.application.exception.IdMapperException;
+import rest.configuration.VisitIDGenerator;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -44,8 +45,6 @@ public class IdMapper {
 
     private HashMap<String, String> mappedIDs;
 
-    private final static String VISIT_BASE_URI = "http://visit.de/data/";
-
     public IdMapper() {
         this.baseIDs = new HashMap<String, String>();
         this.referenceIDs = new HashMap<String, String>();
@@ -64,7 +63,7 @@ public class IdMapper {
 
                 this.referenceIDs.remove(baseID);
             } else {
-                uri = this.generateURI();
+                uri = VisitIDGenerator.generateVisitDBID();
             }
 
             this.baseIDs.put(baseID, objectType);
@@ -82,7 +81,7 @@ public class IdMapper {
         if(this.mappedIDs.containsKey(referenceID)) {
             uri = this.mappedIDs.get(referenceID);
         } else {
-            uri = this.generateURI();
+            uri = VisitIDGenerator.generateVisitDBID();
             this.referenceIDs.put(referenceID, uri);
         }
 
@@ -99,10 +98,6 @@ public class IdMapper {
         }
 
         return errors;
-    }
-
-    private String generateURI() {
-        return VISIT_BASE_URI + UUID.randomUUID();
     }
 
 

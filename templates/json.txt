@@ -1,1 +1,353 @@
-{"Object": {"type": "http://visit.de/ontologies/vismo/Object", "object_identifiedby_title": "string", "object_has_description": "string", "object_exemplifies_function": "string", "object_inventory_number": "string", "object_description": "string_long", "object_comment": "string_long", "object_keyword": "string", "object_iconography": "string", "object_literature": "string_long", "object_current_owner": "entity_reference (http://visit.de/ontologies/vismo/Institution)", "object_current_location": "entity_reference (http://visit.de/ontologies/vismo/Institution)", "object_currentlocation_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "object_composedof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "object_partof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "object_tookpartin_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)", "object_depicts_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "object_depicts_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "object_depicts_place": "entity_reference (http://visit.de/ontologies/vismo/Place)", "object_depicts_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)", "object_helpfullinks": "string", "object_thumbnail": "image", "object_prefidentifier_inscriptio": {"type": "http://erlangen-crm.org/170309/E34_Inscription", "inscription_text": "string", "inscription_has_type": "string", "inscription_signature": "string", "inscription_mounting": "string", "inscription_date": "string"}, "object_producedby_production": {"type": "http://erlangen-crm.org/170309/E12_Production", "object_employs_material": "string", "production_used_technique": "string", "production_doneby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "production_doneby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "production_tookplaceat_place": "entity_reference (http://visit.de/ontologies/vismo/Place)", "production_dating": {"object_prod_dating_start": "string", "object_prod_dating_end": "string", "production_date_sometime": "string", "object_prod_dating_century": "list_string"}}, "object_has_dimension": {"type": "http://erlangen-crm.org/170309/E54_Dimension", "dimension_has_measurementunit": "string", "dimension_hasvalue": "string"}, "object_transferred_custody": {"type": "http://erlangen-crm.org/170309/E10_Transfer_of_Custody", "custody_receiving_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "custody_receiving_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "custody_from_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "custody_from_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "object_toc_dating": {"object_toc_dating_exact": "datetime", "object_toc_dating_start": "string", "object_toc_dating_end": "string", "object_toc_dating_sometime": "string", "object_toc_dating_century": "list_string"}}, "object_dating": {"type": "http://visit.de/ontologies/vismo/Dating", "object_dating_start": "string", "object_dating_end": "string", "object_dating_sometime": "string", "object_dating_century": "list_string"}, "object_refentry": {"type": "http://visit.de/ontologies/vismo/ReferenceEntry", "object_refentry_pages": "string", "object_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"}, "object_digitalrepresentation": {"type": "http://visit.de/ontologies/vismo/DigitalRepresentation", "object_dr_technicalmetadata": "string_long"}}, "Person": {"type": "http://visit.de/ontologies/vismo/Person", "person_idby_actorappel": "string", "person_hastype_profession": "string", "person_firstname": "string", "person_lastname": "string", "person_pseudonym": "string", "person_alternatename": "string", "person_carries_title": "string", "person_comment": "string_long", "person_description": "string_long", "person_keyword": "string", "person_iconography": "string", "person_parentof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "person_ischildof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "person_ownerof_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "person_motiv_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "person_carriedout_arch_prod": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "person_infld_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "person_motiv_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "person_carriedout_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "person_infl_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "person_depictedon_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "person_participatedin_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)", "person_receivedcustody_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "person_lostcustodyof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "person_helpfullinks": "string", "person_thumbnail": "image", "person_birth": {"type": "http://erlangen-crm.org/170309/E67_Birth", "person_mother": "entity_reference (http://visit.de/ontologies/vismo/Person)", "person_father": "entity_reference (http://visit.de/ontologies/vismo/Person)", "person_birthplace": "entity_reference (http://visit.de/ontologies/vismo/Place)", "person_birth_dating": {"person_birth_dating_exact": "datetime", "person_birth_dating_start": "string", "person_birth_dating_end": "string", "person_birth_dating_sometime": "string"}}, "person_death": {"type": "http://erlangen-crm.org/170309/E69_Death", "person_deathplace": "entity_reference (http://visit.de/ontologies/vismo/Place)", "person_death_dating": {"person_death_dating_exact": "datetime", "person_death_dating_start": "string", "person_death_dating_end": "string", "person_death_dating_sometime": "string"}}, "person_marriage": {"type": "http://visit.de/ontologies/vismo/Marriage", "marriage_partner_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "marriage_begin_dating": {"marriage_begin_dating_exact": "datetime", "marriage_begin_dating_start": "string", "marriage_begin_dating_end": "string", "marriage_begin_dating_sometime": "string"}, "marriage_end_dating": {"marriage_end_dating_exact": "datetime", "marriage_end_dating_start": "string", "marriage_end_dating_end": "string", "marriage_end_dating_sometime": "string"}}, "person_refentry": {"type": "http://visit.de/ontologies/vismo/ReferenceEntry", "person_refentry_pages": "string", "person_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"}, "person_digitalrepresentation": {"type": "http://visit.de/ontologies/vismo/DigitalRepresentation", "person_dr_technicalmetadata": "string_long"}}, "Architecture": {"type": "http://visit.de/ontologies/vismo/Architecture", "architecture_idby_title": "string", "arch_sacraltype": "string", "arch_has_seculartype": "string", "arch_bishopricaffiliation": "string", "arch_geographicaffiliation": "string", "arch_orderaffiliation": "string", "architecture_description": "string_long", "architecture_comment": "string_long", "architecture_keyword": "string", "architecture_iconography": "string", "architecture_innerdescription": "string_long", "architecture_outerdescription": "string_long", "architecture_depictedby_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "architecture_buildinghistory": "string_long", "arch_currentlyholds_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "architecture_exemplify_function": "string", "architecture_location_place": "entity_reference (http://visit.de/ontologies/vismo/Place)", "arch_currentowner_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "arch_currentowner_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "arch_currentowner_institution": "entity_reference (http://visit.de/ontologies/vismo/Institution)", "architecture_contains_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "architecture_fallswithin_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "architecture_tookpartin_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)", "architecture_helpfullinks": "string", "architecture_thumbnail": "image", "arch_producedby_production": {"type": "http://erlangen-crm.org/170309/E12_Production", "production_motivatedby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "production_carriedoutby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "production_inflby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "arch_prod_motivatedby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "arch_prod_carriedoutby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "arch_prod_inflby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "arch_production_dating": {"arch_prod_dating_start": "string", "arch_prod_dating_end": "string", "archproduction_sometime": "string", "arch_prod_dating_century": "list_string"}}, "arch_modifiedby_structevolution": {"type": "http://visit.de/ontologies/vismo/StructuralEvolution", "structuralevolution_idby_title": "string", "structuralevolution_description": "string_long", "structuralevolution_comment": "string_long", "structevol_exemplifies_function": "string", "structevol_motivatedby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "structevol_carriedoutby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "structevol_influencedby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "structevol_motivby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "structevol_carriedoutby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "structevol_inflby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "arch_structevol_dating": {"arch_structevol_dating_start": "string", "arch_structevol_dating_end": "string", "arch_evol_dat_sometime": "string", "arch_structevol_dating_century": "list_string"}}, "arch_refentry": {"type": "http://visit.de/ontologies/vismo/ReferenceEntry", "arch_refentry_pages": "string", "arch_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"}, "architecture_digitalrepresentati": {"type": "http://visit.de/ontologies/vismo/DigitalRepresentation", "architecture_dr_techmetadata": "string_long"}}, "Place": {"type": "http://visit.de/ontologies/vismo/Place", "place_idby_placeappel": "string", "place_description": "string_long", "place_comment": "string_long", "place_keyword": "string", "place_iconography": "string", "place_holds_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "place_witnessed_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)", "place_wasbirthplaceof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "place_wasdeathplaceof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "place_isdepictedby_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "place_helpfullinks": "string", "place_thumbnail": "image", "place_refentry": {"type": "http://visit.de/ontologies/vismo/ReferenceEntry", "place_refentry_pages": "string", "place_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"}, "place_digitalrepresentation": {"type": "http://visit.de/ontologies/vismo/DigitalRepresentation", "place_dr_techmetadata": "string"}}, "Institution": {"type": "http://visit.de/ontologies/vismo/Institution", "institution_idby_appel": "string", "institution_ownerof_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "institution_fallswithin_place": "entity_reference (http://visit.de/ontologies/vismo/Place)", "institution_address": "string", "institution_owns_catalog": "entity_reference (http://visit.de/ontologies/vismo/Reference)", "institution_loc_catalog": "entity_reference (http://visit.de/ontologies/vismo/Reference)", "institution_helpfullinks": "string"}, "Group": {"type": "http://visit.de/ontologies/vismo/Group", "group_idby_actorappel": "string", "group_keyword": "string", "group_iconography": "string", "group_produced_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "group_ownerof_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "group_motiv_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "group_carriedout_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "group_infl_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "group_motiv_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "group_carriedout_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "group_infl_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "group_receivedcustodyof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "group_lostcustodyof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "group_refentry": {"type": "http://visit.de/ontologies/vismo/ReferenceEntry", "group_refentry_pages": "string", "group_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"}}, "Reference": {"type": "http://visit.de/ontologies/vismo/Reference", "reference_keyword": "string", "reference_has_type": "string", "reference_publisher": "string", "reference_series": "string", "reference_volume": "integer", "reference_pages": "integer", "reference_catalog_owner": "entity_reference (http://visit.de/ontologies/vismo/Institution)", "reference_catalog_location": "entity_reference (http://visit.de/ontologies/vismo/Institution)", "reference_title": {"type": "http://visit.de/ontologies/vismo/Title", "reference_title_title": "string", "reference_title_superordinate": "string"}, "reference_producedby_production": {"type": "http://erlangen-crm.org/170309/E12_Production", "production_authorname": "string", "production_year": "integer", "ref_production_placeofpub": "string"}, "reference_entry": {"type": "http://visit.de/ontologies/vismo/ReferenceEntry", "reference_entry_pages": "string", "reference_entry_about_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)", "reference_entry_about_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "reference_entry_about_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "reference_entry_about_place": "entity_reference (http://visit.de/ontologies/vismo/Place)", "reference_entry_about_group": "entity_reference (http://visit.de/ontologies/vismo/Group)", "reference_entry_about_person": "entity_reference (http://visit.de/ontologies/vismo/Person)"}, "reference_catalog_dating": {"type": "http://visit.de/ontologies/vismo/Dating", "catalog_exhibition_start": "datetime", "catalog_exhibition_end": "datetime"}}, "Activity": {"type": "http://visit.de/ontologies/vismo/Activity", "activity_idby_title": "string", "activity_description": "string_long", "activity_comment": "string_long", "activity_keyword": "string", "activity_iconography": "string", "activity_hadparticipant_person": "entity_reference (http://visit.de/ontologies/vismo/Person)", "activity_used_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)", "activity_used_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "activity_tookplaceat_place": "entity_reference (http://visit.de/ontologies/vismo/Place)", "activity_isdepictedby_object": "entity_reference (http://visit.de/ontologies/vismo/Object)", "activity_helpfullinks": "string", "activity_thumbnail": "image", "activity_dating": {"type": "http://visit.de/ontologies/vismo/Dating", "activity_dating_exact": "datetime", "activity_dating_end": "string", "activity_dating_start": "string", "activity_dating_sometime": "string"}, "activity_refentry": {"type": "http://visit.de/ontologies/vismo/ReferenceEntry", "activity_refentry_pages": "string", "activity_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"}, "activity_digitalrepresentation": {"type": "http://visit.de/ontologies/vismo/DigitalRepresentation", "activity_dr_techmetadata": "string"}}}
+{
+  "Object": {
+    "type": "http://visit.de/ontologies/vismo/Object",
+    "object_identifiedby_title": "string",
+    "object_has_description": "string",
+    "object_exemplifies_function": "string",
+    "object_inventory_number": "string",
+    "object_description": "string_long",
+    "object_comment": "string_long",
+    "object_keyword": "string",
+    "object_iconography": "string",
+    "object_literature": "string_long",
+    "object_current_owner": "entity_reference (http://visit.de/ontologies/vismo/Institution)",
+    "object_current_location": "entity_reference (http://visit.de/ontologies/vismo/Institution)",
+    "object_currentlocation_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "object_composedof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "object_partof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "object_tookpartin_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)",
+    "object_depicts_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+    "object_depicts_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "object_depicts_place": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+    "object_depicts_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)",
+    "object_helpfullinks": "string",
+    "object_thumbnail": "image",
+    "object_prefidentifier_inscriptio": {
+      "type": "http://erlangen-crm.org/170309/E34_Inscription",
+      "inscription_text": "string",
+      "inscription_has_type": "string",
+      "inscription_signature": "string",
+      "inscription_mounting": "string",
+      "inscription_date": "string"
+    },
+    "object_producedby_production": {
+      "type": "http://erlangen-crm.org/170309/E12_Production",
+      "object_employs_material": "string",
+      "production_used_technique": "string",
+      "production_doneby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "production_doneby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "production_tookplaceat_place": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+      "production_dating": {
+        "object_prod_dating_start": "string",
+        "object_prod_dating_end": "string",
+        "production_date_sometime": "string",
+        "object_prod_dating_century": "list_string"
+      }
+    },
+    "object_has_dimension": {
+      "type": "http://erlangen-crm.org/170309/E54_Dimension",
+      "dimension_has_measurementunit": "string",
+      "dimension_hasvalue": "string"
+    },
+    "object_transferred_custody": {
+      "type": "http://erlangen-crm.org/170309/E10_Transfer_of_Custody",
+      "custody_receiving_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "custody_receiving_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "custody_from_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "custody_from_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "object_toc_dating": {
+        "object_toc_dating_exact": "datetime",
+        "object_toc_dating_start": "string",
+        "object_toc_dating_end": "string",
+        "object_toc_dating_sometime": "string",
+        "object_toc_dating_century": "list_string"
+      }
+    },
+    "object_dating": {
+      "type": "http://visit.de/ontologies/vismo/Dating",
+      "object_dating_start": "string",
+      "object_dating_end": "string",
+      "object_dating_sometime": "string",
+      "object_dating_century": "list_string"
+    },
+    "object_refentry": {
+      "type": "http://visit.de/ontologies/vismo/ReferenceEntry",
+      "object_refentry_pages": "string",
+      "object_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"
+    },
+    "object_digitalrepresentation": {
+      "type": "http://visit.de/ontologies/vismo/DigitalRepresentation",
+      "object_dr_technicalmetadata": "string_long"
+    }
+  },
+  "Person": {
+    "type": "http://visit.de/ontologies/vismo/Person",
+    "person_idby_actorappel": "string",
+    "person_hastype_profession": "string",
+    "person_firstname": "string",
+    "person_lastname": "string",
+    "person_pseudonym": "string",
+    "person_alternatename": "string",
+    "person_carries_title": "string",
+    "person_comment": "string_long",
+    "person_description": "string_long",
+    "person_keyword": "string",
+    "person_iconography": "string",
+    "person_parentof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+    "person_ischildof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+    "person_ownerof_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "person_motiv_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "person_carriedout_arch_prod": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "person_infld_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "person_motiv_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "person_carriedout_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "person_infl_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "person_depictedon_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "person_participatedin_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)",
+    "person_receivedcustody_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "person_lostcustodyof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "person_helpfullinks": "string",
+    "person_thumbnail": "image",
+    "person_birth": {
+      "type": "http://erlangen-crm.org/170309/E67_Birth",
+      "person_mother": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "person_father": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "person_birthplace": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+      "person_birth_dating": {
+        "person_birth_dating_exact": "datetime",
+        "person_birth_dating_start": "string",
+        "person_birth_dating_end": "string",
+        "person_birth_dating_sometime": "string"
+      }
+    },
+    "person_death": {
+      "type": "http://erlangen-crm.org/170309/E69_Death",
+      "person_deathplace": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+      "person_death_dating": {
+        "person_death_dating_exact": "datetime",
+        "person_death_dating_start": "string",
+        "person_death_dating_end": "string",
+        "person_death_dating_sometime": "string"
+      }
+    },
+    "person_marriage": {
+      "type": "http://visit.de/ontologies/vismo/Marriage",
+      "marriage_partner_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "marriage_begin_dating": {
+        "marriage_begin_dating_exact": "datetime",
+        "marriage_begin_dating_start": "string",
+        "marriage_begin_dating_end": "string",
+        "marriage_begin_dating_sometime": "string"
+      },
+      "marriage_end_dating": {
+        "marriage_end_dating_exact": "datetime",
+        "marriage_end_dating_start": "string",
+        "marriage_end_dating_end": "string",
+        "marriage_end_dating_sometime": "string"
+      }
+    },
+    "person_refentry": {
+      "type": "http://visit.de/ontologies/vismo/ReferenceEntry",
+      "person_refentry_pages": "string",
+      "person_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"
+    },
+    "person_digitalrepresentation": {
+      "type": "http://visit.de/ontologies/vismo/DigitalRepresentation",
+      "person_dr_technicalmetadata": "string_long"
+    }
+  },
+  "Architecture": {
+    "type": "http://visit.de/ontologies/vismo/Architecture",
+    "architecture_idby_title": "string",
+    "arch_sacraltype": "string",
+    "arch_has_seculartype": "string",
+    "arch_bishopricaffiliation": "string",
+    "arch_geographicaffiliation": "string",
+    "arch_orderaffiliation": "string",
+    "architecture_description": "string_long",
+    "architecture_comment": "string_long",
+    "architecture_keyword": "string",
+    "architecture_iconography": "string",
+    "architecture_innerdescription": "string_long",
+    "architecture_outerdescription": "string_long",
+    "architecture_depictedby_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "architecture_buildinghistory": "string_long",
+    "arch_currentlyholds_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "architecture_exemplify_function": "string",
+    "architecture_location_place": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+    "arch_currentowner_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+    "arch_currentowner_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+    "arch_currentowner_institution": "entity_reference (http://visit.de/ontologies/vismo/Institution)",
+    "architecture_contains_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "architecture_fallswithin_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "architecture_tookpartin_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)",
+    "architecture_helpfullinks": "string",
+    "architecture_thumbnail": "image",
+    "arch_producedby_production": {
+      "type": "http://erlangen-crm.org/170309/E12_Production",
+      "production_motivatedby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "production_carriedoutby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "production_inflby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "arch_prod_motivatedby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "arch_prod_carriedoutby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "arch_prod_inflby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "arch_production_dating": {
+        "arch_prod_dating_start": "string",
+        "arch_prod_dating_end": "string",
+        "archproduction_sometime": "string",
+        "arch_prod_dating_century": "list_string"
+      }
+    },
+    "arch_modifiedby_structevolution": {
+      "type": "http://visit.de/ontologies/vismo/StructuralEvolution",
+      "structuralevolution_idby_title": "string",
+      "structuralevolution_description": "string_long",
+      "structuralevolution_comment": "string_long",
+      "structevol_exemplifies_function": "string",
+      "structevol_motivatedby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "structevol_carriedoutby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "structevol_influencedby_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+      "structevol_motivby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "structevol_carriedoutby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "structevol_inflby_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "arch_structevol_dating": {
+        "arch_structevol_dating_start": "string",
+        "arch_structevol_dating_end": "string",
+        "arch_evol_dat_sometime": "string",
+        "arch_structevol_dating_century": "list_string"
+      }
+    },
+    "arch_refentry": {
+      "type": "http://visit.de/ontologies/vismo/ReferenceEntry",
+      "arch_refentry_pages": "string",
+      "arch_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"
+    },
+    "architecture_digitalrepresentati": {
+      "type": "http://visit.de/ontologies/vismo/DigitalRepresentation",
+      "architecture_dr_techmetadata": "string_long"
+    }
+  },
+  "Place": {
+    "type": "http://visit.de/ontologies/vismo/Place",
+    "place_idby_placeappel": "string",
+    "place_description": "string_long",
+    "place_comment": "string_long",
+    "place_keyword": "string",
+    "place_iconography": "string",
+    "place_holds_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "place_witnessed_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)",
+    "place_wasbirthplaceof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+    "place_wasdeathplaceof_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+    "place_isdepictedby_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "place_helpfullinks": "string",
+    "place_thumbnail": "image",
+    "place_refentry": {
+      "type": "http://visit.de/ontologies/vismo/ReferenceEntry",
+      "place_refentry_pages": "string",
+      "place_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"
+    },
+    "place_digitalrepresentation": {
+      "type": "http://visit.de/ontologies/vismo/DigitalRepresentation",
+      "place_dr_techmetadata": "string"
+    }
+  },
+  "Institution": {
+    "type": "http://visit.de/ontologies/vismo/Institution",
+    "institution_idby_appel": "string",
+    "institution_ownerof_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "institution_fallswithin_place": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+    "institution_address": "string",
+    "institution_owns_catalog": "entity_reference (http://visit.de/ontologies/vismo/Reference)",
+    "institution_loc_catalog": "entity_reference (http://visit.de/ontologies/vismo/Reference)",
+    "institution_helpfullinks": "string"
+  },
+  "Group": {
+    "type": "http://visit.de/ontologies/vismo/Group",
+    "group_idby_actorappel": "string",
+    "group_keyword": "string",
+    "group_iconography": "string",
+    "group_produced_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "group_ownerof_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "group_motiv_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "group_carriedout_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "group_infl_arch_production": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "group_motiv_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "group_carriedout_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "group_infl_structevol": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "group_receivedcustodyof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "group_lostcustodyof_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "group_refentry": {
+      "type": "http://visit.de/ontologies/vismo/ReferenceEntry",
+      "group_refentry_pages": "string",
+      "group_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"
+    }
+  },
+  "Reference": {
+    "type": "http://visit.de/ontologies/vismo/Reference",
+    "reference_keyword": "string",
+    "reference_has_type": "string",
+    "reference_publisher": "string",
+    "reference_series": "string",
+    "reference_volume": "integer",
+    "reference_pages": "integer",
+    "reference_catalog_owner": "entity_reference (http://visit.de/ontologies/vismo/Institution)",
+    "reference_catalog_location": "entity_reference (http://visit.de/ontologies/vismo/Institution)",
+    "reference_title": {
+      "type": "http://visit.de/ontologies/vismo/Title",
+      "reference_title_title": "string",
+      "reference_title_superordinate": "string"
+    },
+    "reference_producedby_production": {
+      "type": "http://erlangen-crm.org/170309/E12_Production",
+      "production_authorname": "string",
+      "production_year": "integer",
+      "ref_production_placeofpub": "string"
+    },
+    "reference_entry": {
+      "type": "http://visit.de/ontologies/vismo/ReferenceEntry",
+      "reference_entry_pages": "string",
+      "reference_entry_about_activity": "entity_reference (http://visit.de/ontologies/vismo/Activity)",
+      "reference_entry_about_arch": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+      "reference_entry_about_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+      "reference_entry_about_place": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+      "reference_entry_about_group": "entity_reference (http://visit.de/ontologies/vismo/Group)",
+      "reference_entry_about_person": "entity_reference (http://visit.de/ontologies/vismo/Person)"
+    },
+    "reference_catalog_dating": {
+      "type": "http://visit.de/ontologies/vismo/Dating",
+      "catalog_exhibition_start": "datetime",
+      "catalog_exhibition_end": "datetime"
+    }
+  },
+  "Activity": {
+    "type": "http://visit.de/ontologies/vismo/Activity",
+    "activity_idby_title": "string",
+    "activity_description": "string_long",
+    "activity_comment": "string_long",
+    "activity_keyword": "string",
+    "activity_iconography": "string",
+    "activity_hadparticipant_person": "entity_reference (http://visit.de/ontologies/vismo/Person)",
+    "activity_used_architecture": "entity_reference (http://visit.de/ontologies/vismo/Architecture)",
+    "activity_used_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "activity_tookplaceat_place": "entity_reference (http://visit.de/ontologies/vismo/Place)",
+    "activity_isdepictedby_object": "entity_reference (http://visit.de/ontologies/vismo/Object)",
+    "activity_helpfullinks": "string",
+    "activity_thumbnail": "image",
+    "activity_dating": {
+      "type": "http://visit.de/ontologies/vismo/Dating",
+      "activity_dating_exact": "datetime",
+      "activity_dating_end": "string",
+      "activity_dating_start": "string",
+      "activity_dating_sometime": "string"
+    },
+    "activity_refentry": {
+      "type": "http://visit.de/ontologies/vismo/ReferenceEntry",
+      "activity_refentry_pages": "string",
+      "activity_refentry_in_reference": "entity_reference (http://visit.de/ontologies/vismo/Reference)"
+    },
+    "activity_digitalrepresentation": {
+      "type": "http://visit.de/ontologies/vismo/DigitalRepresentation",
+      "activity_dr_techmetadata": "string"
+    }
+  }
+}

@@ -2,6 +2,7 @@ package rest.persistence.util;
 
 import com.opencsv.CSVReader;
 import model.namespace.JSONVISMO;
+import model.namespace.VISMO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -10,14 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import rest.VisitRestApplication;
+import rest.application.exception.IdMapperException;
+import rest.application.exception.MetadataQueryException;
 import rest.application.exception.QueryGenerationException;
+import rest.configuration.VisitIDGenerator;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ImportQueryGenerator {
 
@@ -53,44 +54,72 @@ public class ImportQueryGenerator {
         this.mapper = new IdMapper();
     }
 
-    public String createUpdateQueryFromJSON(String json) throws QueryGenerationException {
+    public String createUpdateQueryFromJSON(String json) throws QueryGenerationException, IdMapperException {
         JSONObject jsonObject = new JSONObject(json);
         LinkedList<String> queries = new LinkedList<String>();
 
-        for (String rootObjectName : jsonObject.keySet()) {
+        Iterator<String> iterator = jsonObject.keys();
+
+        while(iterator.hasNext()) {
+            String rootObjectName = iterator.next();
+
             if (this.basicGroupNames.contains(rootObjectName)) {
                 Object rootObject = jsonObject.get(rootObjectName);
 
                 if (rootObject instanceof JSONArray) {
+                    JSONArray array = (JSONArray) rootObject;
 
+                    for(int i = 0; i < array.length(); ++i) {
+                        JSONObject object = array.getJSONObject(i);
+
+                        LinkedList<String> queryParts = this.processJSONObject(object, rootObjectName);
+                        String mergedTriples = TripleMerger.mergeTriples(queryParts);
+
+                        String objectID = this.mapper.addBaseID(object.getString(JSONVISMO.ID), object.getString(JSONVISMO.TYPE));
+                        queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
+                    }
                 } else if (rootObject instanceof JSONObject) {
+                    JSONObject currentObject = (JSONObject) rootObject;
+                    LinkedList<String> queryParts = this.processJSONObject(currentObject, rootObjectName);
+                    String mergedTriples = TripleMerger.mergeTriples(queryParts);
 
+                    String objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.ID), currentObject.getString(JSONVISMO.TYPE));
+                    queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
                 } else {
                     // TODO Can this happen?
                     throw new QueryGenerationException("Input JSON String contained an incorrect object.");
                 }
             } else {
-                // TODO Throw proper exception or info text
-                this.errors += "Root name " + rootObjectName + " is not an accepted entity.\n";
+                throw new QueryGenerationException("Root name " + rootObjectName + " is not an accepted entity.");
             }
         }
 
+        String overallQuery = "INSERT DATA {\n";
+        for(String query : queries) {
+            overallQuery += query;
+        }
+        overallQuery += "}";
 
-
-        return null;
+        return overallQuery;
     }
 
-    private List<String> processJSONObject(JSONObject jsonObject, String groupName) {
+    private LinkedList<String> processJSONObject(JSONObject jsonObject, String groupName) throws IdMapperException {
 
-//        String query = "";
         LinkedList<String> queryParts = new LinkedList<String>();
+        queryParts.add(this.typeAssociation(groupName));
 
-        for (String id : jsonObject.keySet()) {
+        String objectID = "";
+
+        Iterator<String> iterator = jsonObject.keys();
+
+        while(iterator.hasNext()) {
+            String id = iterator.next();
 
             if (id.equals(JSONVISMO.TYPE)) {
 
             } else if(id.equals(JSONVISMO.ID)) {
-
+                // Supposedly not needed here, done in a step before
+//                objectID = this.mapper.addBaseID(jsonObject.getString(JSONVISMO.ID), jsonObject.getString(JSONVISMO.TYPE));
             } else {
 
                 // Check if id is given in the supported model
@@ -109,17 +138,6 @@ public class ImportQueryGenerator {
                         } else {
                             queryParts.addAll(processJSONObject((JSONObject) subgroup, id));
                         }
-//                        HashMap<String, String> subGroupIds = this.subGroups.get(id);
-//
-//                        LinkedList<String> wrapperQueries = new LinkedList<String>();
-//
-//                        for(String subGroupId : subGroupIds.keySet()) {
-//                            if(subGroupId.equals("type")) {
-//
-//                            } else {
-//                                wrapperQueries.add(subGroupIds.get(subGroupId));
-//                            }
-//                        }
                     } else {
                         String value = jsonObject.getString(id);
 
@@ -143,10 +161,68 @@ public class ImportQueryGenerator {
         return queryParts;
     }
 
+    private String typeAssociation(String groupName) {
+        String groupID = "";
+
+        switch(groupName) {
+            case "Activity":
+                groupID = VISMO.ACTIVITY;
+                break;
+            case "Architecture":
+                groupID = VISMO.ARCHITECTURE;
+                break;
+            case "Group":
+                groupID = VISMO.GROUP;
+                break;
+            case "Institution":
+                groupID = VISMO.INSTITUTION;
+                break;
+            case "Object":
+                groupID = VISMO.PERSON;
+                break;
+            case "Person":
+                groupID = VISMO.PERSON;
+                break;
+            case "Place":
+                groupID = VISMO.PLACE;
+                break;
+            case "Reference":
+                groupID = VISMO.REFERENCE;
+                break;
+        }
+
+        return "?x rdf:type <" + groupID + ">";
+    }
+
+    private String exchangeRDFVariables(String input, String objectID) {
+        String result = input.replace("?x", "<" + objectID + ">");
+
+        // Find all occurences of intermediary variables (written as ?y + a number) and replace them with same URIs
+        int index = input.indexOf("?y");
+        while(index > 0) {
+            int start = index;
+            int end = input.indexOf(" ", index);
+
+            String intermediary = input.substring(start, end);
+            String uri = VisitIDGenerator.generateVisitDBID();
+
+            result = result.replace(intermediary, "<" + uri + ">");
+
+            index = input.indexOf("?y", start + 1);
+        }
+
+        return result;
+    }
+
     private String createQueryAddition(String groupName, String value, String id) {
         String queryAddition = this.basicGroups.get(groupName).get(id);
+        String queryValue = value;
 
-        return queryAddition.replace(id, value);
+        if(this.datatypes.get(id).startsWith("entity_reference")) {
+            queryValue = "<" + this.mapper.addReferenceID(value) + ">";
+        }
+
+        return queryAddition.replace("?" + id, queryValue);
     }
 
     private boolean isSingleValue(String text) {
