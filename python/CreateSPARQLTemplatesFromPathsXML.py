@@ -48,7 +48,7 @@ def preprocess(soup):
             path.string.replace_with(path.get_text()[:-1])
 
 
-# In[7]:
+# In[3]:
 
 
 def createOptionalQueryTemplate(groupName, paths):
@@ -186,7 +186,7 @@ def createOptionalQueryTemplate(groupName, paths):
         print('Wrong path provided')
 
 
-# In[8]:
+# In[4]:
 
 
 def createJSONTemplate(groupName, paths, jsonString):
@@ -249,7 +249,7 @@ def createJSONTemplate(groupName, paths, jsonString):
     jsonString[groupName] = jsonAddition
 
 
-# In[9]:
+# In[5]:
 
 
 def createWrapperTemplate(groupName, paths, wrapper):
@@ -272,21 +272,28 @@ def createWrapperTemplate(groupName, paths, wrapper):
         counter += 1
         
         queryPart = ''
+        datatype = ''
         
         # Check for path length
         if(len(path.path_array.contents) == 3):
             # 1-step Path, Ending in a Property
             queryPart = '?x <' + path.datatype_property.get_text() + '> ' + identifier
             
+            datatype = path.field_type_informative.get_text()
+            
         elif(len(path.path_array.contents) == 7):
             if(path.datatype_property.get_text() == 'empty'):
                 # 3-step Path, Ending in a Reference
                 queryPart = '?x <' + path.path_array.y.get_text() + '> ' + identifier + ' . ' + identifier + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '>'
             
+                datatype = path.field_type_informative.get_text() + ' (' + path.path_array.find_all('x')[1].get_text() + ')'
+                
             else:
                 # 3-step Path, Ending in a Property                
                 queryPart = '?x <' + path.path_array.y.get_text() + '> ?y' + str(counter) + ' . ?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . ?y' + str(counter) + ' <' + path.datatype_property.get_text() + '> ' + identifier
             
+                datatype = path.field_type_informative.get_text()
+                
         elif(len(path.path_array.contents) == 11):  
             if(path.datatype_property.get_text() == 'empty'):
                 # 5-step Path, Ending in a Reference
@@ -294,7 +301,9 @@ def createWrapperTemplate(groupName, paths, wrapper):
                                 + '?y' + str(counter) + ' rdf:type <' + path.path_array.find_all('x')[1].get_text() + '> . '
                                 + '?y' + str(counter) + ' <' + path.path_array.find_all('y')[1].get_text() + '> ' + identifier + ' . '
                                 + identifier + ' rdf:type <' + path.path_array.find_all('x')[2].get_text() + '>')
-                            
+                       
+                datatype = path.field_type_informative.get_text() + ' (' + path.path_array.find_all('x')[2].get_text() + ')'
+                
             else:
                 # 5-step Path, Ending in a Property
                 queryPart = ('?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' . '
@@ -304,6 +313,9 @@ def createWrapperTemplate(groupName, paths, wrapper):
                                 + '?y' + str(counter + 1) + ' <' + path.datatype_property.get_text() + '> '  + identifier)
                 
                 counter += 1
+                
+                datatype = path.field_type_informative.get_text()
+                
         elif(len(path.path_array.contents) == 15):
             if(path.datatype_property.get_text() == 'empty'):
                 # 7-step Path, Ending in a Reference
@@ -315,6 +327,9 @@ def createWrapperTemplate(groupName, paths, wrapper):
                                 + identifier + ' rdf:type <' + path.path_array.find_all('x')[3].get_text() + '>')
                 
                 counter += 1
+                
+                datatype = path.field_type_informative.get_text() + ' (' + path.path_array.find_all('x')[3].get_text() + ')'
+                
             else:
                 # 7-step Path, Ending in a Property
                 queryPart = ('?x <' + path.path_array.find_all('y')[0].get_text() + '> ' + '?y' + str(counter) + ' . '
@@ -328,7 +343,9 @@ def createWrapperTemplate(groupName, paths, wrapper):
                 
                 counter += 2
                 
-        wrapper = wrapper.append({'id' : path.id.get_text() , 'group' : groupName , 'query' : queryPart} , ignore_index=True)
+                datatype = path.field_type_informative.get_text()
+                
+        wrapper = wrapper.append({'id' : path.id.get_text() , 'group' : groupName , 'query' : queryPart, 'datatype' : datatype} , ignore_index=True)
         
     for path in subGroupPaths:        
         # Create sub-templates for the sub-groups of a top-level group 
@@ -342,7 +359,7 @@ def createWrapperTemplate(groupName, paths, wrapper):
     return wrapper
 
 
-# In[10]:
+# In[6]:
 
 
 infile = open("paths.xml","r")

@@ -33,6 +33,10 @@ public class ImportQueryGenerator {
     private HashSet<String> basicGroupNames;
     private HashSet<String> idnames;
 
+    private HashMap<String, String> datatypes;
+
+    private IdMapper mapper;
+
     private String errors;
 
     private static Log logger = LogFactory.getLog(VisitRestApplication.class);
@@ -45,6 +49,8 @@ public class ImportQueryGenerator {
         this.pathToTemplates = pathToTemplates;
 
         this.initialiseQueryWrappers();
+
+        this.mapper = new IdMapper();
     }
 
     public String createUpdateQueryFromJSON(String json) throws QueryGenerationException {
@@ -154,6 +160,8 @@ public class ImportQueryGenerator {
         this.basicGroupNames = new HashSet<String>();
         this.idnames = new HashSet<String>();
 
+        this.datatypes = new HashMap<String, String>();
+
         String csv = "";
 
         if(this.sparqlEndpointUpdate.equals("none") && this.sparqlEndpointQuery.equals("none")) {
@@ -190,6 +198,8 @@ public class ImportQueryGenerator {
                 }
 
                 this.idnames.add(line[1]);
+
+                this.datatypes.put(line[1], line[4]);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -230,5 +240,14 @@ public class ImportQueryGenerator {
      */
     public HashSet<String> getIdnames() {
         return idnames;
+    }
+
+    /**
+     * Gets datatypes.
+     *
+     * @return Value of datatypes.
+     */
+    public HashMap<String, String> getDatatypes() {
+        return datatypes;
     }
 }

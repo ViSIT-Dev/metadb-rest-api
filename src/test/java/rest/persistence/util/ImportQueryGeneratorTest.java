@@ -47,5 +47,14 @@ public class ImportQueryGeneratorTest {
         assertTrue(generator.getIdnames().contains("object_iconography"));
         assertTrue(generator.getIdnames().contains("person_death_dating_start"));
         assertTrue(generator.getIdnames().contains("arch_orderaffiliation"));
+
+        assertTrue(generator.getDatatypes().containsKey("object_prod_dating_start"));
+        assertEquals("string", generator.getDatatypes().get("object_prod_dating_start"));
+
+        assertTrue(generator.getDatatypes().containsKey("object_refentry_in_reference"));
+        assertEquals("entity_reference (http://visit.de/ontologies/vismo/Reference)", generator.getDatatypes().get("object_refentry_in_reference"));
+
+        assertTrue(generator.getDatatypes().containsKey("person_comment"));
+        assertEquals("string_long", generator.getDatatypes().get("person_comment"));
     }
 }
