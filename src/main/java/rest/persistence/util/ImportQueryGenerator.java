@@ -1,6 +1,7 @@
 package rest.persistence.util;
 
 import com.opencsv.CSVReader;
+import model.namespace.JSONVISMO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 public class ImportQueryGenerator {
 
@@ -47,6 +49,7 @@ public class ImportQueryGenerator {
 
     public String createUpdateQueryFromJSON(String json) throws QueryGenerationException {
         JSONObject jsonObject = new JSONObject(json);
+        LinkedList<String> queries = new LinkedList<String>();
 
         for (String rootObjectName : jsonObject.keySet()) {
             if (this.basicGroupNames.contains(rootObjectName)) {
@@ -66,46 +69,62 @@ public class ImportQueryGenerator {
             }
         }
 
+
+
         return null;
     }
 
-    private String processJSONObject(JSONObject jsonObject, String groupName) {
+    private List<String> processJSONObject(JSONObject jsonObject, String groupName) {
 
-        String query = "";
+//        String query = "";
+        LinkedList<String> queryParts = new LinkedList<String>();
 
         for (String id : jsonObject.keySet()) {
 
-            if (id.equals("type")) {
+            if (id.equals(JSONVISMO.TYPE)) {
+
+            } else if(id.equals(JSONVISMO.ID)) {
 
             } else {
-                String value = jsonObject.getString(id);
 
                 // Check if id is given in the supported model
                 if (this.idnames.contains(id)) {
                     // Check if id stands for a property/relationship or for a subgroup
                     if (this.subGroups.keySet().contains(id)) {
                         // Subgroup
-                        HashMap<String, String> subGroupIds = this.subGroups.get(id);
+                        Object subgroup = jsonObject.get(id);
 
-                        LinkedList<String> wrapperQueries = new LinkedList<String>();
+                        if(subgroup instanceof JSONArray) {
+                            JSONArray subGroupArray = (JSONArray) subgroup;
 
-                        for(String subGroupId : subGroupIds.keySet()) {
-                            if(subGroupId.equals("type")) {
-
-                            } else {
-                                wrapperQueries.add(subGroupIds.get(subGroupId));
+                            for(int i = 0; i < subGroupArray.length(); ++i) {
+                                queryParts.addAll(processJSONObject(subGroupArray.getJSONObject(0), id));
                             }
+                        } else {
+                            queryParts.addAll(processJSONObject((JSONObject) subgroup, id));
                         }
-
-
-
+//                        HashMap<String, String> subGroupIds = this.subGroups.get(id);
+//
+//                        LinkedList<String> wrapperQueries = new LinkedList<String>();
+//
+//                        for(String subGroupId : subGroupIds.keySet()) {
+//                            if(subGroupId.equals("type")) {
+//
+//                            } else {
+//                                wrapperQueries.add(subGroupIds.get(subGroupId));
+//                            }
+//                        }
                     } else {
+                        String value = jsonObject.getString(id);
+
                         // Normal id, check if multiple or single value supported
                         if (this.isSingleValue(value)) {
-                            query += this.createQueryAddition(groupName, value, id);
+//                            query += this.createQueryAddition(groupName, value, id);
+                            queryParts.add(this.createQueryAddition(groupName, value, id));
                         } else {
                             for (String split : value.split(",")) {
-                                query += this.createQueryAddition(groupName, split, id);
+//                                query += this.createQueryAddition(groupName, split, id);
+                                queryParts.add(this.createQueryAddition(groupName, value, id));
                             }
                         }
                     }
@@ -115,16 +134,13 @@ public class ImportQueryGenerator {
             }
         }
 
-
-        return query;
+        return queryParts;
     }
 
     private String createQueryAddition(String groupName, String value, String id) {
         String queryAddition = this.basicGroups.get(groupName).get(id);
 
-        queryAddition = queryAddition.replace(id, value);
-
-        return queryAddition + " .\n";
+        return queryAddition.replace(id, value);
     }
 
     private boolean isSingleValue(String text) {
