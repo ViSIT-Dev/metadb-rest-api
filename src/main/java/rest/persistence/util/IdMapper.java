@@ -80,6 +80,8 @@ public class IdMapper {
 
         if(this.mappedIDs.containsKey(referenceID)) {
             uri = this.mappedIDs.get(referenceID);
+        } else if(this.referenceIDs.containsKey(referenceID)) {
+            uri = this.referenceIDs.get(referenceID);
         } else {
             uri = VisitIDGenerator.generateVisitDBID();
             this.referenceIDs.put(referenceID, uri);

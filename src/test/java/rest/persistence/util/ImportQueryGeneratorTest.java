@@ -62,6 +62,40 @@ public class ImportQueryGeneratorTest {
             "  }\n" +
             "}";
 
+    private final static String COMPLEX_WITH_TWO_ENTITIES = "{\n" +
+            "  \"Reference\": {\n" +
+            "    \"reference_title\": {\n" +
+            "      \"reference_title_title\": \"ReferenceTitle\",\n" +
+            "      \"reference_title_superordinate\": \"ReferenceSuperordinateTitle\",\n" +
+            "      \"id\": \"1.1\",\n" +
+            "      \"type\": \"http://visit.de/ontologies/vismo/Title\"\n" +
+            "    },\n" +
+            "    \"type\": \"http://visit.de/ontologies/vismo/Reference\",\n" +
+            "    \"reference_keyword\": \"ReferenceKeyword\",\n" +
+            "    \"id\": \"1\"\n" +
+            "  },\n" +
+            "  \"Group\": {\n" +
+            "    \"type\": \"http://visit.de/ontologies/vismo/Group\",\n" +
+            "    \"group_refentry\": [\n" +
+            "      {\n" +
+            "        \"group_refentry_pages\": \"11\",\n" +
+            "        \"group_refentry_in_reference\": \"1\",\n" +
+            "        \"id\": \"2.1\",\n" +
+            "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"group_refentry_pages\": \"22\",\n" +
+            "        \"group_refentry_in_reference\": \"1\",\n" +
+            "        \"id\": \"2.2\",\n" +
+            "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" +
+            "      }\n" +
+            "    ],\n" +
+            "    \"id\": \"2\",\n" +
+            "    \"group_iconography\": \"Iconography\",\n" +
+            "    \"group_keyword\": \"Keyword,Keyword2\"\n" +
+            "  }\n" +
+            "}";
+
     @Test
     public void testSimpleQueryGeneration() throws IdMapperException, QueryGenerationException, RepositoryConfigException, RepositoryException, MalformedQueryException, UpdateExecutionException, ParseException, QueryEvaluationException {
         ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
@@ -115,6 +149,15 @@ public class ImportQueryGeneratorTest {
         System.out.println(String.valueOf(referenceEntry.getPages()));
 
         assertTrue(referenceEntry.getEntryIn() != null);
+    }
+
+    @Test
+    public void testComplexWithTwoEntities() throws IdMapperException, QueryGenerationException {
+        ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
+
+        String updateQueryFromJSON = generator.createUpdateQueryFromJSON(COMPLEX_WITH_TWO_ENTITIES);
+
+        System.out.println(updateQueryFromJSON);
     }
 
     @Test
