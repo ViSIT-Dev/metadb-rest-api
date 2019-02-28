@@ -1,6 +1,14 @@
 package rest.persistence.util;
 
+import com.github.anno4j.Anno4j;
+import model.namespace.VISMO;
 import org.junit.Test;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.config.RepositoryConfigException;
+import org.openrdf.repository.object.ObjectConnection;
 import rest.application.exception.IdMapperException;
 import rest.application.exception.QueryGenerationException;
 import rest.configuration.VisitIDGenerator;
@@ -26,13 +34,43 @@ public class ImportQueryGeneratorTest {
             "  }\n" +
             "}";
 
+    private final static String MORE_COMPLEX_GENERATION = "{\n" +
+            "  \"Group\": {\n" +
+            "    \"type\": \"http://visit.de/ontologies/vismo/Group\",\n" +
+            "    \"group_refentry\": [\n" +
+            "      {\n" +
+            "        \"group_refentry_pages\": \"11\",\n" +
+            "        \"group_refentry_in_reference\": \"1\",\n" +
+            "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "        \"group_refentry_pages\": \"22\",\n" +
+            "        \"group_refentry_in_reference\": \"1\",\n" +
+            "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" +
+            "      }\n" +
+            "    ],\n" +
+            "    \"id\": \"http://visit.de/metadb/7f85ff68-701e-4115-8301-3e69fe188069\"\n" +
+            "  }\n" +
+            "}";
+
     @Test
-    public void testSimpleQueryGeneration() throws IdMapperException, QueryGenerationException {
+    public void testSimpleQueryGeneration() throws IdMapperException, QueryGenerationException, RepositoryConfigException, RepositoryException, MalformedQueryException, UpdateExecutionException {
         ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
 
         String updateQueryFromJSON = generator.createUpdateQueryFromJSON(SIMPLE_GENERATION);
 
-        System.out.println("blub:" + updateQueryFromJSON);
+        System.out.println(updateQueryFromJSON);
+    }
+
+    @Test
+    public void testMoreComplexQueryGeneration() throws IdMapperException, QueryGenerationException {
+        ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
+
+        generator.getMapper().addBaseID("1", VISMO.REFERENCE);
+
+        String updateQueryFromJSON = generator.createUpdateQueryFromJSON(MORE_COMPLEX_GENERATION);
+
+        System.out.println(updateQueryFromJSON);
     }
 
     @Test

@@ -20,6 +20,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import static javafx.scene.input.KeyCode.T;
+
 public class ImportQueryGenerator {
 
     private String sparqlEndpointQuery;
@@ -106,7 +108,9 @@ public class ImportQueryGenerator {
     private LinkedList<String> processJSONObject(JSONObject jsonObject, String groupName) throws IdMapperException {
 
         LinkedList<String> queryParts = new LinkedList<String>();
-        queryParts.add(this.typeAssociation(groupName));
+        if(this.basicGroups.keySet().contains(groupName)) {
+            queryParts.add(this.typeAssociation(groupName));
+        }
 
         String objectID = "";
 
@@ -133,10 +137,22 @@ public class ImportQueryGenerator {
                             JSONArray subGroupArray = (JSONArray) subgroup;
 
                             for(int i = 0; i < subGroupArray.length(); ++i) {
-                                queryParts.addAll(processJSONObject(subGroupArray.getJSONObject(0), id));
+                                LinkedList<String> intermediateQueryParts = processJSONObject(subGroupArray.getJSONObject(i), id);
+
+                                String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
+
+                                queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
+
+
+//                                queryParts.add(TripleMerger.mergeTriples(processJSONObject(subGroupArray.getJSONObject(i), id)));
                             }
                         } else {
-                            queryParts.addAll(processJSONObject((JSONObject) subgroup, id));
+                            LinkedList<String> intermediateQueryParts = processJSONObject((JSONObject) subgroup, id);
+
+                            String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
+
+                            queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
+//                            queryParts.add(TripleMerger.mergeTriples(processJSONObject((JSONObject) subgroup, id)));
                         }
                     } else {
                         String value = jsonObject.getString(id);
@@ -148,7 +164,7 @@ public class ImportQueryGenerator {
                         } else {
                             for (String split : value.split(",")) {
 //                                query += this.createQueryAddition(groupName, split, id);
-                                queryParts.add(this.createQueryAddition(groupName, value, id));
+                                queryParts.add(this.createQueryAddition(groupName, split, id));
                             }
                         }
                     }
@@ -214,8 +230,52 @@ public class ImportQueryGenerator {
         return result;
     }
 
+    private LinkedList<String> exchangeRDFVariablesInList(List<String> input) {
+        LinkedList<String> result = new LinkedList<String>();
+        HashMap<String, String> substitutions = new HashMap<String, String>();
+//        substitutions.put("?x", VisitIDGenerator.generateVisitDBID());
+
+        for(String triple : input) {
+            String change = triple;
+
+            for(String subKey : substitutions.keySet()) {
+                if(change.contains(subKey)) {
+                    change = change.replace(subKey, "<" + substitutions.get(subKey) + ">");
+                }
+            }
+
+            int index = change.indexOf("?y");
+            while(index > 0) {
+                int start = index;
+                int end = change.indexOf(" ", index);
+                if(end == -1) {
+                    end = change.length();
+                }
+
+                String intermediary = change.substring(start, end);
+                String uri = VisitIDGenerator.generateVisitDBID();
+
+                change = change.replace(intermediary, "<" + uri + ">");
+                substitutions.put(intermediary, uri);
+
+                index = change.indexOf("?y", start + 1);
+            }
+
+            result.add(change);
+        }
+
+        return result;
+    }
+
     private String createQueryAddition(String groupName, String value, String id) {
-        String queryAddition = this.basicGroups.get(groupName).get(id);
+        String queryAddition = "";
+
+        if(this.basicGroups.containsKey(groupName)) {
+            queryAddition = this.basicGroups.get(groupName).get(id);
+        } else {
+            queryAddition = this.subGroups.get(groupName).get(id);
+        }
+
         String queryValue = value;
 
         if(this.datatypes.get(id).startsWith("entity_reference")) {
@@ -268,6 +328,7 @@ public class ImportQueryGenerator {
                     // Subgroup
                     if (!this.subGroups.containsKey(group)) {
                         this.subGroups.put(group, new HashMap<String, String>());
+                        this.idnames.add(group);
                     }
 
                     this.subGroups.get(group).put(line[1], line[3]);
@@ -325,5 +386,14 @@ public class ImportQueryGenerator {
      */
     public HashMap<String, String> getDatatypes() {
         return datatypes;
+    }
+
+    /**
+     * Gets mapper.
+     *
+     * @return Value of mapper.
+     */
+    public IdMapper getMapper() {
+        return mapper;
     }
 }
