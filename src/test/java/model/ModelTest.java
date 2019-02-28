@@ -14,6 +14,7 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
@@ -54,7 +55,7 @@ public class ModelTest {
         reference.addEntry(entry);
 
         entry.setIsAbout(group);
-        entry.setPages(11);
+        entry.setPages(BigInteger.valueOf(11));
 
         QueryService qs = this.anno4j.createQueryService();
         qs.addCriteria(".", reference.getResourceAsString());
@@ -74,7 +75,7 @@ public class ModelTest {
 
         ReferenceEntry resultEntry = (ReferenceEntry) resultReference.getEntries().toArray()[0];
 
-        assertEquals(11, resultEntry.getPages());
+        assertEquals(BigInteger.valueOf(11), resultEntry.getPages());
         assertEquals(group.getResourceAsString(), resultEntry.getIsAbout().getResourceAsString());
     }
 

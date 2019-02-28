@@ -1,9 +1,15 @@
 package rest.persistence.util;
 
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.querying.QueryService;
 import model.namespace.VISMO;
+import model.vismo.Group;
+import model.vismo.Reference;
+import model.vismo.ReferenceEntry;
+import org.apache.marmotta.ldpath.parser.ParseException;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
@@ -12,6 +18,9 @@ import org.openrdf.repository.object.ObjectConnection;
 import rest.application.exception.IdMapperException;
 import rest.application.exception.QueryGenerationException;
 import rest.configuration.VisitIDGenerator;
+
+import java.math.BigInteger;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -49,21 +58,36 @@ public class ImportQueryGeneratorTest {
             "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" +
             "      }\n" +
             "    ],\n" +
-            "    \"id\": \"http://visit.de/metadb/7f85ff68-701e-4115-8301-3e69fe188069\"\n" +
+            "    \"id\": \"2\"\n" +
             "  }\n" +
             "}";
 
     @Test
-    public void testSimpleQueryGeneration() throws IdMapperException, QueryGenerationException, RepositoryConfigException, RepositoryException, MalformedQueryException, UpdateExecutionException {
+    public void testSimpleQueryGeneration() throws IdMapperException, QueryGenerationException, RepositoryConfigException, RepositoryException, MalformedQueryException, UpdateExecutionException, ParseException, QueryEvaluationException {
         ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
 
         String updateQueryFromJSON = generator.createUpdateQueryFromJSON(SIMPLE_GENERATION);
 
         System.out.println(updateQueryFromJSON);
+
+        Anno4j anno4j = new Anno4j(false);
+
+        ObjectConnection connection = anno4j.getObjectRepository().getConnection();
+
+        Update update = connection.prepareUpdate(updateQueryFromJSON);
+        update.execute();
+
+        QueryService qs = anno4j.createQueryService();
+        List<Group> result = qs.execute(Group.class);
+
+        assertEquals(1, result.size());
+        Group resultGroup = result.get(0);
+        assertEquals("Iconography", resultGroup.getIconography());
+        assertTrue(resultGroup.getKeywords().contains("Keyword"));
     }
 
     @Test
-    public void testMoreComplexQueryGeneration() throws IdMapperException, QueryGenerationException {
+    public void testMoreComplexQueryGeneration() throws IdMapperException, QueryGenerationException, RepositoryConfigException, RepositoryException, MalformedQueryException, UpdateExecutionException, ParseException, QueryEvaluationException {
         ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
 
         generator.getMapper().addBaseID("1", VISMO.REFERENCE);
@@ -71,6 +95,26 @@ public class ImportQueryGeneratorTest {
         String updateQueryFromJSON = generator.createUpdateQueryFromJSON(MORE_COMPLEX_GENERATION);
 
         System.out.println(updateQueryFromJSON);
+
+        Anno4j anno4j = new Anno4j(false);
+
+        ObjectConnection connection = anno4j.getObjectRepository().getConnection();
+
+        Update update = connection.prepareUpdate(updateQueryFromJSON);
+        update.execute();
+
+        QueryService qs = anno4j.createQueryService();
+        List<Group> result = qs.execute(Group.class);
+
+        assertEquals(1, result.size());
+        Group resultGroup = result.get(0);
+        assertEquals(2, resultGroup.getEntries().size());
+
+        ReferenceEntry referenceEntry = (ReferenceEntry) resultGroup.getEntries().toArray()[0];
+
+        System.out.println(String.valueOf(referenceEntry.getPages()));
+
+        assertTrue(referenceEntry.getEntryIn() != null);
     }
 
     @Test

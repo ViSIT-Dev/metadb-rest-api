@@ -5,14 +5,16 @@ import model.Resource;
 import model.namespace.VISMO;
 import org.openrdf.annotations.Iri;
 
+import java.math.BigInteger;
+
 @Iri(VISMO.REFERENCE_ENTRY)
 public interface ReferenceEntry extends ResourceObject {
 
     @Iri(VISMO.ENTRY_PAGES)
-    int getPages();
+    BigInteger getPages();
 
     @Iri(VISMO.ENTRY_PAGES)
-    void setPages(int pages);
+    void setPages(BigInteger pages);
 
     @Iri(VISMO.IS_ENTRY_IN)
     Reference getEntryIn();

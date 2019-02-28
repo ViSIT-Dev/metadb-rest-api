@@ -21,6 +21,8 @@ import org.springframework.context.annotation.ComponentScan;
 import rest.configuration.VisitIDGenerator;
 import rest.persistence.util.ImportQueryGenerator;
 
+import java.math.BigInteger;
+
 @SpringBootApplication
 @ComponentScan(basePackages = {"rest"})
 public class VisitRestApplication extends SpringBootServletInitializer {
@@ -104,13 +106,13 @@ public class VisitRestApplication extends SpringBootServletInitializer {
         group.addKeyword("Keyword2");
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
-        entry.setPages(11);
+        entry.setPages(BigInteger.valueOf(11));
 
         entry.setIsAbout(group);
         group.addEntry(entry);
 
         ReferenceEntry entry2 = anno4j.createObject(ReferenceEntry.class);
-        entry2.setPages(22);
+        entry2.setPages(BigInteger.valueOf(22));
 
         entry2.setIsAbout(group);
         group.addEntry(entry2);

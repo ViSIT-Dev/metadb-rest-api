@@ -3,6 +3,7 @@ package rest.persistence.util;
 import com.opencsv.CSVReader;
 import model.namespace.JSONVISMO;
 import model.namespace.VISMO;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -280,6 +281,11 @@ public class ImportQueryGenerator {
 
         if(this.datatypes.get(id).startsWith("entity_reference")) {
             queryValue = "<" + this.mapper.addReferenceID(value) + ">";
+        } else if(this.datatypes.get(id).startsWith("string")) {
+            queryValue = "\"" + value + "\"";
+            if(StringUtils.isNumeric(value)) {
+                queryValue += "^^xsd:integer";
+            }
         }
 
         return queryAddition.replace("?" + id, queryValue);

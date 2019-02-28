@@ -22,6 +22,8 @@ import org.openrdf.repository.config.RepositoryConfigException;
 import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
 
+import java.math.BigInteger;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -144,13 +146,13 @@ public class ObjectControllerTest extends BaseWebTest {
 
         ReferenceEntry entry = anno4j.createObject(ReferenceEntry.class);
         this.entryId1 = entry.getResourceAsString();
-        entry.setPages(11);
+        entry.setPages(BigInteger.valueOf(11));
 
         entry.setIsAbout(group);
         group.addEntry(entry);
 
         ReferenceEntry entry2 = anno4j.createObject(ReferenceEntry.class);
-        entry2.setPages(22);
+        entry2.setPages(BigInteger.valueOf(22));
 
         entry2.setIsAbout(group);
         group.addEntry(entry2);
