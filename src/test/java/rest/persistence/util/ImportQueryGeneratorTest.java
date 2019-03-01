@@ -146,18 +146,48 @@ public class ImportQueryGeneratorTest {
 
         ReferenceEntry referenceEntry = (ReferenceEntry) resultGroup.getEntries().toArray()[0];
 
-        System.out.println(String.valueOf(referenceEntry.getPages()));
-
+        assertTrue(referenceEntry.getPages().equals(BigInteger.valueOf(11)) || referenceEntry.getPages().equals(BigInteger.valueOf(22)));
         assertTrue(referenceEntry.getEntryIn() != null);
     }
 
     @Test
-    public void testComplexWithTwoEntities() throws IdMapperException, QueryGenerationException {
+    public void testComplexWithTwoEntities() throws IdMapperException, QueryGenerationException, RepositoryConfigException, RepositoryException, MalformedQueryException, UpdateExecutionException, ParseException, QueryEvaluationException {
         ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
 
         String updateQueryFromJSON = generator.createUpdateQueryFromJSON(COMPLEX_WITH_TWO_ENTITIES);
 
         System.out.println(updateQueryFromJSON);
+
+        Anno4j anno4j = new Anno4j(false);
+
+        ObjectConnection connection = anno4j.getObjectRepository().getConnection();
+
+        Update update = connection.prepareUpdate(updateQueryFromJSON);
+        update.execute();
+
+        QueryService qs = anno4j.createQueryService();
+
+        List<Group> result = qs.execute(Group.class);
+
+        assertEquals(1, result.size());
+        Group resultGroup = result.get(0);
+        assertEquals(2, resultGroup.getEntries().size());
+
+        ReferenceEntry referenceEntry = (ReferenceEntry) resultGroup.getEntries().toArray()[0];
+
+        assertTrue(referenceEntry.getPages().equals(BigInteger.valueOf(11)) || referenceEntry.getPages().equals(BigInteger.valueOf(22)));
+        assertTrue(referenceEntry.getEntryIn() != null);
+
+        List<Reference> result2 = qs.execute(Reference.class);
+
+        assertEquals(1, result2.size());
+
+        Reference reference = result2.get(0);
+
+        assertEquals(reference.getResourceAsString(), referenceEntry.getEntryIn().getResourceAsString());
+        assertTrue(reference.getKeywords().contains("ReferenceKeyword"));
+        assertEquals("ReferenceTitle", reference.getTitle().getTitle());
+        assertEquals("ReferenceSuperordinateTitle", reference.getTitle().getSuperordinateTitle());
     }
 
     @Test

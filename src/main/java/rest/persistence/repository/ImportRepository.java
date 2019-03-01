@@ -25,4 +25,11 @@ public class ImportRepository {
 
         update.execute();
     }
+
+    /**
+     * ATM mainly here for test purposes. Do not like this, change possibility?
+     */
+    public Anno4j getAnno4j() {
+        return this.anno4j;
+    }
 }
