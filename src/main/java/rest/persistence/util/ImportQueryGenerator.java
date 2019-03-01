@@ -46,8 +46,6 @@ public class ImportQueryGenerator {
     private static Log logger = LogFactory.getLog(VisitRestApplication.class);
 
     public ImportQueryGenerator(String sparqlEndpointQuery, String sparqlEndpointUpdate, String pathToTemplates) {
-        this.errors = "The following errors are contained in the supported JSON input:\n";
-
         this.sparqlEndpointQuery = sparqlEndpointQuery;
         this.sparqlEndpointUpdate = sparqlEndpointUpdate;
         this.pathToTemplates = pathToTemplates;
