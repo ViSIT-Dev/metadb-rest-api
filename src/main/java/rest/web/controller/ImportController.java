@@ -28,18 +28,4 @@ public class ImportController {
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-
-
-
-
-//    @ApiOperation(value = "Update DigitalRepresentation node",
-//            notes = "Method to update a given DigitalRepresentation node, defined by the supported mediaID, by exchanging its Technical Metadata String with the one supported by newData.")
-//    @PutMapping(value = "media")
-//    public String updateDigitalRepresentationNode(
-//            @ApiParam(required = true, value = "The ID of the DigitalRepresentation node")
-//            @RequestParam("id") String id,
-//            @ApiParam(value = "The new Technical Metadata String")
-//            @RequestBody String newData) throws DigitalRepositoryException, MetadataQueryException {
-//        return digitalRepresentationService.updateDigitalRepresentationNode(id, newData);
-//    }
 }

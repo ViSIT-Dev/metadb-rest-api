@@ -1,6 +1,5 @@
 package rest.web.controller;
 
-import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
 import model.namespace.CIDOC;
 import model.namespace.VISMO;
@@ -9,19 +8,17 @@ import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
 import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
-import org.openrdf.repository.object.ObjectConnection;
 import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
 
 import java.math.BigInteger;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
