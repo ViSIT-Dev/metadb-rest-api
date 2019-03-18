@@ -1,9 +1,13 @@
 package util.excel;
 
 import model.namespace.JSONVISMO;
+import org.apache.poi.hssf.usermodel.DVConstraint;
+import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.ss.util.CellRangeUtil;
+import org.apache.poi.ss.util.SheetUtil;
+import org.apache.poi.xssf.usermodel.*;
 import org.json.JSONObject;
 
 import javax.swing.border.Border;
@@ -27,31 +31,11 @@ public class ExcelTemplateProducer {
     private static final String JSON_FILE_NAME = "templates/json.txt";
 
     public static void main(String[] args) {
-        Workbook workbook = new XSSFWorkbook();
-
-//        String jsonContent = "";
-//
-//        // Read in the json file containing all relevant information
-//        try {
-//            byte[] encoded = Files.readAllBytes(Paths.get(JSON_FILE_NAME));
-//            jsonContent = new String(encoded);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        JSONObject outerObject = new JSONObject(jsonContent);
-//
-//        // Create a Sheet for every main Class
-//        for (String outerKey : outerObject.keySet()) {
-//            Sheet sheet = workbook.createSheet(outerKey);
-//
-//            JSONObject innerObject = outerObject.getJSONObject(outerKey);
-//
-//            processInnerEntries(sheet, innerObject);
-//        }
+        XSSFWorkbook workbook = new XSSFWorkbook();
 
         for (String[][] sheetInput : ExcelTemplateContent.SHEETS) {
-            Sheet sheet = workbook.createSheet(sheetInput[0][0]);
+            XSSFSheet sheet = workbook.createSheet(sheetInput[0][0]);
+            sheet.createFreezePane(1,0,1,0);
 
             Row idRow = sheet.createRow(0);
 
@@ -59,6 +43,11 @@ public class ExcelTemplateProducer {
             idRowStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());
             idRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             idRowStyle.setBorderBottom(BorderStyle.THIN);
+
+            XSSFFont idRowFont = workbook.createFont();
+            idRowFont.setBold(true);
+            idRowStyle.setFont(idRowFont);
+
             idRow.setRowStyle(idRowStyle);
 
             Cell idCell = idRow.createCell(0);
@@ -75,6 +64,22 @@ public class ExcelTemplateProducer {
                     Cell cell = row.createCell(0);
 
                     cell.setCellValue(stripDataType(sheetInput[i][0]));
+
+                    // Add validation if the cell represents a reference
+                    if(ExcelTemplateContent.ENTITIES.contains(getDataType(sheetInput[i][0]))) {
+                        XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper(sheet);
+
+                        CellRangeAddressList addressList = new CellRangeAddressList(cell.getAddress().getRow(), cell.getAddress().getRow(), cell.getAddress().getColumn() + 1, cell.getAddress().getColumn() + 5);
+
+                        String constraint = "=" + getDataType(sheetInput[i][0]) + "!$B$1:$XFD$1";
+
+                        XSSFDataValidationConstraint formulaListConstraint = (XSSFDataValidationConstraint)
+                                dvHelper.createFormulaListConstraint(constraint);
+
+                        XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(formulaListConstraint, addressList);
+
+                        sheet.addValidationData(validation);
+                    }
 //                  Do datatype check  getDataType(sheetInput[i][0])
                 } else {
                     // Subgroup
@@ -93,6 +98,8 @@ public class ExcelTemplateProducer {
                     headerRow.setRowStyle(headerStyle);
                     headerCell.setCellStyle(headerStyle);
 
+                    int subsubgroup = 0;
+
                     for (int j = 1; j < sheetInput[i].length; ++j) {
                         Row row = sheet.createRow(rows);
                         rows += 1;
@@ -100,18 +107,34 @@ public class ExcelTemplateProducer {
                         Cell cell = row.createCell(0);
                         cell.setCellValue(stripDataType(sheetInput[i][j]));
 
-                        if (j == sheetInput[i].length - 1) {
+                        if(sheetInput[i][j].endsWith("]")) {
+                            // Sub-subgroup, start counter for fields associated with the subsubgroup
+                            subsubgroup = stripSubSubGroupLength(sheetInput[i][j]);
+
+                            CellStyle topGroupStyle = workbook.createCellStyle();
+                            topGroupStyle.setBorderTop(BorderStyle.THIN);
+
+                            row.setRowStyle(topGroupStyle);
+                            cell.setCellStyle(topGroupStyle);
+                        } else if (j == sheetInput[i].length - 1 || subsubgroup == 1) {
+                            // End of subgroup reached, so add closing style
                             CellStyle bottomGroupStyle = workbook.createCellStyle();
                             bottomGroupStyle.setBorderBottom(BorderStyle.THIN);
 
                             row.setRowStyle(bottomGroupStyle);
                             cell.setCellStyle(bottomGroupStyle);
                         }
+
+                        if(subsubgroup != 0) {
+                            subsubgroup -= 1;
+                        }
                     }
 
 
                 }
             }
+
+            sheet.autoSizeColumn(0);
 
         }
 
@@ -131,32 +154,13 @@ public class ExcelTemplateProducer {
     }
 
     private static String stripDataType(String input) {
-        return input.substring(0, input.indexOf("("));
-    }
-
-    private static int processInnerEntries(Sheet sheet, JSONObject currentObject) {
-        int rowNumber = sheet.getLastRowNum() + 1;
-
-        for (String innerObjectKey : currentObject.keySet()) {
-            Object innerObjectEntry = currentObject.get(innerObjectKey);
-
-            if (innerObjectEntry instanceof JSONObject) {
-                // Subgroup
-                rowNumber = processInnerEntries(sheet, (JSONObject) innerObjectEntry);
-            } else {
-                // Normal data entry
-                if (!innerObjectKey.equals(JSONVISMO.TYPE)) {
-                    Row row = sheet.createRow(rowNumber);
-                    rowNumber += 1;
-
-                    Cell cell = row.createCell(0);
-                    cell.setCellValue(innerObjectKey);
-                }
-            }
-
+        if(input.endsWith(")")) {
+            return input.substring(0, input.indexOf("("));
+        } else {
+            return input.substring(0, input.indexOf("["));
         }
-
-
-        return rowNumber;
     }
+
+    private static int stripSubSubGroupLength(String input) { return Integer.parseInt(input.substring(input.indexOf("[") + 1, input.length() - 1));}
+
 }
