@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import rest.application.exception.MetadataNotFoundException;
 import rest.application.exception.MetadataQueryException;
 import rest.application.exception.ObjectClassNotFoundException;
 import rest.service.ObjectService;
@@ -32,7 +33,7 @@ public class ObjectController {
     @GetMapping(value = "wisskiobject")
     public String getRepresentationOfObjectByWisskiPath(
             @ApiParam(required = true, value = "The wisskiId of the object to request")
-            @RequestParam("wisskipath") String wisskipath) throws MetadataQueryException {
+            @RequestParam("wisskipath") String wisskipath) throws MetadataQueryException, MetadataNotFoundException {
         return this.objectService.getObjectIdByWisskiPath(wisskipath);
     }
 

@@ -11,6 +11,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import rest.application.exception.MetadataNotFoundException;
 import rest.application.exception.MetadataQueryException;
 
 import java.util.List;
@@ -41,8 +42,33 @@ public class Anno4jRepository {
      * @throws MalformedQueryException
      * @throws QueryEvaluationException
      */
-    public String getObjectIdByWisskiPath(String wisskiPath) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    public String getObjectIdByWisskiPath(String wisskiPath) throws RepositoryException, MalformedQueryException, QueryEvaluationException, MetadataNotFoundException {
+        // Do query with supported http/https
+        String result = this.evaluateWisskiPathQuery(wisskiPath);
 
+        if(!result.equals("")) {
+            return result;
+        } else {
+            // Try other http/https combination
+            String queryPath = wisskiPath;
+
+            if(queryPath.startsWith("https")) {
+                queryPath = queryPath.replace("https", "http");
+            } else {
+                queryPath = queryPath.replace("http", "https");
+            }
+
+            result = this.evaluateWisskiPathQuery(queryPath);
+
+            if(!result.equals("")) {
+                return result;
+            } else {
+                throw new MetadataNotFoundException("The requested wisski view path does not exist, neither with http or https.");
+            }
+        }
+    }
+
+    private String evaluateWisskiPathQuery(String wisskiPath) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         String query = "SELECT ?id\n" +
                 "WHERE {\n" +
                 " ?wid <http://www.w3.org/2002/07/owl#sameAs> ?id .\n" +
@@ -56,9 +82,15 @@ public class Anno4jRepository {
         TupleQuery tupleQuery = objectConnection.prepareTupleQuery(query);
         TupleQueryResult evaluateTupleQuery = tupleQuery.evaluate();
 
-        BindingSet currentResult = evaluateTupleQuery.next();
+        BindingSet currentResult;
 
-        return String.valueOf(currentResult.getValue("id"));
+        if(evaluateTupleQuery.hasNext()) {
+            currentResult = evaluateTupleQuery.next();
+
+            return String.valueOf(currentResult.getValue("id"));
+        } else {
+            return "";
+        }
     }
 
     /**
