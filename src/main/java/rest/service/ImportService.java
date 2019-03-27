@@ -6,6 +6,7 @@ import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import rest.application.exception.IdMapperException;
 import rest.application.exception.ImportException;
 import rest.application.exception.QueryGenerationException;
@@ -32,5 +33,9 @@ public class ImportService {
         } catch (QueryGenerationException | IdMapperException | UpdateExecutionException | MalformedQueryException | RepositoryException e) {
             throw new ImportException(e.getMessage());
         }
+    }
+
+    public void importExcelUpload(MultipartFile file) {
+
     }
 }
