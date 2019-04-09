@@ -48,4 +48,52 @@ public class ExcelParserTest {
         assertEquals("genau", dating.getString("activity_dating_exact"));
         assertEquals("1/1/01", dating.getString("activity_dating_start"));
     }
+
+    @Test
+    public void testExcelParserWithTwoActivities() throws IOException, ExcelParserException, JSONException {
+        File originalFile = new File("src/test/resources/visitExcelTwoActivityTest.xlsx");
+
+        InputStream is = new FileInputStream(originalFile);
+
+        MultipartFile file = new MockMultipartFile("visitExcelActivityTest.xlsx", is);
+
+        ExcelParser parser = new ExcelParser();
+
+        String json = parser.createJSONFromParsedExcelFile(file);
+
+        System.out.println(json);
+
+        JSONObject jsonObject = new JSONObject(json);
+
+        JSONArray activityArray = jsonObject.getJSONArray("Activity");
+
+        assertEquals(2, activityArray.length());
+
+        JSONObject activity = activityArray.getJSONObject(0);
+
+        assertEquals("titel", activity.getString("activity_idby_title"));
+        assertEquals("beschr", activity.getString("activity_description"));
+        assertEquals("object", activity.getString("activity_used_object"));
+
+        JSONObject dating = activity.getJSONObject("activity_dating");
+
+        assertEquals("genau", dating.getString("activity_dating_exact"));
+        assertEquals("1/1/01", dating.getString("activity_dating_start"));
+
+        JSONObject activity2 = activityArray.getJSONObject(1);
+
+        assertEquals("titel2", activity2.getString("activity_idby_title"));
+        assertEquals("beschr2", activity2.getString("activity_description"));
+        assertEquals("object2", activity2.getString("activity_used_object"));
+
+        JSONObject dating2 = activity2.getJSONObject("activity_dating");
+
+        assertEquals("genau2", dating2.getString("activity_dating_exact"));
+        assertEquals("1/1/01", dating2.getString("activity_dating_start"));
+
+        JSONObject refentry2 = activity2.getJSONObject("activity_refentry");
+
+        assertEquals("titelz2", refentry2.getString("activity_refentry_in_reference"));
+        assertEquals("pages2", refentry2.getString("activity_refentry_pages"));
+    }
 }
