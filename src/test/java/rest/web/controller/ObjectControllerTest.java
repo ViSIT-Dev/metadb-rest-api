@@ -43,6 +43,7 @@ public class ObjectControllerTest extends BaseWebTest {
     private final static String WISSKI_VIEW_PATH4 = "http://database.visit.uni-passau.de/drupal/wisski/navigate/172/view";
 
     private String groupId;
+    private String groupWithQuotesId;
     private String referenceId;
     private String iconographyString;
     private String keywordString1;
@@ -198,6 +199,19 @@ public class ObjectControllerTest extends BaseWebTest {
     }
 
     @Test
+    public void testGetRepresentationOfGroupWithQuotes() throws Exception {
+        String requestURL = standardUrl + "object?id=" + this.groupWithQuotesId;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+
+        assertFalse(mvcResultString.isEmpty());
+        JSONObject jsonObject = new JSONObject(mvcResultString);
+
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY).contains("\"quotes\""));
+        System.out.println(jsonObject.toString());
+    }
+
+    @Test
     public void getRepresentationOfObjectSuccess() throws Exception {
         String requestURL = standardUrl + "object?id=" + this.groupId;
         MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
@@ -270,5 +284,9 @@ public class ObjectControllerTest extends BaseWebTest {
 
         this.groupId = group.getResourceAsString();
         this.referenceId = reference.getResourceAsString();
+
+        Group groupWithQuotes = anno4j.createObject(Group.class);
+        groupWithQuotes.setIconography("Test with \"quotes\"");
+        this.groupWithQuotesId = groupWithQuotes.getResourceAsString();
     }
 }
