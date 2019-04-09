@@ -3,10 +3,7 @@ package rest.persistence.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,10 +28,14 @@ public class ExcelParser {
 
     private HashMap<String, String> subGroupMap;
 
+    private DataFormatter formatter;
+
     public ExcelParser() {
         this.idMap = new HashMap<String, HashMap<String, String>>();
         this.initializeLabelIDMap();
         this.subGroupMap = new HashMap<String, String>();
+
+        this.formatter = new DataFormatter();
     }
 
     public String createJSONFromParsedExcelFile(MultipartFile file) throws ExcelParserException, IOException {
@@ -60,10 +61,11 @@ public class ExcelParser {
 
             boolean emptyCell = false;
 
-            while(!emptyCell) {
-                int cellIterator = 1;
+            int cellIterator = 1;
 
-                if(sheet.getRow(0).getCell(cellIterator).getStringCellValue().equals("")) {
+            while(!emptyCell) {
+
+                if(sheet.getRow(0).getCell(cellIterator) == null) {
                     emptyCell = true;
                     break;
                 }
@@ -75,16 +77,14 @@ public class ExcelParser {
                     Row row = sheet.getRow(i);
 
                     Cell cell = row.getCell(cellIterator);
-                    // Problem: cannot read String from number type cell -> DataFormatter?
-//                    cell.setCellType(Cell);
 
                     String label = sheet.getRow(i).getCell(0).getStringCellValue();
 
                     String value = "";
 
                     if(!label.endsWith("Untergruppe") && !label.endsWith("Unteruntergruppe")) {
-                        value = cell.getStringCellValue();
-
+//                        value = cell.getStringCellValue();
+                        value = this.formatter.formatCellValue(cell);
                     }
 
                     String id = this.getIdWithoutSubGroup(this.idMap.get(entity).get(label));;
@@ -157,7 +157,7 @@ public class ExcelParser {
             // ID is not part of a subgroup and therefore only the ID is persisted.
             return input;
         } else {
-            return input.substring(input.indexOf("|") + 1, input.length());
+            return input.substring(input.indexOf("|") + 2, input.length());
         }
     }
 
