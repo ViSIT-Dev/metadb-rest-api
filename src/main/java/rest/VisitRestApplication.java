@@ -19,6 +19,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import rest.configuration.VisitIDGenerator;
+import rest.persistence.util.ExcelParser;
 import rest.persistence.util.ImportQueryGenerator;
 
 import java.math.BigInteger;
@@ -64,6 +65,11 @@ public class VisitRestApplication extends SpringBootServletInitializer {
     @Bean
     public ImportQueryGenerator importQueryGenerator() {
         return new ImportQueryGenerator(this.sparqlEndpointQuery, this.sparqlEndpointUpdate, this.pathToTemplates);
+    }
+
+    @Bean
+    public ExcelParser excelParser() {
+        return new ExcelParser();
     }
 
     public static void main(String[] args) {

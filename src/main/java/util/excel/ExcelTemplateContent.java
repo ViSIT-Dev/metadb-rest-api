@@ -3,6 +3,7 @@ package util.excel;
 import com.sun.org.apache.regexp.internal.RE;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,8 +61,8 @@ public class ExcelTemplateContent {
             {"Geschichte(String)"},
             {"Ereignis(Activity)"},
             {"Baugeschichte(String)"},
-            {"Bau", "Datierung[5]", "Entstehung:Beginn des Datierungszeitraums(String)", "Entstehung: Ende des Datierungszeitraums(String)", "Entstehung: Freie Datierung(String)", "Entstehung: Jahrhundert(String)", "Auftraggeber Person(Person)", "Ausführende Personen(Person)", "Beteiligte Personen(Person)", "Auftraggeber Gruppe(Group)", "Ausführende Gruppe(Group)", "Beteiligte Gruppe(Group)"},
-            {"Bauphasen", "Titel(String)", "Datierung[5]", "Beginn der Bauphase(String)", "Ende der Bauphase(String)", "Freie Datierung(String)", "Jahrhundert(String)", "Beschreibung(String)", "Funktion(String)", "Auftraggeber Person(Person)", "Ausführende Personen(Person)", "Beteiligte Personen(Person)", "Auftraggeber Gruppe(Group)", "Ausführende Gruppe(Group)", "Beteiligte Gruppe(Group)", "Kommentar(String)"},
+            {"Bau", "Datierung - Bau[5]", "Entstehung: Beginn des Datierungszeitraums(String)", "Entstehung: Ende des Datierungszeitraums(String)", "Entstehung: Freie Datierung(String)", "Entstehung: Jahrhundert(String)", "Auftraggeber Person - Bau(Person)", "Ausführende Personen - Bau(Person)", "Beteiligte Personen - Bau(Person)", "Auftraggeber Gruppe - Bau(Group)", "Ausführende Gruppe - Bau(Group)", "Beteiligte Gruppe - Bau(Group)"},
+            {"Bauphasen", "Titel(String)", "Datierung - Bauphase[5]", "Beginn der Bauphase(String)", "Ende der Bauphase(String)", "Freie Datierung(String)", "Jahrhundert(String)", "Beschreibung(String)", "Funktion - Bauphase(String)", "Auftraggeber Person - Bauphase(Person)", "Ausführende Personen - Bauphase(Person)", "Beteiligte Personen - Bauphase(Person)", "Auftraggeber Gruppe - Bauphase(Group)", "Ausführende Gruppe - Bauphase(Group)", "Beteiligte Gruppe - Bauphase(Group)", "Kommentar - Bauphase(String)"},
             {"Enthaltene Bauteile(Architecture)"},
             {"Bauteil von(Architecture)"},
             {"Eigentümer/Verwalter Person(Person)"},
@@ -178,4 +179,24 @@ public class ExcelTemplateContent {
     };
 
     final static List<String[][]> SHEETS = new LinkedList<String[][]>(Arrays.asList(ACTIVITY_FIELDS, GROUP_FIELDS, ARCHITECTURE_FIELDS, REFERENCE_FIELDS, OBJECT_FIELDS, INSTITUTION_FIELDS, PERSON_FIELDS, PLACE_FIELDS));
+
+    public final static HashMap<String, String> ACTIVITY_LABEL_ID_MAP  = new HashMap<String, String>() {{
+        put("Titel", "activity_idby_title");
+        put("Beschreibung", "activity_description");
+        put("Datierung - Untergruppe", "activity_dating");
+        put("Taggenaue Datierung", "activity_dating | activity_dating_exact");
+        put("Freie Datierung", "activity_dating | activity_dating_sometime");
+        put("Beginn des Datierungszeitraums", "activity_dating | activity_dating_start");
+        put("Ende des Datierungszeitraums", "activity_dating | activity_dating_end");
+        put("Ort", "activity_tookplaceat_place");
+        put("Beteiligte Personen", "activity_hadparticipant_person");
+        put("Beteiligte Bauwerke", "activity_used_architecture");
+        put("Beteiligtes Objekt", "activity_used_object");
+        put("Schlagwort", "activity_iconography");
+        put("Kommentar", "activity_comment");
+        put("Literaturangaben - Untergruppe", "activity_refentry");
+        put("Kurztitel", "activity_refentry | activity_refentry_in_reference");
+        put("Seiten", "activity_refentry | activity_refentry_pages");
+        put("Hilfreiche Links", "activity_helpfullinks");
+    }};
 }

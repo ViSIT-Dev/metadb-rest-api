@@ -11,6 +11,7 @@ import rest.application.exception.IdMapperException;
 import rest.application.exception.ImportException;
 import rest.application.exception.QueryGenerationException;
 import rest.persistence.repository.ImportRepository;
+import rest.persistence.util.ExcelParser;
 import rest.persistence.util.ImportQueryGenerator;
 
 /**
@@ -24,6 +25,9 @@ public class ImportService {
 
     @Autowired
     private ImportQueryGenerator importQueryGenerator;
+
+    @Autowired
+    private ExcelParser excelParser;
 
     public void importJSON(String json) throws ImportException {
         try {

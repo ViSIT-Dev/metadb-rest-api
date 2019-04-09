@@ -106,7 +106,7 @@ public class ExcelTemplateProducer {
                     rows += 1;
 
                     Cell headerCell = headerRow.createCell(0);
-                    headerCell.setCellValue(sheetInput[i][0]);
+                    headerCell.setCellValue(sheetInput[i][0] + " - Untergruppe");
 
                     CellStyle headerStyle = workbook.createCellStyle();
                     headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
@@ -178,13 +178,14 @@ public class ExcelTemplateProducer {
                             }
                             topGroupStyle.setBorderTop(BorderStyle.DASHED);
 
-
                             XSSFFont topGroupFont = workbook.createFont();
                             topGroupFont.setBold(true);
                             topGroupStyle.setFont(topGroupFont);
 
                             row.setRowStyle(topGroupStyle);
                             cell.setCellStyle(topGroupStyle);
+
+                            cell.setCellValue(cell.getStringCellValue() + " - Unteruntergruppe");
                         } else if(subsubgroup == 1) {
                             CellStyle bottomSubGroupStyle = workbook.createCellStyle();
                             if(COLOR_CODED) {
