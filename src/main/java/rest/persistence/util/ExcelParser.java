@@ -72,7 +72,7 @@ public class ExcelParser {
 
                 JsonObject entityJson = new JsonObject();
 
-                for(int i = 1; i < sheet.getLastRowNum(); ++i) {
+                for(int i = 1; i <= sheet.getLastRowNum(); ++i) {
 
                     Row row = sheet.getRow(i);
 
@@ -171,5 +171,6 @@ public class ExcelParser {
 
     private void initializeLabelIDMap() {
         this.idMap.put("Activity", ExcelTemplateContent.ACTIVITY_LABEL_ID_MAP);
+        this.idMap.put("Group", ExcelTemplateContent.GROUP_LABEL_ID_MAP);
     }
 }

@@ -199,4 +199,22 @@ public class ExcelTemplateContent {
         put("Seiten", "activity_refentry | activity_refentry_pages");
         put("Hilfreiche Links", "activity_helpfullinks");
     }};
+
+    public final static HashMap<String, String> GROUP_LABEL_ID_MAP = new HashMap<String, String>() {{
+        put("Name", "group_idby_actorappel");
+        put("Werkstatt", "group_produced_object");
+        put("Besitz, Bauwerk", "group_ownerof_architecture");
+        put("In Auftrag gegebene Bauwerke", "group_motiv_arch_production");
+        put("Ausgeführte Bauwerke", "group_carriedout_arch_production");
+        put("Beteiligt an, Bauwerk", "group_infl_arch_production");
+        put("In Auftrag gegebene Baumaßnahmen", "group_motiv_structevol");
+        put("Ausgeführte Baumaßnahmen", "group_carriedout_structevol");
+        put("Beteiligt an, Baumaßnahmen", "group_infl_structevol");
+        put("Im Besitz befindliche Objekte", "group_receivedcustodyof_object");
+        put("Ehemals im Besitz befindliche Objekte", "group_lostcustodyof_object");
+        put("Schlagwort", "group_iconography");
+        put("Literaturangaben - Untergruppe", "group_refentry");
+        put("Kurztitel", "group_refentry | group_refentry_in_reference");
+        put("Seiten", "group_refentry | group_refentry_pages");
+    }};
 }

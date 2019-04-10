@@ -65,7 +65,7 @@ public class ImportControllerTest extends BaseWebTest {
             "}";
 
     @Test
-    public void testImport() throws Exception {
+    public void testImportWithJSON() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post(STANDARD_URL).content(COMPLEX_WITH_TWO_ENTITIES))
                 .andDo(print()).andExpect(status().isNoContent()).andReturn();
 
