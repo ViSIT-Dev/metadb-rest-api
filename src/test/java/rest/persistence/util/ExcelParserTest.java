@@ -18,6 +18,38 @@ import static org.junit.Assert.*;
 public class ExcelParserTest {
 
     @Test
+    public void testExcelParserWithActivityAndGroup() throws IOException, ExcelParserException, JSONException {
+        File originalFile = new File("src/test/resources/visitExcelActivityAndGroupTest.xlsx");
+
+        InputStream is = new FileInputStream(originalFile);
+
+        MultipartFile file = new MockMultipartFile("visitExcelActivityAndGroupTest.xlsx", is);
+
+        ExcelParser parser = new ExcelParser();
+
+        String json = parser.createJSONFromParsedExcelFile(file);
+
+        System.out.println(json);
+
+        JSONObject jsonObject = new JSONObject(json);
+
+        JSONArray groupArray = jsonObject.getJSONArray("Group");
+
+        assertEquals(1, groupArray.length());
+
+        JSONObject group = groupArray.getJSONObject(0);
+
+        assertEquals("name", group.getString("group_idby_actorappel"));
+        assertEquals("auftrag", group.getString("group_motiv_structevol"));
+        assertEquals("formerobject", group.getString("group_lostcustodyof_object"));
+
+        JSONObject reference = group.getJSONObject("group_refentry");
+
+        assertEquals("titel", reference.getString("group_refentry_in_reference"));
+        assertEquals("seiten", reference.getString("group_refentry_pages"));
+    }
+
+    @Test
     public void testExcelParserWithSingleGroup() throws IOException, ExcelParserException, JSONException {
         File originalFile = new File("src/test/resources/visitExcelGroupTest.xlsx");
 
