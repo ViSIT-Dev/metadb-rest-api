@@ -27,6 +27,8 @@ public class CIDOC {
 
     public final static String P1_IS_IDENTIFIED_BY = NS + "P1_is_identified_by";
 
+    public final static String P7_TOOK_PLACE_AT = NS + "P7_took_place_at";
+
 
     /*
     Properties

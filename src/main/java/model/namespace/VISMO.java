@@ -66,4 +66,37 @@ public class VISMO {
     public final static String ENTRY_PAGES = NS + "entryPages";
 
     public final static String SUPERORDINATE_TITLE = NS + "superordinateTitle";
+
+    public static String typeAssociation(String entityName) {
+        String groupID = "";
+
+        switch(entityName) {
+            case "Activity":
+                groupID = ACTIVITY;
+                break;
+            case "Architecture":
+                groupID = ARCHITECTURE;
+                break;
+            case "Group":
+                groupID = GROUP;
+                break;
+            case "Institution":
+                groupID = INSTITUTION;
+                break;
+            case "Object":
+                groupID = PERSON;
+                break;
+            case "Person":
+                groupID = PERSON;
+                break;
+            case "Place":
+                groupID = PLACE;
+                break;
+            case "Reference":
+                groupID = REFERENCE;
+                break;
+        }
+
+        return groupID;
+    }
 }

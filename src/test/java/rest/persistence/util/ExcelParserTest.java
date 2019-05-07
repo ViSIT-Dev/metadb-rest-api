@@ -1,14 +1,21 @@
 package rest.persistence.util;
 
+import com.github.anno4j.Anno4j;
+import com.github.anno4j.querying.QueryService;
+import model.vismo.Activity;
+import model.vismo.Place;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.openrdf.query.Update;
+import org.openrdf.repository.object.ObjectConnection;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import rest.application.exception.ExcelParserException;
 
 import java.io.*;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +25,7 @@ import static org.junit.Assert.*;
 public class ExcelParserTest {
 
    @Test
-    public void testExcelParserWithActivityWithLinks() throws IOException, ExcelParserException {
+    public void testExcelParserWithActivityWithLinksAndQuery() throws Exception {
        File originalFile = new File("src/test/resources/visitExcelActivityWithLinksTest.xlsx");
 
        InputStream is = new FileInputStream(originalFile);
@@ -30,7 +37,34 @@ public class ExcelParserTest {
        String json = parser.createJSONFromParsedExcelFile(file);
 
        System.out.println(json);
-    }
+
+       ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
+
+       String updateQueryFromJSON = generator.createUpdateQueryFromJSON(json);
+
+       System.out.println(updateQueryFromJSON);
+
+       Anno4j anno4j = new Anno4j(false);
+
+       ObjectConnection connection = anno4j.getObjectRepository().getConnection();
+
+       Update update = connection.prepareUpdate(updateQueryFromJSON);
+       update.execute();
+
+       QueryService qs = anno4j.createQueryService();
+
+       List<Activity> activities = qs.execute(Activity.class);
+
+       Activity activity = activities.get(0);
+
+       QueryService qs2 = anno4j.createQueryService();
+
+       List<Place> places = qs2.execute(Place.class);
+
+       Place place = places.get(0);
+
+       assertEquals(activity.getP7TookPlaceAt().getResourceAsString(), place.getResourceAsString());
+   }
 
     @Test
     public void testExcelParserWithActivityAndGroup() throws IOException, ExcelParserException, JSONException {
