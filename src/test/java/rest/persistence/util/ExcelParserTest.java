@@ -17,6 +17,21 @@ import static org.junit.Assert.*;
  */
 public class ExcelParserTest {
 
+   @Test
+    public void testExcelParserWithActivityWithLinks() throws IOException, ExcelParserException {
+       File originalFile = new File("src/test/resources/visitExcelActivityWithLinksTest.xlsx");
+
+       InputStream is = new FileInputStream(originalFile);
+
+       MultipartFile file = new MockMultipartFile("visitExcelActivityWithLinksTest.xlsx", is);
+
+       ExcelParser parser = new ExcelParser();
+
+       String json = parser.createJSONFromParsedExcelFile(file);
+
+       System.out.println(json);
+    }
+
     @Test
     public void testExcelParserWithActivityAndGroup() throws IOException, ExcelParserException, JSONException {
         File originalFile = new File("src/test/resources/visitExcelActivityAndGroupTest.xlsx");

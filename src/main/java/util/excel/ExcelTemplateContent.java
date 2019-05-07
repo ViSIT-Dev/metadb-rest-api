@@ -217,4 +217,25 @@ public class ExcelTemplateContent {
         put("Kurztitel", "group_refentry | group_refentry_in_reference");
         put("Seiten", "group_refentry | group_refentry_pages");
     }};
+
+    public final static HashMap<String, String> PERSON_LABEL_ID_MAP = new HashMap<String, String>() {{
+        put("Vorname", "person_firstname");
+        put("Nachname", "person_lastname");
+    }};
+
+    public final static HashMap<String, String> PLACE_LABEL_ID_MAP = new HashMap<String, String>() {{
+        put("Ortsname", "place_idby_placeappel");
+        put("Beschreibung", "place_description");
+        put("Bauwerk", "place_holds_architecture");
+        put("Ereignis", "place_witnessed_activity");
+        put("Geburtsort von Personen", "place_wasbirthplaceof_person");
+        put("Sterbeort von Personen", "place_wasdeathplaceof_person");
+        put("Schlagwort", "place_keyword");
+        put("Kommentar", "place_comment");
+        put("Literaturangaben - Untergruppe", "place_refentry");
+        put("Kurztitel", "place_refentry | place_refentry_in_reference");
+        put("Seiten", "place_refentry | place_refentry_pages");
+        put("Hilfreiche Links", "place_helpfullinks");
+        put("Abbildung", "place_isdepictedby_object");
+    }};
 }
