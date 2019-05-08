@@ -218,11 +218,6 @@ public class ExcelTemplateContent {
         put("Seiten", "group_refentry | group_refentry_pages");
     }};
 
-    public final static HashMap<String, String> PERSON_LABEL_ID_MAP = new HashMap<String, String>() {{
-        put("Vorname", "person_firstname");
-        put("Nachname", "person_lastname");
-    }};
-
     public final static HashMap<String, String> PLACE_LABEL_ID_MAP = new HashMap<String, String>() {{
         put("Ortsname", "place_idby_placeappel");
         put("Beschreibung", "place_description");
@@ -238,4 +233,12 @@ public class ExcelTemplateContent {
         put("Hilfreiche Links", "place_helpfullinks");
         put("Abbildung", "place_isdepictedby_object");
     }};
+
+    public final static HashMap<String, String> PERSON_LABEL_ID_MAP = new HashMap<String, String>() {{
+        put("Vorname", "person_firstname");
+        put("Nachname", "person_lastname");
+    }};
+
+    // TODO Miriam: Restliche Label-ID Maps vervollständigen (Person fehlt auch). Bei den Labels oder IDs, wo Du Dir nicht sicher bist, bitte einen "Lückenfüller" einfügen, die mach ich dann
+    // "Anleitung": Die Labels stehen in der "visitExcel.xslt", die IDs aus dem JSON stehen in dem File "json.txt"
 }

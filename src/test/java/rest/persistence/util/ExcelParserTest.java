@@ -26,43 +26,65 @@ public class ExcelParserTest {
 
    @Test
     public void testExcelParserWithActivityWithLinksAndQuery() throws Exception {
+
+       // TODO Miriam: Funktionalität für diesen Test nachvollziehen
+       // Ablauf mit Kommentaren beschrieben
+
+       // Excel File wird eingelesen und InputStream erstellt
        File originalFile = new File("src/test/resources/visitExcelActivityWithLinksTest.xlsx");
 
        InputStream is = new FileInputStream(originalFile);
 
+       // Ein MockMultipartFile wird benötigt, da diese MultipartFiles später als FileUpload für die REST API dienen
        MultipartFile file = new MockMultipartFile("visitExcelActivityWithLinksTest.xlsx", is);
 
+       // Eigene Klasse ExcelParser wird inizialisiert
        ExcelParser parser = new ExcelParser();
 
+       // ExcelParser benötigt (zwecks späterer API Anbindung) ebenfalls ein MultipartFile
+       // Der Parser nimmt ein Excel entgegen und bastelt daraus eine JSON Repräsentation. Diese kann von der Import-Funktionalität der REST API verstanden werden
        String json = parser.createJSONFromParsedExcelFile(file);
 
        System.out.println(json);
 
+       // Der ImportQueryGenerator nimmt nun das JSON entgegen, und kann daraus eine UPDATE SPARQL Query erstellen, die an einen RDF Triplestore gegeben werden kann
+       // Dies funktioniert ungefähr so: jede ID im JSON hat einen RDF Pfad in Wisski, d.h. aus jeder ID werden mehrere RDF Triples erstellt, die den Pfad widerspiegeln.
+       // Die Klasse TripleMerger ist dann dafür da, alle diese Triples an Stellen zusammenzuführen, wo sich die Pfade überlappen.
        ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
 
+       // Update Query wird erstellt
        String updateQueryFromJSON = generator.createUpdateQueryFromJSON(json);
 
        System.out.println(updateQueryFromJSON);
 
+       // Die Anno4j Klasse kennst Du ja schon etwas. Diese "gaukelt" uns hier einen Triplestore vor.
+       // Für einen Test reicht es uns, die Daten in-memory zu halten, wir brauchen also keinen wirklichen Triplestore.
        Anno4j anno4j = new Anno4j(false);
 
        ObjectConnection connection = anno4j.getObjectRepository().getConnection();
 
+       // Das Update Objekt ist eine Kapselung der UPDATE SPARQL Query, welche im nächsten Schritt ausgeführt wird.
+       // Durch die Verbindung der ObjectConnection zum Anno4j Objekt, wird die Query im Anno4j Speicher ausgeführt.
        Update update = connection.prepareUpdate(updateQueryFromJSON);
        update.execute();
 
+       // Nun um noch zu leichten testen, dass alles auch geklappt hat.
+       // Der QueryService ist eine eigene Implementierung für Anno4j, um Queries zu basteln und abzuschicken.
        QueryService qs = anno4j.createQueryService();
 
+       // Query nach allen Activity Objekten
        List<Activity> activities = qs.execute(Activity.class);
 
        Activity activity = activities.get(0);
 
        QueryService qs2 = anno4j.createQueryService();
 
+       // Query nach allen Place Objekten
        List<Place> places = qs2.execute(Place.class);
 
        Place place = places.get(0);
 
+       // Vergleich, ob die Verbindung von Activity zu Place besteht und ob die entsprechenden IDs passen
        assertEquals(activity.getP7TookPlaceAt().getResourceAsString(), place.getResourceAsString());
    }
 
