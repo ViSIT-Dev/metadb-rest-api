@@ -89,6 +89,32 @@ public class ExcelParserTest {
    }
 
     @Test
+    public void testExcelParserWithActivityAndSplitValues() throws IOException, ExcelParserException, JSONException {
+        File originalFile = new File("src/test/resources/visitExcelActivitySplitValuesTest.xlsx");
+
+        InputStream is = new FileInputStream(originalFile);
+
+        MultipartFile file = new MockMultipartFile("visitExcelActivitySplitValuesTest.xlsx", is);
+
+        ExcelParser parser = new ExcelParser();
+
+        String json = parser.createJSONFromParsedExcelFile(file);
+
+        System.out.println(json);
+
+        JSONObject jsonObject = new JSONObject(json);
+
+        JSONArray activityArray = jsonObject.getJSONArray("Activity");
+
+        assertEquals(1, activityArray.length());
+
+        JSONObject activity = activityArray.getJSONObject(0);
+
+        assertEquals("titel, titel2", activity.getString("activity_idby_title"));
+        assertEquals("beschr, beschr2", activity.getString("activity_description"));
+    }
+
+    @Test
     public void testExcelParserWithActivityAndMultipleValues() throws IOException, ExcelParserException, JSONException {
         File originalFile = new File("src/test/resources/visitExcelActivityMultipleValuesTest.xlsx");
 
