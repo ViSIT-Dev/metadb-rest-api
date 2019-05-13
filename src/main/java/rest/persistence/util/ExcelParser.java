@@ -2,7 +2,9 @@ package rest.persistence.util;
 
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import model.namespace.JSONVISMO;
 import model.namespace.VISMO;
 import org.apache.poi.ss.usermodel.*;
@@ -131,6 +133,10 @@ public class ExcelParser {
                     } else {
                         if (!value.isEmpty()) {
 
+                            // Find the respective JsonObject (which is the overall object or a sub-part of it),
+                            // to which the current property is to be added
+                            JsonObject objectToAddProperty = null;
+
                             if (this.idContainedInSubgroup(this.idMap.get(entity).get(label))) {
                                 // Id is part of a subgroup or subsubgroup
 
@@ -140,22 +146,45 @@ public class ExcelParser {
                                 if (this.subGroupMap.containsKey(subgroup)) {
                                     JsonObject subgroupJsonObject = entityJson.getAsJsonObject(this.subGroupMap.get(subgroup));
 
-                                    JsonObject subsubGroupJsonObject = subgroupJsonObject.getAsJsonObject(subgroup);
-
-                                    subsubGroupJsonObject.addProperty(id, value);
+                                    objectToAddProperty = subgroupJsonObject.getAsJsonObject(subgroup);;
                                 } else {
                                     // Normal subgroup affiliation
-
-                                    JsonObject subgroupJsonObject = entityJson.getAsJsonObject(subgroup);
-
-                                    subgroupJsonObject.addProperty(id, value);
+                                    objectToAddProperty = entityJson.getAsJsonObject(subgroup);
                                 }
                             } else {
                                 // Id is not part of subgroup
-                                entityJson.addProperty(id, value);
+                                objectToAddProperty = entityJson;
+                            }
+
+                            if(value.contains("|")) {
+                                String[] split = value.split("\\|");
+
+                                String updatedValue = "";
+
+                                for(int j = 0; j < split.length; ++j) {
+                                    String part = split[j];
+
+                                    updatedValue += part.trim();
+
+                                    if(j < split.length - 1) {
+                                        updatedValue += ", ";
+                                    }
+                                }
+
+                                value = updatedValue;
+                            }
+
+                            if(objectToAddProperty.has(id)) {
+                                // Property already existing, so read out old value and add new value
+                                JsonPrimitive jsonPrimitive = objectToAddProperty.getAsJsonPrimitive(id);
+
+                                String oldValue = jsonPrimitive.getAsString();
+
+                                objectToAddProperty.addProperty(id, oldValue + ", " + value);
+                            } else {
+                                objectToAddProperty.addProperty(id, value);
                             }
                         }
-
                     }
                 }
 
