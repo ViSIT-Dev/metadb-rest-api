@@ -9,13 +9,10 @@ import model.namespace.JSONVISMO;
 import model.namespace.VISMO;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 import rest.application.exception.ExcelParserException;
 import util.excel.ExcelTemplateContent;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -103,33 +100,43 @@ public class ExcelParser {
                     String id = this.getIdWithoutSubGroup(this.idMap.get(entity).get(label));
 
                     if (label.endsWith("Untergruppe")) {
-                        JsonObject subgroup = new JsonObject();
+                        if (!entityJson.has(id)) {
+                            JsonArray subgroupArray = new JsonArray();
 
-                        // Subgroup tracking
-                        LinkedList<String> subgroupList = new LinkedList<String>();
-                        subgroupList.add(id);
-                        subgroupTracker.add(subgroupList);
+                            // Subgroup tracking
+                            LinkedList<String> subgroupList = new LinkedList<String>();
+                            subgroupList.add(id);
+                            subgroupTracker.add(subgroupList);
 
-                        entityJson.add(id, subgroup);
-                    } else if (label.endsWith("Unteruntergruppe")) {
-                        JsonObject subsubgroup = new JsonObject();
+                            entityJson.add(id, subgroupArray);
 
-                        String subgroup = this.getSubGroupOfId(this.idMap.get(entity).get(label));
-
-                        JsonObject subgroupJsonObject = entityJson.getAsJsonObject(subgroup);
-
-                        // Subgroup tracking
-                        // First look for the correct list of the tracker
-                        for(LinkedList<String> list : subgroupTracker) {
-                            if(list.contains(id)) {
-                                list.add(id);
-                            }
+                            JsonObject emptyObject = new JsonObject();
+                            subgroupArray.add(emptyObject);
                         }
+                    } else if (label.endsWith("Unteruntergruppe")) {
+                        String subgroupName = this.getSubGroupOfId(this.idMap.get(entity).get(label));
 
-                        subgroupJsonObject.add(id, subsubgroup);
+                        JsonArray subgroupJsonArray = entityJson.getAsJsonArray(subgroupName);
 
-                        // Add the combination of subgroup and its subsubgroup to a map to use this information later
-                        this.subGroupMap.put(id, subgroup);
+                        JsonObject lastSubgroupObject = (JsonObject) subgroupJsonArray.get(subgroupJsonArray.size() - 1);
+
+                        if (!lastSubgroupObject.has(id)) {
+
+                            JsonArray subsubgroupArray = new JsonArray();
+
+                            // Subgroup tracking
+                            // First look for the correct list of the tracker
+                            for (LinkedList<String> list : subgroupTracker) {
+                                if (list.contains(id)) {
+                                    list.add(id);
+                                }
+                            }
+
+                            lastSubgroupObject.add(id, subsubgroupArray);
+
+                            // Add the combination of subgroup and its subsubgroup to a map to use this information later
+                            this.subGroupMap.put(id, subgroupName);
+                        }
                     } else {
                         if (!value.isEmpty()) {
 
@@ -144,29 +151,36 @@ public class ExcelParser {
                                 String subgroup = this.getSubGroupOfId(this.idMap.get(entity).get(label));
 
                                 if (this.subGroupMap.containsKey(subgroup)) {
-                                    JsonObject subgroupJsonObject = entityJson.getAsJsonObject(this.subGroupMap.get(subgroup));
+                                    // Subsubgroup affiliation
+                                    JsonArray subgroupJsonArray = entityJson.getAsJsonArray(this.subGroupMap.get(subgroup));
 
-                                    objectToAddProperty = subgroupJsonObject.getAsJsonObject(subgroup);;
+                                    JsonObject subgroupLastObject = (JsonObject) subgroupJsonArray.get(subgroupJsonArray.size() - 1);
+
+                                    JsonArray subsubgroupJsonArray = (JsonArray) subgroupLastObject.get(subgroup);
+
+                                    objectToAddProperty = (JsonObject) subsubgroupJsonArray.get(subgroupJsonArray.size() - 1);
                                 } else {
                                     // Normal subgroup affiliation
-                                    objectToAddProperty = entityJson.getAsJsonObject(subgroup);
+                                    JsonArray subgroupArray = entityJson.getAsJsonArray(subgroup);
+
+                                    objectToAddProperty = (JsonObject) subgroupArray.get(subgroupArray.size() - 1);
                                 }
                             } else {
                                 // Id is not part of subgroup
                                 objectToAddProperty = entityJson;
                             }
 
-                            if(value.contains("|")) {
+                            if (value.contains("|")) {
                                 String[] split = value.split("\\|");
 
                                 String updatedValue = "";
 
-                                for(int j = 0; j < split.length; ++j) {
+                                for (int j = 0; j < split.length; ++j) {
                                     String part = split[j];
 
                                     updatedValue += part.trim();
 
-                                    if(j < split.length - 1) {
+                                    if (j < split.length - 1) {
                                         updatedValue += ", ";
                                     }
                                 }
@@ -174,7 +188,8 @@ public class ExcelParser {
                                 value = updatedValue;
                             }
 
-                            if(objectToAddProperty.has(id)) {
+                            // Add the actual property
+                            if (objectToAddProperty.has(id)) {
                                 // Property already existing, so read out old value and add new value
                                 JsonPrimitive jsonPrimitive = objectToAddProperty.getAsJsonPrimitive(id);
 
@@ -189,6 +204,7 @@ public class ExcelParser {
                 }
 
                 this.removeEmptySubgroups(entityJson, subgroupTracker);
+                // TODO Remove empty entity types
 
                 jsonArray.add(entityJson);
                 ++cellIterator;
@@ -232,29 +248,58 @@ public class ExcelParser {
      * Method receives an JsonObject to check and a tracker which contains the possible subgroups in the JsonObject.
      * Then it will be checked, if the respective subgroups are empty, and if yes, they are removed from the JsonObject.
      *
-     * @param jsonObject    The JSON to check.
-     * @param tracker       A list of IDs that represent the possible subgroups of the JsonObject.
+     * @param jsonObject The JSON to check.
+     * @param tracker    A list of IDs that represent the possible subgroups of the JsonObject.
      */
     private void removeEmptySubgroups(JsonObject jsonObject, LinkedList<LinkedList<String>> tracker) {
-        for(LinkedList<String> list : tracker) {
-            if(list.size() == 1) {
-                JsonObject subgroup = jsonObject.getAsJsonObject(list.get(0));
+        for (LinkedList<String> list : tracker) {
+            if (list.size() == 1) {
+                JsonArray subgroup = jsonObject.getAsJsonArray(list.get(0));
 
-                if(subgroup.keySet().size() == 0) {
+                if (this.isJsonArrayEmpty(subgroup)) {
                     jsonObject.remove(list.get(0));
                 }
+
             } else {
-                for(int i = list.size() - 1; i >= 1; ++i) {
-                    JsonObject subgroup = jsonObject.getAsJsonObject(list.get(i - 1));
+                for (int i = list.size() - 1; i >= 1; ++i) {
 
-                    JsonObject subsubgroup = subgroup.getAsJsonObject(list.get(i));
+                    JsonArray jsonArray = jsonObject.getAsJsonArray(list.get(0));
 
-                    if(subsubgroup.keySet().size() == 0) {
-                        subgroup.remove(list.get(i));
+                    if (this.isJsonArrayEmpty(jsonArray)) {
+                        jsonObject.remove(list.get(0));
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Private method to check if the supported JsonArray is empty.
+     * This is done by checking if the array has elements altogether, and if it does, if these are just empty JsonObjects.
+     *
+     * @param jsonArray The JsonArray to check.
+     * @return True, if the JsonArray does not have any elements or only empty elements.
+     */
+    private boolean isJsonArrayEmpty(JsonArray jsonArray) {
+        if (jsonArray.size() == 0) {
+            return true;
+        } else {
+            for (JsonElement jsonElement : jsonArray) {
+                if (jsonElement.isJsonObject()) {
+                    if (!((JsonObject) jsonElement).keySet().isEmpty()) {
+                        return false;
+                    }
+                } else {
+                    boolean subArrayEmpty = this.isJsonArrayEmpty((JsonArray) jsonElement);
+
+                    if (!subArrayEmpty) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     private void initializeLabelIDMap() {

@@ -166,7 +166,9 @@ public class ExcelParserTest {
         assertEquals("auftrag", group.getString("group_motiv_structevol"));
         assertEquals("formerobject", group.getString("group_lostcustodyof_object"));
 
-        JSONObject reference = group.getJSONObject("group_refentry");
+        JSONArray refArray = group.getJSONArray("group_refentry");
+
+        JSONObject reference = refArray.getJSONObject(0);
 
         assertEquals("titel", reference.getString("group_refentry_in_reference"));
         assertEquals("seiten", reference.getString("group_refentry_pages"));
@@ -198,7 +200,9 @@ public class ExcelParserTest {
         assertEquals("auftrag", group.getString("group_motiv_structevol"));
         assertEquals("formerobject", group.getString("group_lostcustodyof_object"));
 
-        JSONObject reference = group.getJSONObject("group_refentry");
+        JSONArray referenceArray = group.getJSONArray("group_refentry");
+
+        JSONObject reference = referenceArray.getJSONObject(0);
 
         assertEquals("titel", reference.getString("group_refentry_in_reference"));
         assertEquals("seiten", reference.getString("group_refentry_pages"));
@@ -230,7 +234,9 @@ public class ExcelParserTest {
         assertEquals("beschr", activity.getString("activity_description"));
         assertEquals("object", activity.getString("activity_used_object"));
 
-        JSONObject dating = activity.getJSONObject("activity_dating");
+        JSONArray datingArray = activity.getJSONArray("activity_dating");
+
+        JSONObject dating = datingArray.getJSONObject(0);
 
         assertEquals("genau", dating.getString("activity_dating_exact"));
         assertEquals("1/1/01", dating.getString("activity_dating_start"));
@@ -262,7 +268,9 @@ public class ExcelParserTest {
         assertEquals("beschr", activity.getString("activity_description"));
         assertEquals("object", activity.getString("activity_used_object"));
 
-        JSONObject dating = activity.getJSONObject("activity_dating");
+        JSONArray datingArray = activity.getJSONArray("activity_dating");
+
+        JSONObject dating = datingArray.getJSONObject(0);
 
         assertEquals("genau", dating.getString("activity_dating_exact"));
         assertEquals("1/1/01", dating.getString("activity_dating_start"));
@@ -273,12 +281,16 @@ public class ExcelParserTest {
         assertEquals("beschr2", activity2.getString("activity_description"));
         assertEquals("object2", activity2.getString("activity_used_object"));
 
-        JSONObject dating2 = activity2.getJSONObject("activity_dating");
+        JSONArray datingArray2 = activity2.getJSONArray("activity_dating");
+
+        JSONObject dating2 = datingArray2.getJSONObject(0);
 
         assertEquals("genau2", dating2.getString("activity_dating_exact"));
         assertEquals("1/1/01", dating2.getString("activity_dating_start"));
 
-        JSONObject refentry2 = activity2.getJSONObject("activity_refentry");
+        JSONArray refArray2 = activity2.getJSONArray("activity_refentry");
+
+        JSONObject refentry2 = refArray2.getJSONObject(0);
 
         assertEquals("titelz2", refentry2.getString("activity_refentry_in_reference"));
         assertEquals("pages2", refentry2.getString("activity_refentry_pages"));
