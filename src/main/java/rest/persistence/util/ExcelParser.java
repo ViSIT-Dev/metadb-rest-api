@@ -216,16 +216,15 @@ public class ExcelParser {
                 }
 
                 this.removeEmptySubgroups(entityJson, subgroupTracker);
-                // TODO Remove empty entity types
 
                 jsonArray.add(entityJson);
                 ++cellIterator;
-
             }
 
-            json.add(entity, jsonArray);
+            if(jsonArray.size() > 0) {
+                json.add(entity, jsonArray);
+            }
         }
-
 
         return json.toString();
     }
