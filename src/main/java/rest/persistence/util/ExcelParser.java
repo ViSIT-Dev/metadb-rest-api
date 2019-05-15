@@ -112,6 +112,12 @@ public class ExcelParser {
 
                             JsonObject emptyObject = new JsonObject();
                             subgroupArray.add(emptyObject);
+                        } else {
+                            // Array is existing, so create a new empty JsonObject to fill
+                            JsonArray subgroupArray = entityJson.getAsJsonArray(id);
+
+                            JsonObject emptyObject = new JsonObject();
+                            subgroupArray.add(emptyObject);
                         }
                     } else if (label.endsWith("Unteruntergruppe")) {
                         String subgroupName = this.getSubGroupOfId(this.idMap.get(entity).get(label));
@@ -136,6 +142,12 @@ public class ExcelParser {
 
                             // Add the combination of subgroup and its subsubgroup to a map to use this information later
                             this.subGroupMap.put(id, subgroupName);
+                        } else {
+                            JsonObject emptyObject = new JsonObject();
+
+                            JsonArray subsubgroupArray = lastSubgroupObject.getAsJsonArray(id);
+
+                            subsubgroupArray.add(emptyObject);
                         }
                     } else {
                         if (!value.isEmpty()) {

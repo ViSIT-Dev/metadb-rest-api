@@ -89,6 +89,46 @@ public class ExcelParserTest {
    }
 
     @Test
+    public void testExcelParserWithActivityAndSplitSubgroupValues() throws IOException, ExcelParserException, JSONException {
+        File originalFile = new File("src/test/resources/visitExcelActivitySplitSubgroupValuesTest.xlsx");
+
+        InputStream is = new FileInputStream(originalFile);
+
+        MultipartFile file = new MockMultipartFile("visitExcelActivitySplitSubgroupValuesTest.xlsx", is);
+
+        ExcelParser parser = new ExcelParser();
+
+        String json = parser.createJSONFromParsedExcelFile(file);
+
+        System.out.println(json);
+
+        JSONObject jsonObject = new JSONObject(json);
+
+        JSONArray activityArray = jsonObject.getJSONArray("Activity");
+
+        assertEquals(1, activityArray.length());
+
+        JSONObject activity = activityArray.getJSONObject(0);
+
+        assertEquals("titel, titel2", activity.getString("activity_idby_title"));
+        assertEquals("beschr, beschr2", activity.getString("activity_description"));
+
+        JSONArray refArray = activity.getJSONArray("activity_refentry");
+
+        assertEquals(2, refArray.length());
+
+        JSONObject refentry1 = refArray.getJSONObject(0);
+
+        assertEquals("kurztitel1", refentry1.getString("activity_refentry_in_reference"));
+        assertEquals("seiten1", refentry1.getString("activity_refentry_pages"));
+
+        JSONObject refentry2 = refArray.getJSONObject(1);
+
+        assertEquals("kurztitel2", refentry2.getString("activity_refentry_in_reference"));
+        assertEquals("seiten2", refentry2.getString("activity_refentry_pages"));
+    }
+
+    @Test
     public void testExcelParserWithActivityAndSplitValues() throws IOException, ExcelParserException, JSONException {
         File originalFile = new File("src/test/resources/visitExcelActivitySplitValuesTest.xlsx");
 
