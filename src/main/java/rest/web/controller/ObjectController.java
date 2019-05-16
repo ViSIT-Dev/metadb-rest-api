@@ -12,8 +12,8 @@ import rest.service.ObjectService;
 /**
  * Controller Class for the Object Repository
  */
+@CrossOrigin
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping//(value = "/api/")
 public class ObjectController {
 

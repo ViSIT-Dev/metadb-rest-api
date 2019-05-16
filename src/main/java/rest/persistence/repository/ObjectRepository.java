@@ -146,6 +146,12 @@ public class ObjectRepository {
             }
         }
 
+        String wisskiPathByObjectId = this.anno4jRepository.getWisskiPathByObjectId(id);
+
+        if(!wisskiPathByObjectId.equals("")) {
+            jsonObject.addProperty(JSONVISMO.WISSKI_VIEW_PATH, wisskiPathByObjectId);
+        }
+
         String jsonObjectString = jsonObject.toString();
         // TODO Removed this line, which has presumably been added by Christian, but dunno the reason
 //        jsonObjectString = replaceString(jsonObjectString, "\\", "");

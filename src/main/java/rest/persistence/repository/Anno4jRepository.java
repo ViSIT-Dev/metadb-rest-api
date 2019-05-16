@@ -32,6 +32,31 @@ public class Anno4jRepository {
         return this.anno4j;
     }
 
+    public String getWisskiPathByObjectId(String objectId) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+        String query = "SELECT ?wid\n" +
+                "WHERE {\n" +
+                " ?id <http://www.w3.org/2002/07/owl#sameAs> ?wid .\n" +
+                "  \n" +
+                " FILTER regex(str(?id), \"^ADD_ID_HERE$\", \"\")\n" +
+                "}";
+
+        query = query.replace("ADD_ID_HERE", objectId);
+
+        ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
+        TupleQuery tupleQuery = objectConnection.prepareTupleQuery(query);
+        TupleQueryResult evaluateTupleQuery = tupleQuery.evaluate();
+
+        BindingSet currentResult;
+
+        if(evaluateTupleQuery.hasNext()) {
+            currentResult = evaluateTupleQuery.next();
+
+            return String.valueOf(currentResult.getValue("wid"));
+        } else {
+            return "";
+        }
+    }
+
     /**
      * Method to query an object Id by supporting a WissKI view path that corresponds to the object from the underlying triplestore.
      * This path is connected to the respective RDF resource via an owl:sameAs relationship.

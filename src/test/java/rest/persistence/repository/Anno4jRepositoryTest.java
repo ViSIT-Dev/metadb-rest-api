@@ -13,8 +13,10 @@ import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import rest.BaseWebTest;
+import rest.application.exception.MetadataNotFoundException;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,6 +32,27 @@ public class Anno4jRepositoryTest extends BaseWebTest {
     private String digRepID;
 
     private final static String WISSKI_VIEW_PATH = "https://database.visit.uni-passau.de/drupal/wisski/navigate/177/view";
+
+    @Test
+    public void testGetWisskiViewPathByObjectId() throws RepositoryException, IllegalAccessException, InstantiationException, MalformedQueryException, UpdateExecutionException, QueryEvaluationException, MetadataNotFoundException {
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        // Test data for the getObjectIdByWisskiPath method
+        Resource someResource = anno4j.createObject(Resource.class);
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + someResource.getResourceAsString() + "> <http://www.w3.org/2002/07/owl#sameAs> <" + WISSKI_VIEW_PATH + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String wisskiPathByObjectId = this.anno4jRepository.getWisskiPathByObjectId(someResource.getResourceAsString());
+
+        assertEquals(WISSKI_VIEW_PATH, wisskiPathByObjectId);
+    }
 
     @Test
     public void testGetObjectRepresentationByWissKIViewPath() throws Exception {

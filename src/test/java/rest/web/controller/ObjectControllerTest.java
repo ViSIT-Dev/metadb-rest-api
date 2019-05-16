@@ -129,6 +129,7 @@ public class ObjectControllerTest extends BaseWebTest {
         String updateQuery = "INSERT DATA\n" +
                 "{ \n" +
                 "  <" + persistanceWisskiPath + "> <http://www.w3.org/2002/07/owl#sameAs> <" + group.getResourceAsString() + "> ." +
+                "  <" + group.getResourceAsString() + "> <http://www.w3.org/2002/07/owl#sameAs> <" + persistanceWisskiPath + "> ." +
                 "}";
 
         Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
@@ -143,6 +144,7 @@ public class ObjectControllerTest extends BaseWebTest {
         JSONObject jsonObject = new JSONObject(mvcResultString);
         assertTrue(jsonObject.getString(JSONVISMO.TYPE).equals(VISMO.GROUP));
         assertEquals(group.getResourceAsString(), jsonObject.getString(JSONVISMO.ID));
+        assertEquals(persistanceWisskiPath, jsonObject.getString(JSONVISMO.WISSKI_VIEW_PATH));
         assertEquals("Iconography", jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY));
         assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains("Keyword"));
     }
