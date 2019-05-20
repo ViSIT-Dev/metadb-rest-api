@@ -316,7 +316,11 @@ public class ExcelParser {
     private void initializeLabelIDMap() {
         this.idMap.put("Activity", ExcelTemplateContent.ACTIVITY_LABEL_ID_MAP);
         this.idMap.put("Group", ExcelTemplateContent.GROUP_LABEL_ID_MAP);
-//        this.idMap.put("Person", ExcelTemplateContent.PERSON_LABEL_ID_MAP);
+        this.idMap.put("Person", ExcelTemplateContent.PERSON_LABEL_ID_MAP);
         this.idMap.put("Place", ExcelTemplateContent.PLACE_LABEL_ID_MAP);
+        this.idMap.put("Object", ExcelTemplateContent.OBJECT_LABEL_ID_MAP);
+        this.idMap.put("Reference", ExcelTemplateContent.REFERENCE_LABEL_ID_MAP);
+        this.idMap.put("Institution", ExcelTemplateContent.INSTITUTION_LABEL_ID_MAP);
+        this.idMap.put("Architecture", ExcelTemplateContent.ARCHITECTURE_LABEL_ID_MAP);
     }
 }
