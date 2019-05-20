@@ -138,6 +138,10 @@ public class ExcelParser {
                                 }
                             }
 
+                            JsonObject emptyObject = new JsonObject();
+
+                            subsubgroupArray.add(emptyObject);
+
                             lastSubgroupObject.add(id, subsubgroupArray);
 
                             // Add the combination of subgroup and its subsubgroup to a map to use this information later

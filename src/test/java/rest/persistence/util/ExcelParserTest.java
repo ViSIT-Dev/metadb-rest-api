@@ -2,6 +2,8 @@ package rest.persistence.util;
 
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
+import model.namespace.JSONVISMO;
+import model.namespace.VISMO;
 import model.vismo.Activity;
 import model.vismo.Place;
 import org.json.JSONArray;
@@ -87,6 +89,36 @@ public class ExcelParserTest {
        // Vergleich, ob die Verbindung von Activity zu Place besteht und ob die entsprechenden IDs passen
        assertEquals(activity.getP7TookPlaceAt().getResourceAsString(), place.getResourceAsString());
    }
+
+    @Test
+    public void testExcelParserWithArchitecture() throws IOException, ExcelParserException, JSONException {
+        File originalFile = new File("src/test/resources/visitExcelArchitectureTest.xlsx");
+
+        InputStream is = new FileInputStream(originalFile);
+
+        MultipartFile file = new MockMultipartFile("visitExcelArchitectureTest.xlsx", is);
+
+        ExcelParser parser = new ExcelParser();
+
+        String json = parser.createJSONFromParsedExcelFile(file);
+
+        System.out.println(json);
+
+        JSONObject jsonObject = new JSONObject(json);
+
+        JSONArray architectureArray = jsonObject.getJSONArray("Architecture");
+
+        assertEquals(1, architectureArray.length());
+
+        JSONObject architecture = architectureArray.getJSONObject(0);
+
+        assertEquals(VISMO.ARCHITECTURE, architecture.getString("type"));
+        assertEquals("sakral", architecture.getString("arch_sacraltype"));
+        assertEquals("profan", architecture.getString("arch_has_seculartype"));
+
+        assertEquals("bauteil", architecture.getString("architecture_contains_arch"));
+        assertEquals("objekt", architecture.getString("arch_currentlyholds_object"));
+    }
 
     @Test
     public void testExcelParserWithActivityAndSplitSubgroupValues() throws IOException, ExcelParserException, JSONException {
