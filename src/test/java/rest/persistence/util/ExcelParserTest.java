@@ -118,6 +118,31 @@ public class ExcelParserTest {
 
         assertEquals("bauteil", architecture.getString("architecture_contains_arch"));
         assertEquals("objekt", architecture.getString("arch_currentlyholds_object"));
+
+        JSONObject production = architecture.getJSONArray("arch_producedby_production").getJSONObject(0);
+
+        assertEquals("auftraggeber", production.getString("production_motivatedby_person"));
+        assertEquals("ausfuhrer", production.getString("production_carriedoutby_person"));
+        assertEquals("beteiligter", production.getString("production_inflby_person"));
+
+        JSONObject productionDating = production.getJSONArray("arch_production_dating").getJSONObject(0);
+
+        assertEquals("beginn", productionDating.getString("arch_prod_dating_start"));
+        assertEquals("ende", productionDating.getString("arch_prod_dating_end"));
+        assertEquals("frei", productionDating.getString("archproduction_sometime"));
+        assertEquals("jahrhundert", productionDating.getString("arch_prod_dating_century"));
+
+        JSONObject modification = architecture.getJSONArray("arch_modifiedby_structevolution").getJSONObject(0);
+
+        assertEquals("titel", modification.getString("structuralevolution_idby_title"));
+        assertEquals("beschreibung", modification.getString("structuralevolution_description"));
+
+        JSONObject modificationDating = modification.getJSONArray("arch_structevol_dating").getJSONObject(0);
+
+        assertEquals("beginn", modificationDating.getString("arch_structevol_dating_start"));
+        assertEquals("ende", modificationDating.getString("arch_structevol_dating_end"));
+        assertEquals("frei", modificationDating.getString("arch_evol_dat_sometime"));
+        assertEquals("jahrhundert", modificationDating.getString("arch_structevol_dating_century"));
     }
 
     @Test
