@@ -40,17 +40,19 @@ public class ExcelParser {
         this.formatter = new DataFormatter();
     }
 
-    public String createJSONFromParsedExcelFile(MultipartFile file) throws ExcelParserException, IOException {
+    public String createJSONFromParsedExcelFile(MultipartFile file) throws ExcelParserException {
 
         // Read in Excel file
         // Check if input file is an Excel file with ending .xlsx
-        if (!file.getName().endsWith(".xlsx")) {
-            throw new ExcelParserException("Input file is not an Excel file.");
+
+        InputStream fis = null;
+        Workbook workbook = null;
+        try {
+            fis = file.getInputStream();
+            workbook = new XSSFWorkbook(fis);
+        } catch (IOException e) {
+            throw new ExcelParserException("Reading the file was unsuccessful or the file is not an Excel file (ending .xlsx).");
         }
-
-        InputStream fis = file.getInputStream();
-
-        Workbook workbook = new XSSFWorkbook(fis);
 
         // Create JSON output
         JsonObject json = new JsonObject();

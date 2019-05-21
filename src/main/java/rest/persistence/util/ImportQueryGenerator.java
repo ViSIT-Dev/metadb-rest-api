@@ -308,7 +308,7 @@ public class ImportQueryGenerator {
                 this.idnames.add(line[1]);
 
                 String datatype = line[4];
-                if(datatype.equals("datetime")) {
+                if(datatype.equals("datetime") || datatype.equals("list_string")) {
                     this.datatypes.put(line[1], "string");
                 } else {
                     this.datatypes.put(line[1], line[4]);
