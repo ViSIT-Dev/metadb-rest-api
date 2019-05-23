@@ -97,7 +97,7 @@ public class ExcelTemplateContent {
             {"Titel(String)"},
             {"Objektbezeichnung(String)"},
             {"Funktion(String)"},
-            {"Allgemeine Objektdatierung", "Freie Datierung(String)", "Beginn des Datierungszeitraums(String)", "Ende des Datierungszeitraums(String)", "Jahrhundert(String)"},
+            {"Allgemeine Objektdatierung", "Freie Datierung -1(String)", "Beginn des Datierungszeitraums -1(String)", "Ende des Datierungszeitraums -1(String)", "Jahrhundert -1(String)"},
             {"Objekt besteht aus Teilobjekten(Object)"},
             {"Teilobjekt von(Object)"},
             {"Beschreibung(String)"},
@@ -108,7 +108,7 @@ public class ExcelTemplateContent {
             {"Inventarnummer(String)"},
             {"Standort - Museum(Institution)"},
             {"Standort - Bauwerk(Architecture)"},
-            {"Provenienz", "Datierung des Besitzerwechsels[6]", "Taggenaue Datierung(String)", "Freie Datierung(String)", "Beginn des Datierungszeitraums(String)", "Ende des Datierungszeitraums(String)", "Jahrhundert(String)", "Eigentümer - Person(Person)", "Eigentümer - Gruppe(Group)", "Vorbesitzer - Person(Person)", "Vorbesitzer - Gruppe(Group)"}, // TODO Taggenau to Date?
+            {"Provenienz", "Datierung des Besitzerwechsels[6]", "Taggenaue Datierung -2(String)", "Freie Datierung -2(String)", "Beginn des Datierungszeitraums -2(String)", "Ende des Datierungszeitraums -2(String)", "Jahrhundert -2(String)", "Eigentümer - Person(Person)", "Eigentümer - Gruppe(Group)", "Vorbesitzer - Person(Person)", "Vorbesitzer - Gruppe(Group)"}, // TODO Taggenau to Date?
             {"Darstellung(String)"},
             {"Objektbezug(Activity)"},
             {"Person(Person)"},
@@ -139,12 +139,12 @@ public class ExcelTemplateContent {
             {"Künstlername(String)"},
             {"Notname(String)"},
             {"Bezeichnung(String)"},
-            {"Geburt", "Geburtsdatum[5]", "Taggenaue Datierung(String)", "Freie Datierung(String)", "Beginn des Datierungszeitraums(String)", "Ende des Datierungszeitraums(String)", "Geburtsort(Place)", "Mutter(Person)", "Vater(Person)"},
-            {"Tod", "Sterbedatum[5]", "Taggenaue Datierung(String)", "Freie Datierung(String)", "Beginn des Datierungszeitraums(String)", "Ende des Datierungszeitraums(String)", "Sterbeort(Place)"},
+            {"Geburt", "Geburtsdatum[5]", "Taggenaue Datierung -1(String)", "Freie Datierung -1(String)", "Beginn des Datierungszeitraums -1(String)", "Ende des Datierungszeitraums -1(String)", "Geburtsort(Place)", "Mutter(Person)", "Vater(Person)"},
+            {"Tod", "Sterbedatum[5]", "Taggenaue Datierung -2(String)", "Freie Datierung -2(String)", "Beginn des Datierungszeitraums -2(String)", "Ende des Datierungszeitraums -2(String)", "Sterbeort(Place)"},
             {"Amt/Beruf(String)"},
             {"Titel(String)"},
             {"Beschreibung(String)"},
-            {"Ehe", "Ehepartner(Person)", "Beginn der Ehe[5]", "Taggenaue Datierung(String)", "Freie Datierung(String)", "Beginn des Datierungszeitraums(String)", "Ende des Datierungszeitraums(String)", "Ende der Ehe[5]", "Taggenaue Datierung(String)", "Freie Datierung(String)", "Beginn des Datierungszeitraums(String)", "Ende des Datierungszeitraums(String)"},
+            {"Ehe", "Ehepartner(Person)", "Beginn der Ehe[5]", "Taggenaue Datierung(String) -3", "Freie Datierung(String) -3", "Beginn des Datierungszeitraums(String) -3", "Ende des Datierungszeitraums -3(String)", "Ende der Ehe[5]", "Taggenaue Datierung -4(String)", "Freie Datierung -4(String)", "Beginn des Datierungszeitraums -4(String)", "Ende des Datierungszeitraums -4(String)"},
             {"Kinder(Person)"},
             {"Verwaltung/Eigentum(Architecture)"},
             {"Teilnahme(Activity)"},
@@ -242,19 +242,19 @@ public class ExcelTemplateContent {
         put("Bezeichnung", "person_idby_actorappel");
         put("Geburt - Untergruppe", "person_birth");
         put("Geburtsdatum - Unteruntergruppe", "person_birth | person_birth_dating");
-        put("Taggenaue Datierung", "person_birth_dating | person_birth_dating_exact");
-        put("Freie Datierung", "person_birth_dating | person_birth_dating_sometime");
-        put("Beginn des Datierungszeitraums", "person_birth_dating | person_birth_dating_start");
-        put("Ende des Datierungszeitraums", "person_birth_dating | person_birth_dating_end");
+        put("Taggenaue Datierung -1", "person_birth_dating | person_birth_dating_exact");
+        put("Freie Datierung -1", "person_birth_dating | person_birth_dating_sometime");
+        put("Beginn des Datierungszeitraums -1", "person_birth_dating | person_birth_dating_start");
+        put("Ende des Datierungszeitraums -1", "person_birth_dating | person_birth_dating_end");
         put("Geburtsort", "person_birth | person_birthplace");
         put("Mutter", "person_birth | person_mother");
         put("Vater", "person_birth | person_father");
         put("Tod - Untergruppe", "person_death");
         put("Sterbedatum - Unteruntergruppe", "person_death | person_death_dating");
-        put("Taggenaue Datierung", "person_death_dating | person_death_dating_exact");
-        put("Freie Datierung", "person_death_dating | person_death_dating_sometime");
-        put("Beginn des Datierungszeitraums", "person_death_dating | person_death_dating_start");
-        put("Ende des Datierungszeitraums", "person_death_dating | person_death_dating_end");
+        put("Taggenaue Datierung -2", "person_death_dating | person_death_dating_exact");
+        put("Freie Datierung -2", "person_death_dating | person_death_dating_sometime");
+        put("Beginn des Datierungszeitraums -2", "person_death_dating | person_death_dating_start");
+        put("Ende des Datierungszeitraums -2", "person_death_dating | person_death_dating_end");
         put("Sterbeort", "person_death | person_deathplace");
         put("Amt/Beruf", "person_hastype_profession");
         put("Titel", "person_carries_title");
@@ -262,25 +262,26 @@ public class ExcelTemplateContent {
         put("Ehe - Untergruppe", "person_marriage");
         put("Ehepartner", "marriage_partner_person");
         put("Beginn der Ehe - Unteruntergruppe", "person_marriage | marriage_begin_dating");
-        put("Taggenaue Datierung", "marriage_begin_dating | person_marriage_dating_exact");
-        put("Freie Datierung", "marriage_begin_dating | person_marriage_dating_sometime");
-        put("Beginn des Datierungszeitraums", "marriage_begin_dating | person_marriage_dating_start");
-        put("Ende des Datierungszeitraums", "marriage_begin_dating | person_marriage_dating_end");
+        put("Taggenaue Datierung -3", "marriage_begin_dating | person_marriage_dating_exact");
+        put("Freie Datierung -3", "marriage_begin_dating | person_marriage_dating_sometime");
+        put("Beginn des Datierungszeitraums -3", "marriage_begin_dating | person_marriage_dating_start");
+        put("Ende des Datierungszeitraums -3", "marriage_begin_dating | person_marriage_dating_end");
         put("Ende der Ehe - Unteruntergruppe", "person_marriage | marriage_end_dating");
-        put("Taggenaue Datierung", "marriage_end_dating | marriage_end_dating_exact");
-        put("Freie Datierung", "marriage_end_dating | marriage_end_dating_sometime");
-        put("Beginn des Datierungszeitraums", "marriage_end_dating | marriage_end_dating_start");
-        put("Ende des Datierungszeitraums", "marriage_end_dating | marriage_end_dating_end");
+        put("Taggenaue Datierung -4", "marriage_end_dating | marriage_end_dating_exact");
+        put("Freie Datierung -4", "marriage_end_dating | marriage_end_dating_sometime");
+        put("Beginn des Datierungszeitraums -4", "marriage_end_dating | marriage_end_dating_start");
+        put("Ende des Datierungszeitraums -4", "marriage_end_dating | marriage_end_dating_end");
         put("Kinder", "person_parentof_person");
         put("Verwaltung/Eigentum", "person_ownerof_architecture");
         put("Teilnahme", "person_participatedin_activity");
         put("In Auftrag gegebene Bauwerke", "person_motiv_arch_production");
         put("Ausgeführte Bauwerke", "person_carriedout_arch_prod");
         put("Beteiligt an - Bauwerke", "person_infld_arch_production");
-        put("In Auftrag gegebene Baumaßnahme", "person_motiv_structevol");
+        put("In Auftrag gegebene Baumaßnahmen", "person_motiv_structevol");
         put("Ausgeführte Baumaßnahmen", "person_carriedout_structevol");
         put("Beteiligt an - Baumaßnahmen", "person_infl_structevol");
         put("Im Besitz befindliche Objekte", "person_receivedcustody_object");
+        put("Ehemals im Besitz befindliche Objekte", "person_lostcustodyof_object");
         put("Schlagwort", "person_keyword");
         put("Kommentar", "person_comment");
         put("Literaturangaben - Untergruppe", "person_refentry");
@@ -381,10 +382,10 @@ public class ExcelTemplateContent {
     	put("Objektbezeichnung", "object_has_description");
     	put("Funktion", "object_exemplifies_function");
     	put("Allgemeine Objektdatierung - Untergruppe", "object_dating");
-    	put("Freie Datierung", "object_dating | object_dating_sometime");
-    	put("Beginn des Datierungszeitraums", "object_dating | object_dating_start");
-    	put("Ende des Datierungszeitraums", "object_dating | object_dating_end");
-    	put("Jahrhundert", "object_dating | object_dating_century");
+    	put("Freie Datierung -1", "object_dating | object_dating_sometime");
+    	put("Beginn des Datierungszeitraums -1", "object_dating | object_dating_start");
+    	put("Ende des Datierungszeitraums -1", "object_dating | object_dating_end");
+    	put("Jahrhundert -1", "object_dating | object_dating_century");
     	put("Objekt besteht aus Teilobjekten", "object_composedof_object");
     	put("Teilobjekt von", "object_partof_object");
     	put("Beschreibung", "object_description");
@@ -414,11 +415,11 @@ public class ExcelTemplateContent {
     	put("Standort - Bauwerk", "object_currentlocation_arch");
     	put("Provenienz - Untergruppe", "object_transferred_custody");
     	put("Datierung des Besitzerwechsels - Unteruntergruppe", "object_transferred_custody | object_toc_dating");
-    	put("Taggenaue Datierung", "object_toc_dating | object_toc_dating_exact");
-    	put("Freie Datierung", "object_toc_dating | object_toc_dating_sometime");
-    	put("Beginn des Datierungszeitraums", "object_toc_dating | object_toc_dating_start");
-    	put("Ende des Datierungszeitraums", "object_toc_dating | object_toc_dating_end");
-    	put("Jahrhundert", "object_toc_dating | object_toc_dating_century");
+    	put("Taggenaue Datierung -2", "object_toc_dating | object_toc_dating_exact");
+    	put("Freie Datierung -2", "object_toc_dating | object_toc_dating_sometime");
+    	put("Beginn des Datierungszeitraums -2", "object_toc_dating | object_toc_dating_start");
+    	put("Ende des Datierungszeitraums -2", "object_toc_dating | object_toc_dating_end");
+    	put("Jahrhundert -2", "object_toc_dating | object_toc_dating_century");
     	put("Eigentümer - Person", "object_transferred_custody | custody_receiving_person");
     	put("Eigentümer - Gruppe", "object_transferred_custody | custody_receiving_group");
     	put("Vorbesitzer - Person", "object_transferred_custody | custody_from_person");
