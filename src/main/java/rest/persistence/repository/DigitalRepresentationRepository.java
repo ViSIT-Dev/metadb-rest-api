@@ -35,6 +35,22 @@ public class DigitalRepresentationRepository {
     private Anno4j anno4j;
 
     /**
+     * Method to count the DigitalRepresentation nodes that are present for a given entity identified by the id.
+     *
+     * @param id    The id of the object to query the DigitalRepresentations.
+     * @return      The number of associated DigitalRepresentation nodes.
+     */
+    public int getNumberOfDigitalRepresentationsByObjectId(String id) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
+        QueryService qs = this.anno4j.createQueryService();
+
+        qs.addCriteria(".", id);
+
+        Resource resource = qs.execute(Resource.class).get(0);
+
+        return resource.getDigitalRepresentations().size();
+    }
+
+    /**
      * Method to query a single vismo:DigitalRepresentation technical metadata String, defined by a supported mediaId.
      *
      * @param id    The Id of the vismo:DigitalRepresentation entity whose technical metadata is to be requested.

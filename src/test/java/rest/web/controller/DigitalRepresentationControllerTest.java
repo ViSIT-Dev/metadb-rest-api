@@ -3,13 +3,18 @@ package rest.web.controller;
 import com.github.anno4j.Anno4j;
 import model.Resource;
 import model.technicalMetadata.DigitalRepresentation;
+import model.vismo.Group;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import rest.BaseWebTest;
 
 import static org.junit.Assert.*;
@@ -28,6 +33,37 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     private String urlLikeID = "http://visit.de/model/id1";
     private final String standardUrl = "https://database.visit.uni-passau.de/digrep/";
     private Anno4j anno4j;
+
+    private final static String WISSKI_VIEW_PATH = "http://database.visit.uni-passau.de/drupal/wisski/navigate/178/view";
+
+    @Test
+    public void testGetNumberOfDigitalRepresentationsByWisskiPath() throws Exception {
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + objectID + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String requestURL = standardUrl + "object/amountByPath?wisskiPath=" + WISSKI_VIEW_PATH;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        assertEquals("3", body);
+    }
+
+    @Test
+    public void testGetNumberOfDigitalRepresentationsByObjectId() throws Exception {
+        String requestURL = standardUrl + "object/amountById?id=" + objectID;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        assertEquals("3", body);
+    }
 
     /**
      * Testmethod, expects a DigitalRepositoryException to come with a false given MediaID

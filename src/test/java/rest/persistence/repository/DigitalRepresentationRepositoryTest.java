@@ -23,9 +23,20 @@ import static org.junit.Assert.*;
 public class DigitalRepresentationRepositoryTest extends BaseWebTest {
 
     private String objectID;
+    private String resourceWithoutDigRep;
     private Resource resource;
     private String mediaID1;
     private String mediaID2;
+
+    @Test
+    public void testNumberOfDigitalRepresentations() throws RepositoryException, QueryEvaluationException, MalformedQueryException, ParseException {
+        int number1 = this.digitalRepresentationRepository.getNumberOfDigitalRepresentationsByObjectId(objectID);
+
+        int number2 = this.digitalRepresentationRepository.getNumberOfDigitalRepresentationsByObjectId(resourceWithoutDigRep);
+
+        assertEquals(2, number1);
+        assertEquals(0, number2);
+    }
 
     @Test
     public void testGetAllTechnicalMetadataStringsByObjectID() throws RepositoryException, MalformedQueryException, QueryEvaluationException, ParseException {
@@ -139,5 +150,8 @@ public class DigitalRepresentationRepositoryTest extends BaseWebTest {
 
         resource.addDigitalRepresentation(rep1);
         resource.addDigitalRepresentation(rep2);
+
+        Resource resourceWithoutDigRep = anno4j.createObject(Resource.class);
+        this.resourceWithoutDigRep = resourceWithoutDigRep.getResourceAsString();
     }
 }

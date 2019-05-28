@@ -28,6 +28,24 @@ public class DigitalRepresentationService {
     @Autowired
     private Anno4jRepository anno4jRepository;
 
+    public int getNumberOfDigitalRepresentationsByObjectId(String id) {
+        try {
+            return this.digitalRepresentationRepository.getNumberOfDigitalRepresentationsByObjectId(id);
+        } catch (Exception e) {
+            throw new DigitalRepositoryException(e.getMessage());
+        }
+    }
+
+    public int getNumberOfDigitalRepresentationsByWisskiPath(String wisskiPath) {
+        try {
+            String objectIdByWisskiPath = this.anno4jRepository.getObjectIdByWisskiPath(wisskiPath);
+
+            return this.digitalRepresentationRepository.getNumberOfDigitalRepresentationsByObjectId(objectIdByWisskiPath);
+        } catch (Exception e) {
+            throw new DigitalRepositoryException(e.getMessage());
+        }
+    }
+
     /**
      * Service Method to get a media representation with given media id.
      *
