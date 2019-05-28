@@ -3,10 +3,8 @@ package rest.web.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import rest.application.exception.MetadataNotFoundException;
 import rest.application.exception.MetadataQueryException;
 import rest.application.exception.ObjectClassNotFoundException;
 import rest.service.ObjectService;
@@ -14,6 +12,7 @@ import rest.service.ObjectService;
 /**
  * Controller Class for the Object Repository
  */
+@CrossOrigin
 @RestController
 @RequestMapping//(value = "/api/")
 public class ObjectController {
@@ -32,7 +31,7 @@ public class ObjectController {
     @GetMapping(value = "wisskiobject")
     public String getRepresentationOfObjectByWisskiPath(
             @ApiParam(required = true, value = "The wisskiId of the object to request")
-            @RequestParam("wisskipath") String wisskipath) throws MetadataQueryException {
+            @RequestParam("wisskipath") String wisskipath) throws MetadataQueryException, MetadataNotFoundException {
         return this.objectService.getObjectIdByWisskiPath(wisskipath);
     }
 

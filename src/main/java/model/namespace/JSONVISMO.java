@@ -13,6 +13,8 @@ public class JSONVISMO {
 
     public static final String TYPE = "type";
 
+    public static final String WISSKI_VIEW_PATH = "wisskiviewpath";
+
     public static final String DIGITAL_REPRESENTATIONS = "digitalRepresentations";
 
     public static final String TECHNICAL_METADATA_STRING = "technicalMetadata";

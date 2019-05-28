@@ -7,6 +7,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rest.application.exception.MetadataNotFoundException;
 import rest.application.exception.MetadataQueryException;
 import rest.application.exception.ObjectClassNotFoundException;
 import rest.persistence.repository.Anno4jRepository;
@@ -34,13 +35,8 @@ public class ObjectService {
      * @return              A JSON representation of the requested object defined by the supported WissKI view path.
      * @throws MetadataQueryException
      */
-    public String getObjectIdByWisskiPath(String wisskiPath) throws MetadataQueryException {
+    public String getObjectIdByWisskiPath(String wisskiPath) throws MetadataQueryException, MetadataNotFoundException {
         try {
-            // Strip https from the given wisskiPath (resource Ids are saved with http by WissKI/Drupal)
-            if(wisskiPath.startsWith("https")) {
-                String input = wisskiPath.replace("https", "http");
-            }
-
             String id = this.anno4jRepository.getObjectIdByWisskiPath(wisskiPath);
 
             return this.getRepresentationOfObject(id);

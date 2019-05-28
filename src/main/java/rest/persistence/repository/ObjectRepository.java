@@ -138,15 +138,23 @@ public class ObjectRepository {
                             jsonObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(id));
                             break;
                         default:
-                            jsonObject.addProperty(binding, currentResult.getValue(binding).stringValue());
+                            String value = currentResult.getValue(binding).stringValue();
+                            jsonObject.addProperty(binding, value);
                             break;
                     }
                 }
             }
         }
 
+        String wisskiPathByObjectId = this.anno4jRepository.getWisskiPathByObjectId(id);
+
+        if(!wisskiPathByObjectId.equals("")) {
+            jsonObject.addProperty(JSONVISMO.WISSKI_VIEW_PATH, wisskiPathByObjectId);
+        }
+
         String jsonObjectString = jsonObject.toString();
-        jsonObjectString = replaceString(jsonObjectString, "\\", "");
+        // TODO Removed this line, which has presumably been added by Christian, but dunno the reason
+//        jsonObjectString = replaceString(jsonObjectString, "\\", "");
         logger.debug("Created output JSON: " + jsonObjectString);
 
         return jsonObjectString;

@@ -19,8 +19,10 @@ import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
 import rest.BaseWebTest;
+import rest.application.exception.MetadataNotFoundException;
 
 import java.math.BigInteger;
 
@@ -36,8 +38,12 @@ public class ObjectControllerTest extends BaseWebTest {
     private final String standardUrl = "https://database.visit.uni-passau.de/";
 
     private final static String WISSKI_VIEW_PATH = "http://database.visit.uni-passau.de/drupal/wisski/navigate/178/view";
+    private final static String WISSKI_VIEW_PATH2 = "http://database.visit.uni-passau.de/drupal/wisski/navigate/179/view";
+    private final static String WISSKI_VIEW_PATH3 = "http://database.visit.uni-passau.de/drupal/wisski/navigate/171/view";
+    private final static String WISSKI_VIEW_PATH4 = "http://database.visit.uni-passau.de/drupal/wisski/navigate/172/view";
 
     private String groupId;
+    private String groupWithQuotesId;
     private String referenceId;
     private String iconographyString;
     private String keywordString1;
@@ -58,14 +64,14 @@ public class ObjectControllerTest extends BaseWebTest {
 
         String updateQuery = "INSERT DATA\n" +
                 "{ \n" +
-                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + group.getResourceAsString() + "> ." +
+                "  <" + WISSKI_VIEW_PATH2 + "> <http://www.w3.org/2002/07/owl#sameAs> <" + group.getResourceAsString() + "> ." +
                 "}";
 
         Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
 
         update.execute();
 
-        String requestURL = standardUrl + "wisskiobject?wisskipath=" + WISSKI_VIEW_PATH;
+        String requestURL = standardUrl + "wisskiobject?wisskipath=" + WISSKI_VIEW_PATH2;
         MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
         String mvcResultString = mvcResult.getResponse().getContentAsString();
 
@@ -75,6 +81,97 @@ public class ObjectControllerTest extends BaseWebTest {
         assertEquals(group.getResourceAsString(), jsonObject.getString(JSONVISMO.ID));
         assertEquals("Iconography", jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY));
         assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains("Keyword"));
+    }
+
+    @Test
+    public void testGetObjectRepresentationByWissKIViewPathMixedHttps() throws Exception {
+        // Test data for the getObjectIdByWisskiPath method by mixing http and https
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        Group group = anno4j.createObject(Group.class);
+        group.addKeyword("Keyword");
+        group.setIconography("Iconography");
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + WISSKI_VIEW_PATH3 + "> <http://www.w3.org/2002/07/owl#sameAs> <" + group.getResourceAsString() + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String requestPath = WISSKI_VIEW_PATH3.replace("http", "https");
+
+        String requestURL = standardUrl + "wisskiobject?wisskipath=" + requestPath;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+
+        assertFalse(mvcResultString.isEmpty());
+        JSONObject jsonObject = new JSONObject(mvcResultString);
+        assertTrue(jsonObject.getString(JSONVISMO.TYPE).equals(VISMO.GROUP));
+        assertEquals(group.getResourceAsString(), jsonObject.getString(JSONVISMO.ID));
+        assertEquals("Iconography", jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY));
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains("Keyword"));
+    }
+
+    @Test
+    public void testGetObjectRepresentationByWissKIViewPathMixedHttps2() throws Exception {
+        // Test data for the getObjectIdByWisskiPath method by mixing http and https
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        Group group = anno4j.createObject(Group.class);
+        group.addKeyword("Keyword");
+        group.setIconography("Iconography");
+
+        String persistanceWisskiPath = WISSKI_VIEW_PATH4.replace("http", "https");
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + persistanceWisskiPath + "> <http://www.w3.org/2002/07/owl#sameAs> <" + group.getResourceAsString() + "> ." +
+                "  <" + group.getResourceAsString() + "> <http://www.w3.org/2002/07/owl#sameAs> <" + persistanceWisskiPath + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String requestURL = standardUrl + "wisskiobject?wisskipath=" + WISSKI_VIEW_PATH4;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+
+        assertFalse(mvcResultString.isEmpty());
+        JSONObject jsonObject = new JSONObject(mvcResultString);
+        assertTrue(jsonObject.getString(JSONVISMO.TYPE).equals(VISMO.GROUP));
+        assertEquals(group.getResourceAsString(), jsonObject.getString(JSONVISMO.ID));
+        assertEquals(persistanceWisskiPath, jsonObject.getString(JSONVISMO.WISSKI_VIEW_PATH));
+        assertEquals("Iconography", jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY));
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_KEYWORD).contains("Keyword"));
+    }
+
+    @Test
+    public void testGetObjectRepresentationByWissKIViewPathFailure() throws Exception {
+        // Test data for the getObjectIdByWisskiPath method
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        Group group = anno4j.createObject(Group.class);
+        group.addKeyword("Keyword");
+        group.setIconography("Iconography");
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + group.getResourceAsString() + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String nonExistingWisskiPath = WISSKI_VIEW_PATH.replace("178", "2000");
+
+        String requestURL = standardUrl + "wisskiobject?wisskipath=" + nonExistingWisskiPath;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isNotFound()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
     }
 
     @Test
@@ -101,6 +198,19 @@ public class ObjectControllerTest extends BaseWebTest {
         assertEquals(11, jsonRefEntry.getInt(JSONVISMO.REFERENCE_ENTRY_PAGES));
         assertEquals(VISMO.REFERENCE_ENTRY, jsonRefEntry.getString(JSONVISMO.TYPE));
         assertEquals(this.entryId1, jsonRefEntry.getString(JSONVISMO.ID));
+    }
+
+    @Test
+    public void testGetRepresentationOfGroupWithQuotes() throws Exception {
+        String requestURL = standardUrl + "object?id=" + this.groupWithQuotesId;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+        String mvcResultString = mvcResult.getResponse().getContentAsString();
+
+        assertFalse(mvcResultString.isEmpty());
+        JSONObject jsonObject = new JSONObject(mvcResultString);
+
+        assertTrue(jsonObject.getString(JSONVISMO.GROUP_ICONOGRAPHY).contains("\"quotes\""));
+        System.out.println(jsonObject.toString());
     }
 
     @Test
@@ -176,5 +286,9 @@ public class ObjectControllerTest extends BaseWebTest {
 
         this.groupId = group.getResourceAsString();
         this.referenceId = reference.getResourceAsString();
+
+        Group groupWithQuotes = anno4j.createObject(Group.class);
+        groupWithQuotes.setIconography("Test with \"quotes\"");
+        this.groupWithQuotesId = groupWithQuotes.getResourceAsString();
     }
 }
