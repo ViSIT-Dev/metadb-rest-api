@@ -10,10 +10,7 @@ import model.namespace.JSONVISMO;
 import model.namespace.VISMO;
 import model.technicalMetadata.DigitalRepresentation;
 import org.apache.marmotta.ldpath.parser.ParseException;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.object.ObjectConnection;
 import org.openrdf.repository.object.ObjectQuery;
@@ -41,13 +38,27 @@ public class DigitalRepresentationRepository {
      * @return      The number of associated DigitalRepresentation nodes.
      */
     public int getNumberOfDigitalRepresentationsByObjectId(String id) throws RepositoryException, ParseException, MalformedQueryException, QueryEvaluationException {
-        QueryService qs = this.anno4j.createQueryService();
+        String query = "    SELECT ((COUNT(?o)) AS ?count)\n" +
+                "    WHERE {\n" +
+                "        ?s <http://visit.de/ontologies/vismo/hasDigitalRepresentation> ?o\n" +
+                " FILTER regex(str(?s), \"^ADD_ID_HERE$\", \"\")\n" +
+                "}";
 
-        qs.addCriteria(".", id);
+        query = query.replace("ADD_ID_HERE", id);
 
-        Resource resource = qs.execute(Resource.class).get(0);
+        ObjectConnection objectConnection = this.anno4j.getObjectRepository().getConnection();
+        TupleQuery tupleQuery = objectConnection.prepareTupleQuery(query);
+        TupleQueryResult evaluateTupleQuery = tupleQuery.evaluate();
 
-        return resource.getDigitalRepresentations().size();
+        BindingSet currentResult;
+
+        if(evaluateTupleQuery.hasNext()) {
+            currentResult = evaluateTupleQuery.next();
+
+            return Integer.valueOf(currentResult.getValue("count").stringValue());
+        } else {
+            return 0;
+        }
     }
 
     /**

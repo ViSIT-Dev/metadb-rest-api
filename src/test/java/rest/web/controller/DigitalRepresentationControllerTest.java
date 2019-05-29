@@ -32,6 +32,7 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
     private Anno4j anno4j;
 
     private final static String WISSKI_VIEW_PATH = "http://database.visit.uni-passau.de/drupal/wisski/navigate/178/view";
+    private final static String WISSKI_VIEW_PATH_WITH_HTTPS = "https://database.visit.uni-passau.de/drupal/wisski/navigate/178/view";
 
     // Following 2 tests technically belong into the ObjectControllerTest
     @Test
@@ -48,6 +49,26 @@ public class DigitalRepresentationControllerTest extends BaseWebTest {
         update.execute();
 
         String requestURL = STANDARD_URL_WITHOUT_DIGREP + "object/amountByPath?wisskiPath=" + WISSKI_VIEW_PATH;
+        MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        assertEquals("3", body);
+    }
+
+    @Test
+    public void testGetNumberOfDigitalRepresentationsByWisskiPathAndHttps() throws Exception {
+        Anno4j anno4j = this.anno4jRepository.getAnno4j();
+
+        String updateQuery = "INSERT DATA\n" +
+                "{ \n" +
+                "  <" + WISSKI_VIEW_PATH + "> <http://www.w3.org/2002/07/owl#sameAs> <" + objectID + "> ." +
+                "}";
+
+        Update update = anno4j.getObjectRepository().getConnection().prepareUpdate(updateQuery);
+
+        update.execute();
+
+        String requestURL = STANDARD_URL_WITHOUT_DIGREP + "object/amountByPath?wisskiPath=" + WISSKI_VIEW_PATH_WITH_HTTPS;
         MvcResult mvcResult = mockMvc.perform(get(requestURL)).andDo(print()).andExpect(status().isOk()).andReturn();
 
         String body = mvcResult.getResponse().getContentAsString();
