@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import rest.application.exception.MetadataNotFoundException;
 import rest.application.exception.MetadataQueryException;
 import rest.application.exception.ObjectClassNotFoundException;
+import rest.service.DigitalRepresentationService;
 import rest.service.ObjectService;
 
 /**
@@ -19,6 +20,9 @@ public class ObjectController {
 
     @Autowired
     private ObjectService objectService;
+
+    @Autowired
+    private DigitalRepresentationService digitalRepresentationService;
 
     /**
      * Method to return a JSON Representation of an Object with the given wisskiId
@@ -48,5 +52,23 @@ public class ObjectController {
             @ApiParam(required = true, value = "The ID of the object to request")
             @RequestParam("id") String id) throws ObjectClassNotFoundException {
        return this.objectService.getRepresentationOfObject(id);
+    }
+
+    @ApiOperation(value = "Get number of DigRep nodes by objectID",
+            notes = "Method to request the number of associated DigitalRepresentations nodes of a given entity with the supported id.")
+    @GetMapping(value = "object/amountById")
+    public int getDigitalRepresentationsByObjectId(
+            @ApiParam(required = true, value = "The ID of the entity node.")
+            @RequestParam("id") String id) {
+        return this.digitalRepresentationService.getNumberOfDigitalRepresentationsByObjectId(id);
+    }
+
+    @ApiOperation(value = "Get number of DigRep nodes by WisskiViewPath",
+            notes = "Method to request the number of associated DigitalRepresentations nodes of a given entity with the supported Wisski view path.")
+    @GetMapping(value = "object/amountByPath")
+    public int getDigitalRepresentationsByWisskiPath(
+            @ApiParam(required = true, value = "The Wisski view path of the entity node.")
+            @RequestParam("wisskiPath") String wisskipath) {
+        return this.digitalRepresentationService.getNumberOfDigitalRepresentationsByWisskiPath(wisskipath);
     }
 }

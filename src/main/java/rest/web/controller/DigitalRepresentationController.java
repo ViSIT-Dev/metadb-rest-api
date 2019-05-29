@@ -21,24 +21,6 @@ public class DigitalRepresentationController {
     @Autowired
     private DigitalRepresentationService digitalRepresentationService;
 
-    @ApiOperation(value = "Get number of DigRep nodes by objectID",
-            notes = "Method to request the number of associated DigitalRepresentations nodes of a given entity with the supported id.")
-    @GetMapping(value = "object/amountById")
-    public int getDigitalRepresentationsByObjectId(
-            @ApiParam(required = true, value = "The ID of the entity node.")
-            @RequestParam("id") String id) {
-        return this.digitalRepresentationService.getNumberOfDigitalRepresentationsByObjectId(id);
-    }
-
-    @ApiOperation(value = "Get number of DigRep nodes by WisskiViewPath",
-            notes = "Method to request the number of associated DigitalRepresentations nodes of a given entity with the supported Wisski view path.")
-    @GetMapping(value = "object/amountByPath")
-    public int getDigitalRepresentationsByWisskiPath(
-            @ApiParam(required = true, value = "The Wisski view path of the entity node.")
-            @RequestParam("wisskiPath") String wisskipath) {
-        return this.digitalRepresentationService.getNumberOfDigitalRepresentationsByWisskiPath(wisskipath);
-    }
-
     /**
      * Controller Method to get a single media representation based on a media id
      *
