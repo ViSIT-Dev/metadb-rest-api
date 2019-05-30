@@ -17,22 +17,27 @@ function triggerMouseEvent(node, eventType) {
 function removeSeparationLines(parts) {
     var pageName = document.title;
     if (pageName.includes("Activity")) {
+        parts.splice(0, 1);
         parts.splice(13, 1);
         parts.splice(2, 1);
     } else if (pageName.includes("Architecture")) {
+        parts.splice(0, 1);
         parts.splice(49, 1);
         parts.splice(27, 1);
         parts.splice(25, 1);
         parts.splice(14, 1);
         parts.splice(13, 1);
     } else if (pageName.includes("Group")) {
+        parts.splice(0, 1);
         parts.splice(12, 1);
     } else if (pageName.includes("Reference")) {
+        parts.splice(0, 1);
         parts.splice(17, 1);
         parts.splice(13, 1);
         parts.splice(4, 1);
         parts.splice(0, 1);
     } else if (pageName.includes("Object")) {
+        parts.splice(0, 1);
         parts.splice(54, 1);
         parts.splice(36, 1);
         parts.splice(35, 1);
@@ -42,6 +47,7 @@ function removeSeparationLines(parts) {
         parts.splice(11, 1);
         parts.splice(3, 1);
     } else if (pageName.includes("Person")) {
+        parts.splice(0, 1);
         parts.splice(49, 1);
         parts.splice(31, 1);
         parts.splice(26, 1);
@@ -51,7 +57,10 @@ function removeSeparationLines(parts) {
         parts.splice(7, 1);
         parts.splice(5, 1);
     } else if (pageName.includes("Place")) {
+        parts.splice(0, 1);
         parts.splice(8, 1);
+    } else if (pageName.includes("Institution")) {
+        parts.splice(0, 1);
     }
 
     return parts;
@@ -156,8 +165,8 @@ function openSecondDimension(_callback) {
         var counter = 0;
         var wisskiId = wisskiAdds[0].id;
 
-                        //if the first id does not fit for a add-process, go through all ids and look if there is a suitable one
-                //The save and cancel button include save oder cancel in their id and are not relevant here
+        //if the first id does not fit for a add-process, go through all ids and look if there is a suitable one
+        //The save and cancel button include save oder cancel in their id and are not relevant here
         if (wisskiId.includes("save") || wisskiId.includes("cancel")) {
             for (i = 0; i < wisskiAdds.length; i++) {
                 wisskiId = wisskiAdds[i].id;
@@ -268,8 +277,18 @@ function fillIn(parts, _callback) {
                     }
                     //if the element is a date, bring the date into the right format
                 } else if (formElement.id.includes("date")) {
-                    var dateArray = parts[i].split(".");
-                    formElement.value = dateArray[2] + "-" + dateArray[1] + "-" + dateArray[0];
+                    if (parts[i] !== "") {
+                        var dateArray = parts[i].split(".");
+
+                        formElement.valueAsDate = new Date(Date.UTC(dateArray[2], (dateArray[1]-1), dateArray[0]));
+                    }
+                } else if (formElement.id.includes("time")) {
+                    if (parts[i] !== "") {
+                        var dateArray = parts[i].split(":");
+                        formElement.valueAsDate = new Date(Date.UTC(0,0,0, dateArray[0], dateArray[1], dateArray[2]));
+                    }
+                } else if (formElement.id.includes("upload")) {
+                    //do nothing as the paste featuer can't paste filenames
                 } else {
                     formElement.value = parts[i];
                 }
