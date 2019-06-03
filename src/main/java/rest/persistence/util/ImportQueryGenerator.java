@@ -157,6 +157,8 @@ public class ImportQueryGenerator {
                         } else {
                             for (String split : value.split(",")) {
 //                                query += this.createQueryAddition(groupName, split, id);
+
+                                split = split.trim();
                                 queryParts.add(this.createQueryAddition(groupName, split, id));
                             }
                         }

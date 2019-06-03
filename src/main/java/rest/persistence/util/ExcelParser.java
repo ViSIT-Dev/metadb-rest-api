@@ -158,6 +158,8 @@ public class ExcelParser {
                     } else {
                         if (!value.isEmpty()) {
 
+                            value = value.trim();
+
                             // Find the respective JsonObject (which is the overall object or a sub-part of it),
                             // to which the current property is to be added
                             JsonObject objectToAddProperty = null;

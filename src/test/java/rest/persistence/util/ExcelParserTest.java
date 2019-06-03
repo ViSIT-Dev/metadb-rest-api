@@ -14,6 +14,8 @@ import org.openrdf.repository.object.ObjectConnection;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import rest.application.exception.ExcelParserException;
+import rest.application.exception.IdMapperException;
+import rest.application.exception.QueryGenerationException;
 
 import java.io.*;
 import java.util.List;
@@ -158,7 +160,7 @@ public class ExcelParserTest {
 
 	@Test
 	public void testExcelParserWithActivityAndSplitSubgroupValues()
-			throws IOException, ExcelParserException, JSONException {
+			throws IOException, ExcelParserException, JSONException, IdMapperException, QueryGenerationException {
 		File originalFile = new File("src/test/resources/visitExcelActivitySplitSubgroupValuesTest.xlsx");
 
 		InputStream is = new FileInputStream(originalFile);
@@ -195,6 +197,12 @@ public class ExcelParserTest {
 
 		assertEquals("kurztitel2", refentry2.getString("activity_refentry_in_reference"));
 		assertEquals("seiten2", refentry2.getString("activity_refentry_pages"));
+
+		ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
+
+		String updateQueryFromJSON = generator.createUpdateQueryFromJSON(json);
+
+		System.out.println(updateQueryFromJSON);
 	}
 
 	@Test
