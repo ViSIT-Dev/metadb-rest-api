@@ -176,7 +176,7 @@ public class ExcelParser {
 
                                     JsonArray subsubgroupJsonArray = (JsonArray) subgroupLastObject.get(subgroup);
 
-                                    objectToAddProperty = (JsonObject) subsubgroupJsonArray.get(subgroupJsonArray.size() - 1);
+                                    objectToAddProperty = (JsonObject) subsubgroupJsonArray.get(subsubgroupJsonArray.size() - 1);
                                 } else {
                                     // Normal subgroup affiliation
                                     JsonArray subgroupArray = entityJson.getAsJsonArray(subgroup);
@@ -273,7 +273,7 @@ public class ExcelParser {
             if (list.size() == 1) {
                 JsonArray subgroup = jsonObject.getAsJsonArray(list.get(0));
 
-                if (this.isJsonArrayEmpty(subgroup)) {
+                if(this.isEmptyJsonArray(subgroup)) {
                     jsonObject.remove(list.get(0));
                 }
 
@@ -282,7 +282,7 @@ public class ExcelParser {
 
                     JsonArray jsonArray = jsonObject.getAsJsonArray(list.get(0));
 
-                    if (this.isJsonArrayEmpty(jsonArray)) {
+                    if (this.isEmptyJsonArray(jsonArray)) {
                         jsonObject.remove(list.get(0));
                     }
                 }
@@ -290,33 +290,82 @@ public class ExcelParser {
         }
     }
 
-    /**
-     * Private method to check if the supported JsonArray is empty.
-     * This is done by checking if the array has elements altogether, and if it does, if these are just empty JsonObjects.
-     *
-     * @param jsonArray The JsonArray to check.
-     * @return True, if the JsonArray does not have any elements or only empty elements.
-     */
-    private boolean isJsonArrayEmpty(JsonArray jsonArray) {
-        if (jsonArray.size() == 0) {
+    private boolean isEmptyJsonObject(JsonObject jsonObject) {
+        if(jsonObject.keySet().size() == 0) {
             return true;
         } else {
-            for (JsonElement jsonElement : jsonArray) {
-                if (jsonElement.isJsonObject()) {
-                    if (!((JsonObject) jsonElement).keySet().isEmpty()) {
-                        return false;
+            boolean empty = true;
+
+            for(String key : jsonObject.keySet()) {
+                JsonElement jsonElement = jsonObject.get(key);
+
+                // Only consider further JsonObjects and Arrays
+                if(!jsonElement.isJsonPrimitive()) {
+                    if(jsonElement.isJsonObject()) {
+                        boolean intermediateEmpty = this.isEmptyJsonObject((JsonObject) jsonElement);
+
+                        if(intermediateEmpty) {
+                            jsonObject.remove(key);
+                        } else {
+                            empty = false;
+                        }
+
+                    } else {
+                        boolean intermediateEmpty = this.isEmptyJsonArray((JsonArray) jsonElement);
+
+                        if(intermediateEmpty) {
+                            jsonObject.remove(key);
+                        } else {
+                            empty = false;
+                        }
+
                     }
                 } else {
-                    boolean subArrayEmpty = this.isJsonArrayEmpty((JsonArray) jsonElement);
+                    empty = false;
+                }
+            }
 
-                    if (!subArrayEmpty) {
-                        return false;
+            return empty;
+        }
+    }
+
+    private boolean isEmptyJsonArray(JsonArray jsonArray) {
+        if(jsonArray.size() == 0) {
+            return true;
+        } else {
+            boolean empty = true;
+
+            for(int i = 0; i < jsonArray.size(); ++i) {
+                JsonElement jsonElement = jsonArray.get(i);
+
+                // Only consider further JsonObjects and Arrays
+                if(!jsonElement.isJsonPrimitive()) {
+                    if(jsonElement.isJsonObject()) {
+                        boolean intermediateEmpty = this.isEmptyJsonObject((JsonObject) jsonElement);
+
+                        if(intermediateEmpty) {
+                            jsonArray.remove(i);
+
+                            // Ugly, but necessary: As we delete one object from the array, we have to lower the for-variable
+                            --i;
+                        } else {
+                            empty = false;
+                        }
+                    } else {
+                        boolean intermediateEmpty = this.isEmptyJsonArray((JsonArray) jsonElement);
+
+                        if(intermediateEmpty) {
+                            jsonArray.remove(i);
+                        } else {
+                            empty = false;
+                        }
+
                     }
                 }
             }
-        }
 
-        return true;
+            return empty;
+        }
     }
 
     private void initializeLabelIDMap() {
