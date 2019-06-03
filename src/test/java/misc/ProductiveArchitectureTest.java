@@ -31,10 +31,10 @@ public class ProductiveArchitectureTest {
 
         System.out.println(json);
 
-//        ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
-//
-//        String updateQueryFromJSON = generator.createUpdateQueryFromJSON(json);
-//
-//        System.out.println(updateQueryFromJSON);
+        ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
+
+        String updateQueryFromJSON = generator.createUpdateQueryFromJSON(json);
+
+        System.out.println(updateQueryFromJSON);
     }
 }

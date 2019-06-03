@@ -1,9 +1,9 @@
 package rest.persistence.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Class that supports a method to merge several given RDF triples within their common parts.
@@ -159,7 +159,7 @@ public class TripleMerger {
         LinkedList<String> singleTriples = new LinkedList<String>();
 
         for(String wrapperQuery : wrapperQueries) {
-            String[] split = wrapperQuery.split(" . ");
+            String[] split = wrapperQuery.split(" \\. ");
 
             Collections.addAll(singleTriples, split);
         }
