@@ -1,5 +1,7 @@
 package rest.persistence.util;
 
+import model.namespace.CIDOC;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,6 +11,8 @@ import java.util.List;
  * Class that supports a method to merge several given RDF triples within their common parts.
  */
 public class TripleMerger {
+
+    private final static String RDF_TYPE = "rdf:type";
 
     public static String mergeTriples(List<String> wrapperQueries) {
 
@@ -57,7 +61,30 @@ public class TripleMerger {
 
                 if(triple1Split[0].equals(triple2Split[0]) && triple1Split[1].equals(triple2Split[1]) && !triple1Split[2].equals(triple2Split[2]) && triple1Split[2].startsWith("?") && triple2Split[2].startsWith("?")) {
                     // Subject and predicate equal, object differing
-                    substitutions.put(triple2Split[2], triple1Split[2]);
+
+                    // Special case: ignore cases that have rdf:type as predicate and do not refer to the same type afterwards
+                    if(triple1Split[1].equals("<" + CIDOC.P2_HAS_TYPE + ">") && triple2Split[1].equals("<" + CIDOC.P2_HAS_TYPE + ">")) {
+                        String furtherTriple1 = "";
+                        String furtherTriple2 = "";
+
+                        for(String searchTriple : triples) {
+                            if(searchTriple.startsWith(triple1Split[2] + " " + RDF_TYPE)) {
+                                furtherTriple1 = searchTriple;
+                            } else if(searchTriple.startsWith(triple2Split[2] + " " + RDF_TYPE)) {
+                                furtherTriple2 = searchTriple;
+                            }
+                        }
+
+                        String furtherTriple1Ending = furtherTriple1.substring(furtherTriple1.indexOf(RDF_TYPE) + RDF_TYPE.length());
+                        String furtherTriple2Ending = furtherTriple2.substring(furtherTriple2.indexOf(RDF_TYPE) + RDF_TYPE.length());
+
+                        if(furtherTriple1Ending.equals(furtherTriple2Ending)) {
+                            substitutions.put(triple2Split[2], triple1Split[2]);
+                        } // If different, no substitutions should happen
+
+                    } else {
+                        substitutions.put(triple2Split[2], triple1Split[2]);
+                    }
                 } else if(!triple1Split[0].equals(triple2Split[0]) && triple1Split[1].equals(triple2Split[1]) && triple1Split[2].equals(triple2Split[2])  && triple1Split[0].startsWith("?") && triple2Split[0].startsWith("?")) {
                     // Predicate and object equal, subject differing
                     substitutions.put(triple2Split[0], triple1Split[0]);

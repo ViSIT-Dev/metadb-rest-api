@@ -254,12 +254,6 @@ public class ImportQueryGenerator {
             // Remove protected Komma from ExcelParser
             queryValue = queryValue.replaceAll("\\[,\\]", ",");
 
-            // TODO Treat ending with \" -> Gnadenkindl
-//            if(queryValue.endsWith("\"\"") && queryValue.length() > 2) {
-//                queryValue = queryValue.substring(0, queryValue.length() - 2);
-//                queryValue = queryValue.concat("\". \"");
-//            }
-
             if(StringUtils.isNumeric(value)) {
                 queryValue += "^^xsd:integer";
             }

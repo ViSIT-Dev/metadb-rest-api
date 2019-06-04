@@ -1,6 +1,8 @@
 package misc;
 
 import com.github.anno4j.Anno4j;
+import com.github.anno4j.querying.QueryService;
+import model.vismo.Architecture;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.query.Update;
@@ -13,6 +15,9 @@ import rest.persistence.util.ImportQueryGenerator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * This test suite does first experiments with the Architecture Excel of Andrea and Nina.
@@ -46,5 +51,11 @@ public class ProductiveArchitectureTest {
 
         Update update = connection.prepareUpdate(updateQueryFromJSON);
         update.execute();
+
+        QueryService qs = anno4j.createQueryService();
+
+        List<Architecture> result = qs.execute(Architecture.class);
+
+        assertEquals(259, result.size());
     }
 }
