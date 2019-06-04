@@ -158,7 +158,7 @@ public class ExcelParser {
                     } else {
                         if (!value.isEmpty()) {
 
-                            value = value.trim();
+                            value = this.adaptInputValue(value);
 
                             // Find the respective JsonObject (which is the overall object or a sub-part of it),
                             // to which the current property is to be added
@@ -368,6 +368,20 @@ public class ExcelParser {
 
             return empty;
         }
+    }
+
+    private String adaptInputValue(String value) {
+        String adaptedValue = value;
+
+        adaptedValue = adaptedValue.trim();
+        adaptedValue = adaptedValue.replaceAll("\n", " ");
+
+        // Create a protected Komma
+        adaptedValue = adaptedValue.replaceAll(",", "[,]");
+
+        adaptedValue = adaptedValue.replaceAll("\"", "\\\\\"");
+
+        return adaptedValue;
     }
 
     private void initializeLabelIDMap() {

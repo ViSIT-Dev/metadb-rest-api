@@ -1,7 +1,10 @@
 package misc;
 
+import com.github.anno4j.Anno4j;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openrdf.query.Update;
+import org.openrdf.repository.object.ObjectConnection;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import rest.persistence.util.ExcelParser;
@@ -36,5 +39,12 @@ public class ProductiveArchitectureTest {
         String updateQueryFromJSON = generator.createUpdateQueryFromJSON(json);
 
         System.out.println(updateQueryFromJSON);
+
+        Anno4j anno4j = new Anno4j(false);
+
+        ObjectConnection connection = anno4j.getObjectRepository().getConnection();
+
+        Update update = connection.prepareUpdate(updateQueryFromJSON);
+        update.execute();
     }
 }

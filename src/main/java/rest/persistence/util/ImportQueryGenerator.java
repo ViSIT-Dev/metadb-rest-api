@@ -155,7 +155,7 @@ public class ImportQueryGenerator {
 //                            query += this.createQueryAddition(groupName, value, id);
                             queryParts.add(this.createQueryAddition(groupName, value, id));
                         } else {
-                            for (String split : value.split(",")) {
+                            for (String split : value.split(", ")) {
 //                                query += this.createQueryAddition(groupName, split, id);
 
                                 split = split.trim();
@@ -190,7 +190,7 @@ public class ImportQueryGenerator {
             String intermediary = input.substring(start, end);
             String uri = VisitIDGenerator.generateVisitDBID();
 
-            result = result.replace(intermediary, "<" + uri + ">");
+            result = result.replace(intermediary + " ", "<" + uri + "> ");
 
             index = input.indexOf("?y", start + 1);
         }
@@ -250,6 +250,16 @@ public class ImportQueryGenerator {
             queryValue = "<" + this.mapper.addReferenceID(value) + ">";
         } else if(this.datatypes.get(id).startsWith("string")) {
             queryValue = "\"" + value + "\"";
+
+            // Remove protected Komma from ExcelParser
+            queryValue = queryValue.replaceAll("\\[,\\]", ",");
+
+            // TODO Treat ending with \" -> Gnadenkindl
+//            if(queryValue.endsWith("\"\"") && queryValue.length() > 2) {
+//                queryValue = queryValue.substring(0, queryValue.length() - 2);
+//                queryValue = queryValue.concat("\". \"");
+//            }
+
             if(StringUtils.isNumeric(value)) {
                 queryValue += "^^xsd:integer";
             }
