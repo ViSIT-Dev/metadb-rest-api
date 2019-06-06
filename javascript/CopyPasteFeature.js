@@ -71,6 +71,7 @@ function removeSeparationLines(parts) {
 function openFirstDimension(_callback) {
     //opens all "Add new wisski entry" fields so that all elements will be found later (first dimension)
     var wisskiAdds = [];
+    var inputButtons = true;
 
     wisskiAdds = document.querySelectorAll("input[id*='ief-add']");
     if (wisskiAdds.length > 0) {
@@ -90,13 +91,39 @@ function openFirstDimension(_callback) {
 
             }
         }
-    }
+    } else {
+        wisskiAdds = document.querySelectorAll("button[id*='ief-add']");
+        if (wisskiAdds.length > 0) {
+            inputButtons = false;
+            wisskiAdditions = true;
+            var wisskiId = wisskiAdds[0].id;
+            var openedFields = 0;
+            //click on all buttons to open the fields
+            if (!wisskiId.includes("save") && !wisskiId.includes("cancel")) {
+                var targetNode = document.getElementById(wisskiId);
+                if (targetNode) {
+                    triggerMouseEvent(targetNode, "mouseover");
+                    triggerMouseEvent(targetNode, "mousedown");
+                    triggerMouseEvent(targetNode, "mouseup");
+                    triggerMouseEvent(targetNode, "click");
+                    triggerMouseEvent(targetNode, "mousemove");
+                    ++openedFields;
+
+                }
+            }
+        }
+    } 
 
     var wisskiButtons = [];
     //construct an interval to check on the opening process
     var interval = setInterval(function () {
         if (wisskiButtons.length == openedFields) {
-            var newWisskiAdds = document.querySelectorAll("input[id*='ief-add']");
+            if (inputButtons) {
+                var newWisskiAdds = document.querySelectorAll("input[id*='ief-add']"); 
+            } else {
+                var newWisskiAdds = document.querySelectorAll("button[id*='ief-add']"); 
+            }
+            
             if (newWisskiAdds.length > 0) {
                 var counter = 0;
                 var wisskiId = newWisskiAdds[0].id;
@@ -138,13 +165,21 @@ function openFirstDimension(_callback) {
                     clearInterval(interval);
                     _callback();
                 } else {
-                    wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");
+                    if (inputButtons) {
+                        wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");   
+                    } else {
+                         wisskiButtons = document.querySelectorAll("button[id*='ief-add-save']");
+                    }
                 }
             }, 700);
 
         } else {
             //the number of save buttons show how many wisski additions are open (yet)
-            wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");
+            if (inputButtons) {
+                wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");   
+            } else {
+                 wisskiButtons = document.querySelectorAll("button[id*='ief-add-save']");
+            }
         }
     }, 700);
 }
@@ -152,12 +187,22 @@ function openFirstDimension(_callback) {
 function openSecondDimension(_callback) {
     //check how many buttons there are already
     var wisskiButtons = [];
+    var inputButtons = true;
     wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");
+    if (wisskiButtons.length == 0) {
+        wisskiButtons = document.querySelectorAll("button[id*='ief-add-save']");
+        inputButtons = false;
+    }
     var numberOfButtons = wisskiButtons.length;
 
     //find all remaining wisski addition fields
     var wisskiAdds = [];
-    wisskiAdds = document.querySelectorAll("input[id*='ief-add']");
+    if (inputButtons) {
+        wisskiAdds = document.querySelectorAll("input[id*='ief-add']");
+    } else {
+        wisskiAdds = document.querySelectorAll("button[id*='ief-add']");
+    }
+    
     if (wisskiAdds.length > 0) {
         wisskiAdditions = true;
         var openedFields = 0;
@@ -194,7 +239,11 @@ function openSecondDimension(_callback) {
     //construct an interval to check on the opening process
     var interval = setInterval(function () {
         if ((wisskiButtons.length - numberOfButtons) == openedFields) {
-            var newWisskiAdds = document.querySelectorAll("input[id*='ief-add']");
+            if (inputButtons) {
+                var newWisskiAdds = document.querySelectorAll("input[id*='ief-add']"); 
+            } else {
+                var newWisskiAdds = document.querySelectorAll("button[id*='ief-add']"); 
+            }
             if (newWisskiAdds.length > 0) {
                 var wisskiId = newWisskiAdds[0].id;
                 if (wisskiId.includes("save") || wisskiId.includes("cancel")) {
@@ -230,12 +279,20 @@ function openSecondDimension(_callback) {
                     clearInterval(interval);
                     _callback();
                 } else {
-                    wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");
+                    if (inputButtons) {
+                        wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");   
+                    } else {
+                        wisskiButtons = document.querySelectorAll("button[id*='ief-add-save']");
+                    }
                 }
             }, 700);
 
         } else {
-            wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");
+            if (inputButtons) {
+                wisskiButtons = document.querySelectorAll("input[id*='ief-add-save']");   
+            } else {
+                 wisskiButtons = document.querySelectorAll("button[id*='ief-add-save']");
+            }
         }
     }, 700);
 }
@@ -288,7 +345,7 @@ function fillIn(parts, _callback) {
                         formElement.valueAsDate = new Date(Date.UTC(0,0,0, dateArray[0], dateArray[1], dateArray[2]));
                     }
                 } else if (formElement.id.includes("upload")) {
-                    //do nothing as the paste featuer can't paste filenames
+                    //do nothing as the paste feature can't paste filenames
                 } else {
                     formElement.value = parts[i];
                 }
@@ -341,6 +398,10 @@ function callPasteProcedures(event) {
 
     var wisskiButtons = [];
     wisskiButtons = document.querySelectorAll("input[id*='ief-add']");
+    if (wisskiButtons.length == 0) {
+        wisskiButtons = document.querySelectorAll("button[id*='ief-add']");
+    }
+    
     var buttonLength = wisskiButtons.length;
 
     //according to how many "add" buttons for the Wisski Additions we can find, do the procedure X times
