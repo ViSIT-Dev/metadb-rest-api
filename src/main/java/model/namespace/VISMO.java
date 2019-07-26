@@ -84,7 +84,7 @@ public class VISMO {
                 groupID = INSTITUTION;
                 break;
             case "Object":
-                groupID = PERSON;
+                groupID = OBJECT;
                 break;
             case "Person":
                 groupID = PERSON;

@@ -313,7 +313,7 @@ public class ExcelParserTest {
 
 		JSONObject group = groupArray.getJSONObject(0);
 
-		assertEquals("name", group.getString("group_idby_actorappel"));
+		assertEquals("groupname", group.getString("group_idby_actorappel"));
 		assertEquals("auftrag", group.getString("group_motiv_structevol"));
 		assertEquals("formerobject", group.getString("group_lostcustodyof_object"));
 
@@ -347,7 +347,7 @@ public class ExcelParserTest {
 
 		JSONObject activity = activityArray.getJSONObject(0);
 
-		assertEquals("titel", activity.getString("activity_idby_title"));
+		assertEquals("activitytitel", activity.getString("activity_idby_title"));
 		assertEquals("beschr", activity.getString("activity_description"));
 		assertEquals("object", activity.getString("activity_used_object"));
 
@@ -522,8 +522,8 @@ public class ExcelParserTest {
 
 		JSONObject institution = InstitutionArray.getJSONObject(0);
 
-		assertEquals("name", institution.getString("institution_idby_appel"));
-		assertEquals("id1", institution.getString("institution_fallswithin_place"));
+		assertEquals("instiname", institution.getString("institution_idby_appel"));
+		assertEquals("place", institution.getString("institution_fallswithin_place"));
 		assertEquals("Ausstellung", institution.getString("institution_owns_catalog"));
 
 		JSONArray PlaceArray = jsonObject.getJSONArray("Place");
@@ -532,7 +532,7 @@ public class ExcelParserTest {
 
 		JSONObject place = PlaceArray.getJSONObject(0);
 
-		assertEquals("Passau", place.getString("place_idby_placeappel"));
+		assertEquals("Regensburg", place.getString("place_idby_placeappel"));
 		assertEquals("schl", place.getString("place_keyword"));
 
 		JSONArray referenceEntryArray = place.getJSONArray("place_refentry");
@@ -565,7 +565,7 @@ public class ExcelParserTest {
 
 		JSONObject object = objectArray.getJSONObject(0);
 
-		assertEquals("Titel", object.getString("object_identifiedby_title"));
+		assertEquals("Objekttitel", object.getString("object_identifiedby_title"));
 		assertEquals("Funktion", object.getString("object_exemplifies_function"));
 		assertEquals("beschr", object.getString("object_description"));
 		

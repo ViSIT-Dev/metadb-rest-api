@@ -247,7 +247,11 @@ public class ImportQueryGenerator {
         String queryValue = value;
 
         if(this.datatypes.get(id).startsWith("entity_reference")) {
-            queryValue = "<" + this.mapper.addReferenceID(value) + ">";
+        	if (value.contains("http") && value.contains("visit")) {
+        		queryValue = "<" + value + ">";
+        	} else {
+        		queryValue = "<" + this.mapper.addReferenceID(value) + ">";
+        	}
         } else if(this.datatypes.get(id).startsWith("string")) {
             queryValue = "\"" + value + "\"";
 

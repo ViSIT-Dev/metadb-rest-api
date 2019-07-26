@@ -15,6 +15,7 @@ import util.excel.ExcelTemplateContent;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -298,6 +299,7 @@ public class ExcelParser {
         } else {
             boolean empty = true;
 
+            ArrayList<String> keysToRemove = new ArrayList<String>();
             for(String key : jsonObject.keySet()) {
                 JsonElement jsonElement = jsonObject.get(key);
 
@@ -307,7 +309,7 @@ public class ExcelParser {
                         boolean intermediateEmpty = this.isEmptyJsonObject((JsonObject) jsonElement);
 
                         if(intermediateEmpty) {
-                            jsonObject.remove(key);
+                            keysToRemove.add(key);
                         } else {
                             empty = false;
                         }
@@ -316,7 +318,7 @@ public class ExcelParser {
                         boolean intermediateEmpty = this.isEmptyJsonArray((JsonArray) jsonElement);
 
                         if(intermediateEmpty) {
-                            jsonObject.remove(key);
+                        	keysToRemove.add(key);
                         } else {
                             empty = false;
                         }
@@ -327,6 +329,11 @@ public class ExcelParser {
                 }
             }
 
+            //remove all unneeded keys
+            for (String key : keysToRemove) {
+				jsonObject.remove(key);
+			}
+            
             return empty;
         }
     }
