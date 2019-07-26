@@ -1,0 +1,211 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>ViSIT - Upload Excel</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: -ms-flexbox;
+            display: -webkit-box;
+            display: flex;
+            -ms-flex-align: center;
+            -ms-flex-pack: center;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            justify-content: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: floralwhite;
+        }
+
+        body:before,
+        body:after {
+            content: "";
+            position: fixed;
+            background: #b62035;
+            left: 0;
+            right: 0;
+            height: 10px;
+        }
+
+        body:before {
+            top: 0;
+        }
+
+        body:after {
+            bottom: 0;
+        }
+
+        body {
+            border-left: 10px solid #b62035;
+            border-right: 10px solid #b62035;
+        }
+
+        .form-upload {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+
+        .form-download {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+
+        .form-upload {
+            font-weight: 400;
+        }
+
+        .form-download {
+            font-weight: 400;
+        }
+
+        .form-upload .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-download .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-upload .form-control:focus {
+            z-index: 2;
+        }
+
+        .form-download .form-control:focus {
+            z-index: 2;
+        }
+
+        .btn.btn-lg.btn-primary.btn-block {
+            background-color: #b62035;
+            border-color: #b62035;
+            margin-bottom: 5%;
+        }
+
+        .custom-file-input:active {
+            border-color: #b62035;
+        }
+
+    </style>
+</head>
+
+<body class="text-center">
+    <form class="form-upload" id="upload-form" enctype="multipart/form-data" method="post">
+        <h1 class="h3 mb-3 font-weight-normal">Excel Datei hochladen</h1>
+        <img class="mb-4" src="/images/ViSIT_Logo_start.png" id="progressPicture" width="100" height="100">
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="customFile" name="file">
+            <label class="custom-file-label" for="customFile" id="customFileLabel">Datei auswählen</label>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-lg btn-primary btn-block" id="submitUpload" type="submit" value="Upload">Hochladen</button>
+        </div>
+    </form>
+    <form class="form-download">
+        <h1 class="h3 mb-3 font-weight-normal">Aktuelle Datei herunterladen</h1>
+        <img class="mb-4" src="/images/ViSIT_Logo_start.png" id="progressPictureDownload" width="140" height="140">
+        <div class="mt-3">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Herunterladen</button>
+        </div>
+
+    </form>
+</body>
+
+<script>
+var interval = 0;
+function fire_ajax_submit() {
+    // Get form
+    var form = $('#upload-form')[0];
+
+    var data = new FormData(form);
+
+    $("#submitUpload").prop("disabled", true);
+
+    $.ajax({
+        type: "POST",
+        enctype: 'multipart/form-data',
+        url: "/import/excel",
+        data: data,
+        processData: false, //prevent jQuery from automatically transforming the data into a query string
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+			clearInterval(interval);
+			var pictureSrc = "/images/ViSIT_Logo_done.png";
+			var picture = document.getElementById("progressPicture");
+			picture.src = pictureSrc;
+			document.getElementById("customFileLabel").innerHTML = "Hochladen abgeschlossen";
+            $("#submitUpload").prop("disabled", false);
+
+        },
+        error: function (e) {
+			clearInterval(interval);
+			var pictureSrc = "/images/ViSIT_Logo_done.png";
+			var picture = document.getElementById("progressPicture");
+			picture.src = pictureSrc;
+			document.getElementById("customFileLabel").innerHTML = "Fehler: Falsches Dateiformat";
+            $("#submitUpload").prop("disabled", false);
+
+        }
+    });
+
+}
+    $(document).ready(function() {
+    	// Add the following code if you want the name of the file appear on select
+        $("#submitUpload").click(function() {
+        	fire_ajax_submit();
+        	var current = 0;
+            interval = setInterval(function() {
+                if (current > 2) {
+                    current = 0;
+                    var pictureSrc = "/images/ViSIT_Logo_start.png";
+                    var picture = document.getElementById("progressPicture");
+                    picture.src = pictureSrc;
+                } else {
+                    ++current;
+                    var pictureSrc = "/images/ViSIT_Logo_step" + current + ".png";
+                    var picture = document.getElementById("progressPicture");
+                    picture.src = pictureSrc;
+                }
+            }, 450);
+        });
+    	
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    });
+
+</script>
+
+</html>

@@ -8,20 +8,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import rest.VisitRestApplication;
 import rest.application.exception.IdMapperException;
-import rest.application.exception.MetadataQueryException;
 import rest.application.exception.QueryGenerationException;
 import rest.configuration.VisitIDGenerator;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-
-import static javafx.scene.input.KeyCode.T;
 
 public class ImportQueryGenerator {
 
@@ -108,7 +102,7 @@ public class ImportQueryGenerator {
 
         LinkedList<String> queryParts = new LinkedList<String>();
         if(this.basicGroups.keySet().contains(groupName)) {
-            queryParts.add(this.typeAssociation(groupName));
+            queryParts.add(this.typeAssociationTriple(groupName));
         }
 
         String objectID = "";
@@ -161,8 +155,10 @@ public class ImportQueryGenerator {
 //                            query += this.createQueryAddition(groupName, value, id);
                             queryParts.add(this.createQueryAddition(groupName, value, id));
                         } else {
-                            for (String split : value.split(",")) {
+                            for (String split : value.split(", ")) {
 //                                query += this.createQueryAddition(groupName, split, id);
+
+                                split = split.trim();
                                 queryParts.add(this.createQueryAddition(groupName, split, id));
                             }
                         }
@@ -176,37 +172,10 @@ public class ImportQueryGenerator {
         return queryParts;
     }
 
-    private String typeAssociation(String groupName) {
-        String groupID = "";
+    private String typeAssociationTriple(String groupName) {
+        String id = VISMO.typeAssociation(groupName);
 
-        switch(groupName) {
-            case "Activity":
-                groupID = VISMO.ACTIVITY;
-                break;
-            case "Architecture":
-                groupID = VISMO.ARCHITECTURE;
-                break;
-            case "Group":
-                groupID = VISMO.GROUP;
-                break;
-            case "Institution":
-                groupID = VISMO.INSTITUTION;
-                break;
-            case "Object":
-                groupID = VISMO.PERSON;
-                break;
-            case "Person":
-                groupID = VISMO.PERSON;
-                break;
-            case "Place":
-                groupID = VISMO.PLACE;
-                break;
-            case "Reference":
-                groupID = VISMO.REFERENCE;
-                break;
-        }
-
-        return "?x rdf:type <" + groupID + ">";
+        return "?x rdf:type <" + id + ">";
     }
 
     private String exchangeRDFVariables(String input, String objectID) {
@@ -221,7 +190,7 @@ public class ImportQueryGenerator {
             String intermediary = input.substring(start, end);
             String uri = VisitIDGenerator.generateVisitDBID();
 
-            result = result.replace(intermediary, "<" + uri + ">");
+            result = result.replace(intermediary + " ", "<" + uri + "> ");
 
             index = input.indexOf("?y", start + 1);
         }
@@ -281,6 +250,10 @@ public class ImportQueryGenerator {
             queryValue = "<" + this.mapper.addReferenceID(value) + ">";
         } else if(this.datatypes.get(id).startsWith("string")) {
             queryValue = "\"" + value + "\"";
+
+            // Remove protected Komma from ExcelParser
+            queryValue = queryValue.replaceAll("\\[,\\]", ",");
+
             if(StringUtils.isNumeric(value)) {
                 queryValue += "^^xsd:integer";
             }
@@ -340,7 +313,12 @@ public class ImportQueryGenerator {
 
                 this.idnames.add(line[1]);
 
-                this.datatypes.put(line[1], line[4]);
+                String datatype = line[4];
+                if(datatype.equals("datetime") || datatype.equals("list_string")) {
+                    this.datatypes.put(line[1], "string");
+                } else {
+                    this.datatypes.put(line[1], line[4]);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
