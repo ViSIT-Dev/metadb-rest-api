@@ -135,7 +135,7 @@ public class ExcelParserTest {
 		JSONObject production = architecture.getJSONArray("arch_producedby_production").getJSONObject(0);
 
 		assertEquals("auftraggeber", production.getString("production_motivatedby_person"));
-		assertEquals("ausfuhrer", production.getString("production_carriedoutby_person"));
+		assertEquals("Bez2", production.getString("production_carriedoutby_person"));
 		assertEquals("beteiligter", production.getString("production_inflby_person"));
 
 		JSONObject productionDating = production.getJSONArray("arch_production_dating").getJSONObject(0);

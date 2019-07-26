@@ -260,7 +260,7 @@ public class ExcelTemplateContent {
         put("Titel", "person_carries_title");
         put("Beschreibung", "person_description");
         put("Ehe - Untergruppe", "person_marriage");
-        put("Ehepartner", "person marriage | marriage_partner_person");
+        put("Ehepartner", "person_marriage | marriage_partner_person");
         put("Beginn der Ehe - Unteruntergruppe", "person_marriage | marriage_begin_dating");
         put("Taggenaue Datierung -3", "marriage_begin_dating | person_marriage_dating_exact");
         put("Freie Datierung -3", "marriage_begin_dating | person_marriage_dating_sometime");
