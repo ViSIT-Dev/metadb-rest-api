@@ -75,7 +75,8 @@ public class ExcelParser {
                 // This list is later used to "revisit" the created JsonObjects for subgroups and check if these are empty
                 LinkedList<LinkedList<String>> subgroupTracker = new LinkedList<LinkedList<String>>();
 
-                if (sheet.getRow(0).getCell(cellIterator) == null) {
+                Cell cellValue = sheet.getRow(0).getCell(cellIterator);
+                if (cellValue == null || cellValue.getStringCellValue().equals("")) {
                     emptyCell = true;
                     break;
                 } else {
