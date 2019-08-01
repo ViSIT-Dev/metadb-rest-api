@@ -1,12 +1,15 @@
 package rest.web.controller;
 
+import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
 import model.namespace.CIDOC;
 import model.namespace.VISMO;
+import model.vismo.Architecture;
 import model.vismo.Group;
 import model.vismo.Reference;
 import model.vismo.ReferenceEntry;
 import org.junit.Test;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
@@ -45,7 +48,36 @@ public class ImportControllerTest extends BaseWebTest {
 
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
 
-        MvcResult mvcResult = this.mockMvc.perform(builder).andDo(print()).andExpect(status().isNoContent()).andReturn();
+        MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "")).andDo(print()).andExpect(status().isNoContent()).andReturn();
+
+        Anno4j anno4j = this.importRepository.getAnno4j();
+
+        QueryService qs = anno4j.createQueryService();
+
+        List<Architecture> result = qs.execute(Architecture.class);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testExcelUploadWithContext() throws Exception {
+        File originalFile = new File("src/test/resources/visitExcelArchitectureTest.xlsx");
+
+        InputStream is = new FileInputStream(originalFile);
+
+        MockMultipartFile file = new MockMultipartFile("file", "visitExcelArchitectureTest.xlsx", "text/plain", is);
+
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
+
+        MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "http://context.de/")).andDo(print()).andExpect(status().isNoContent()).andReturn();
+
+        Anno4j anno4j = this.importRepository.getAnno4j();
+
+        QueryService qs = anno4j.createQueryService(new URIImpl("http://context.de/"));
+
+        List<Architecture> result = qs.execute(Architecture.class);
+
+        assertEquals(1, result.size());
     }
 
     @Test

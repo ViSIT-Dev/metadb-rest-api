@@ -98,6 +98,19 @@ public class ImportQueryGenerator {
         return overallQuery;
     }
 
+    public String createUpdateQueryFromJSONIntoContext(String json, String context) throws IdMapperException, QueryGenerationException {
+        String updateQueryFromJSON = this.createUpdateQueryFromJSON(json);
+
+        String updateQueryFromJSONWithContext = "";
+
+        if(!context.isEmpty()) {
+            updateQueryFromJSONWithContext = updateQueryFromJSON.replace("INSERT DATA {\n", "INSERT DATA { GRAPH <" + context + "> {\n");
+            updateQueryFromJSONWithContext = updateQueryFromJSONWithContext.concat("\n}");
+        }
+
+        return updateQueryFromJSONWithContext;
+    }
+
     private LinkedList<String> processJSONObject(JSONObject jsonObject, String groupName) throws IdMapperException {
 
         LinkedList<String> queryParts = new LinkedList<String>();

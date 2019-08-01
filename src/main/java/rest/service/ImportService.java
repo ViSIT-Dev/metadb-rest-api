@@ -42,11 +42,17 @@ public class ImportService {
         }
     }
 
-    public void importExcelUpload(MultipartFile file) throws ExcelParserException {
+    public void importExcelUpload(MultipartFile file, String context) throws ExcelParserException {
         try {
             String jsonFromParsedExcelFile = this.excelParser.createJSONFromParsedExcelFile(file);
 
-            String updateQuery = this.importQueryGenerator.createUpdateQueryFromJSON(jsonFromParsedExcelFile);
+            String updateQuery = "";
+
+            if(context.isEmpty()) {
+                updateQuery = this.importQueryGenerator.createUpdateQueryFromJSON(jsonFromParsedExcelFile);
+            } else {
+                updateQuery = this.importQueryGenerator.createUpdateQueryFromJSONIntoContext(jsonFromParsedExcelFile, context);
+            }
 
             this.importRepository.persistJSONDataByUpdateQuery(updateQuery);
         } catch (Exception e) {

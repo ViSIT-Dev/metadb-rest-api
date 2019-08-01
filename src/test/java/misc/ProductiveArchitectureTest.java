@@ -58,4 +58,39 @@ public class ProductiveArchitectureTest {
 
         assertEquals(259, result.size());
     }
+
+    @Ignore
+    @Test
+    public void testSmallProductiveArchitectureExcel() throws Exception {
+        File originalFile = new File("src/test/resources/BurgenVisit4.xlsx");
+
+        InputStream is = new FileInputStream(originalFile);
+
+        MultipartFile file = new MockMultipartFile("BurgenVisit4.xlsx", is);
+
+        ExcelParser parser = new ExcelParser();
+
+        String json = parser.createJSONFromParsedExcelFile(file);
+
+        System.out.println(json);
+
+        ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
+
+        String updateQueryFromJSON = generator.createUpdateQueryFromJSONIntoContext(json, "http://visit.de/data/");
+
+        System.out.println(updateQueryFromJSON);
+
+        Anno4j anno4j = new Anno4j(false);
+
+        ObjectConnection connection = anno4j.getObjectRepository().getConnection();
+
+        Update update = connection.prepareUpdate(updateQueryFromJSON);
+        update.execute();
+
+        QueryService qs = anno4j.createQueryService();
+
+        List<Architecture> result = qs.execute(Architecture.class);
+
+        assertEquals(64, result.size());
+    }
 }

@@ -72,6 +72,8 @@ public abstract class BaseWebTest {
     public void destroy() throws RepositoryException {
         this.digitalRepresentationRepository.getAnno4j().getObjectRepository().getConnection().close();
         this.anno4jRepository.getAnno4j().getObjectRepository().getConnection().close();
+        this.importRepository.getAnno4j().getObjectRepository().getConnection().close();
+        this.objectRepository.getAnno4j().getObjectRepository().getConnection().close();
     }
 
     public abstract void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException, RepositoryConfigException, MalformedQueryException, UpdateExecutionException;
