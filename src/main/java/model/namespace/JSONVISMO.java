@@ -6,6 +6,9 @@ package model.namespace;
 public class JSONVISMO {
 
     public static final String OBJECT_ID = "objectId";
+    
+    //needed for objects that can also have a preferred id
+    public static final String SECONDARY_IDENTIFIER = "secondaryIdentifier";
 
     public static final String MEDIA_ID = "mediaId";
 

@@ -69,8 +69,14 @@ public class ImportQueryGenerator {
 
                         LinkedList<String> queryParts = this.processJSONObject(object, rootObjectName);
                         String mergedTriples = TripleMerger.mergeTriples(queryParts);
+                        
+                        String objectID = "";
 
-                        String objectID = this.mapper.addBaseID(object.getString(JSONVISMO.ID), object.getString(JSONVISMO.TYPE));
+                        if (object.getString(JSONVISMO.ID) == null) {
+                        	objectID = this.mapper.addBaseID(object.getString(JSONVISMO.SECONDARY_IDENTIFIER), object.getString(JSONVISMO.TYPE));
+                        } else {
+                        	objectID = this.mapper.addBaseID(object.getString(JSONVISMO.ID), object.getString(JSONVISMO.TYPE));
+                        }
                         queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
                     }
                 } else if (rootObject instanceof JSONObject) {
@@ -78,7 +84,13 @@ public class ImportQueryGenerator {
                     LinkedList<String> queryParts = this.processJSONObject(currentObject, rootObjectName);
                     String mergedTriples = TripleMerger.mergeTriples(queryParts);
 
-                    String objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.ID), currentObject.getString(JSONVISMO.TYPE));
+                    String objectID = "";
+                    
+                    if (currentObject.getString(JSONVISMO.ID) == null) {
+                    	objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.SECONDARY_IDENTIFIER), currentObject.getString(JSONVISMO.TYPE));
+                    } else {
+                    	objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.ID), currentObject.getString(JSONVISMO.TYPE));
+                    }
                     queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
                 } else {
                     // TODO Can this happen?

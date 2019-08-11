@@ -75,18 +75,104 @@ public class ExcelParser {
                 // This list is later used to "revisit" the created JsonObjects for subgroups and check if these are empty
                 LinkedList<LinkedList<String>> subgroupTracker = new LinkedList<LinkedList<String>>();
 
-                Cell cellValue = sheet.getRow(0).getCell(cellIterator);
-                if (cellValue == null || cellValue.getStringCellValue().equals("")) {
-                    emptyCell = true;
-                    break;
-                } else {
-                    entityJson.addProperty(JSONVISMO.ID, sheet.getRow(0).getCell(cellIterator).getStringCellValue());
+                String identifierValue = "";
+                
+					switch (entity) {
+					case "Activity":
+						if (sheet.getRow(0).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+						}
+						break;
+					case "Architecture":
+						if (sheet.getRow(0).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+						}
+						break;
+					case "Group":
+						if (sheet.getRow(0).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+						}
+						break;
+					case "Institution":
+						if (sheet.getRow(0).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+						}
+						break;
+					case "Object":
+						if (sheet.getRow(0).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+						} else if (sheet.getRow(32).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(32).getCell(cellIterator).getStringCellValue();
+							}
+						break;
+					case "Person":
+						if (sheet.getRow(4).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(4).getCell(cellIterator).getStringCellValue();
+						}
+						break;
+					case "Place":
+						if (sheet.getRow(0).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+						}
+						break;
+					case "Reference":
+						if (sheet.getRow(2).getCell(cellIterator) != null) {
+							identifierValue = sheet.getRow(2).getCell(cellIterator).getStringCellValue();
+						}
+						break;
+					}
 
-                    // Associated the type for the respective entity
-                    entityJson.addProperty(JSONVISMO.TYPE, VISMO.typeAssociation(entity));
-                }
+				 if (identifierValue.equals("")) {
+					emptyCell = true;
+					break;
+				} else {
+					// Associated the type for the respective entity
+					String type = VISMO.typeAssociation(entity);
+					entityJson.addProperty(JSONVISMO.TYPE, type);
 
-                for (int i = 1; i <= sheet.getLastRowNum(); ++i) {
+					// add ID for respective type
+					switch (type) {
+					case "http://visit.de/ontologies/vismo/Activity":
+						entityJson.addProperty(JSONVISMO.ID, identifierValue);
+						break;
+					case "http://visit.de/ontologies/vismo/Architecture":
+						entityJson.addProperty(JSONVISMO.ID, identifierValue);
+						break;
+					case "http://visit.de/ontologies/vismo/Group":
+						entityJson.addProperty(JSONVISMO.ID, identifierValue);
+						break;
+					case "http://visit.de/ontologies/vismo/Institution":
+						entityJson.addProperty(JSONVISMO.ID, identifierValue);
+						break;
+					case "http://visit.de/ontologies/vismo/Object":
+						if (sheet.getRow(0).getCell(cellIterator) != null) {
+							if (!sheet.getRow(0).getCell(cellIterator).getStringCellValue().equals("")) {
+								entityJson.addProperty(JSONVISMO.ID,
+										sheet.getRow(0).getCell(cellIterator).getStringCellValue());
+							} else {
+								if(sheet.getRow(32).getCell(cellIterator) != null) {
+									if (!sheet.getRow(32).getCell(cellIterator).getStringCellValue().equals("")) {
+										entityJson.addProperty(JSONVISMO.SECONDARY_IDENTIFIER,
+												sheet.getRow(32).getCell(cellIterator).getStringCellValue());
+									}
+								}
+							}
+						}
+						break;
+					case "http://visit.de/ontologies/vismo/Person":
+						entityJson.addProperty(JSONVISMO.ID, identifierValue);
+						break;
+					case "http://visit.de/ontologies/vismo/Place":
+						entityJson.addProperty(JSONVISMO.ID, identifierValue);
+						break;
+					case "http://visit.de/ontologies/vismo/Reference":
+						entityJson.addProperty(JSONVISMO.ID, identifierValue);
+						break;
+					}
+
+				}
+
+                for (int i = 0; i <= sheet.getLastRowNum(); ++i) {
 
                     Row row = sheet.getRow(i);
 
