@@ -56,7 +56,8 @@ public class ImportControllerTest extends BaseWebTest {
 
         List<Architecture> result = qs.execute(Architecture.class);
 
-        assertEquals(1, result.size());
+        // testExcelUploadWithContext has already an architecture element
+        assertEquals(2, result.size());
     }
 
     @Test

@@ -68,8 +68,10 @@ public class IdMapper {
 
             this.baseIDs.put(baseID, objectType);
             this.mappedIDs.put(baseID, uri);
-        } else {
-            throw new IdMapperException("The read baseID <" + baseID + "> clashes and is thereby used more than once, which is not allowed!");
+        } else { //TODO
+            //throw new IdMapperException("The read baseID <" + baseID + "> clashes and is thereby used more than once, which is not allowed!");
+        	System.out.println(baseID + "clashes.");
+        	uri = VisitIDGenerator.generateVisitDBID();
         }
 
         return uri;

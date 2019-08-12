@@ -11,6 +11,7 @@ import org.apache.marmotta.ldpath.parser.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
@@ -19,6 +20,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.openrdf.repository.object.ObjectConnection;
@@ -30,22 +32,25 @@ import com.github.anno4j.querying.QueryService;
 
 import model.vismo.Activity;
 import model.vismo.Place;
+import rest.BaseWebTest;
 
-public class ExcelParserLinksTest {
+public class ExcelParserLinksTest extends BaseWebTest {
 	private Anno4j anno4j;
 	private QueryService qs;
 	private ObjectConnection connection;
-
-	public ExcelParserLinksTest() throws RepositoryException, RepositoryConfigException {
+	
+	@Before
+	public void setUp() throws Exception {
 		// create one mock database, one query service, and one connection that is used
-		this.anno4j = new Anno4j(false);
+		this.anno4j = this.importRepository.getAnno4j();
 		this.qs = anno4j.createQueryService();
 		this.connection = anno4j.getObjectRepository().getConnection();
+
+		fillDatabase();
 	}
 
 	@Test
 	public void testLinkedExcelFiles() throws Exception {
-		fillDatabase();
 		// Query nach allen Activity Objekten
 		List<Activity> activities = qs.execute(Activity.class);
 		Activity activity = activities.get(0);
@@ -838,6 +843,9 @@ public class ExcelParserLinksTest {
 												e.printStackTrace();
 											}
 										}
+									} else {
+										JSONArray secondDimension = (JSONArray) subJSONObject.get(subKey);
+										updatedJSONObject.put(subKey, secondDimension);
 									}
 								}
 							}
@@ -888,6 +896,12 @@ public class ExcelParserLinksTest {
 
 		return jsonObject.toString();
 
+	}
+
+	@Override
+	public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException,
+			RepositoryConfigException, MalformedQueryException, UpdateExecutionException {
+		
 	}
 
 }

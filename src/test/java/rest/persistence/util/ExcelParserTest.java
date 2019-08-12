@@ -129,7 +129,6 @@ public class ExcelParserTest {
 		assertEquals("sakral", architecture.getString("arch_sacraltype"));
 		assertEquals("profan", architecture.getString("arch_has_seculartype"));
 
-		assertEquals("bauteil", architecture.getString("architecture_contains_arch"));
 		assertEquals("objekt", architecture.getString("arch_currentlyholds_object"));
 
 		JSONObject production = architecture.getJSONArray("arch_producedby_production").getJSONObject(0);
@@ -436,7 +435,7 @@ public class ExcelParserTest {
 		JSONObject reference = referenceArray.getJSONObject(0);
 
 		assertEquals("Typ", reference.getString("reference_has_type"));
-		assertEquals("22", reference.getString("reference_pages"));
+		assertEquals("23", reference.getString("reference_pages"));
 		assertEquals("Test", reference.getString("reference_keyword"));
 
 		JSONArray referenceEntryArray = reference.getJSONArray("reference_entry");

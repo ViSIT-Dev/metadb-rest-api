@@ -3,7 +3,6 @@ package misc;
 import com.github.anno4j.Anno4j;
 import com.github.anno4j.querying.QueryService;
 import model.vismo.Architecture;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.query.Update;
 import org.openrdf.repository.object.ObjectConnection;
@@ -24,7 +23,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class ProductiveArchitectureTest {
 
-    @Ignore
     @Test
     public void testProductiveArchitectureExcel() throws Exception {
         File originalFile = new File("src/test/resources/BurgenVisit.xlsx");
@@ -59,7 +57,6 @@ public class ProductiveArchitectureTest {
         assertEquals(259, result.size());
     }
 
-    @Ignore
     @Test
     public void testSmallProductiveArchitectureExcel() throws Exception {
         File originalFile = new File("src/test/resources/BurgenVisit4.xlsx");
