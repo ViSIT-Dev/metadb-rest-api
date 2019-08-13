@@ -262,10 +262,10 @@ public class ExcelTemplateContent {
         put("Ehe - Untergruppe", "person_marriage");
         put("Ehepartner", "person_marriage | marriage_partner_person");
         put("Beginn der Ehe - Unteruntergruppe", "person_marriage | marriage_begin_dating");
-        put("Taggenaue Datierung -3", "marriage_begin_dating | person_marriage_dating_exact");
-        put("Freie Datierung -3", "marriage_begin_dating | person_marriage_dating_sometime");
-        put("Beginn des Datierungszeitraums -3", "marriage_begin_dating | person_marriage_dating_start");
-        put("Ende des Datierungszeitraums -3", "marriage_begin_dating | person_marriage_dating_end");
+        put("Taggenaue Datierung -3", "marriage_begin_dating | marriage_begin_dating_exact");
+        put("Freie Datierung -3", "marriage_begin_dating | marriage_begin_dating_sometime");
+        put("Beginn des Datierungszeitraums -3", "marriage_begin_dating | marriage_begin_dating_start");
+        put("Ende des Datierungszeitraums -3", "marriage_begin_dating | marriage_begin_dating_end");
         put("Ende der Ehe - Unteruntergruppe", "person_marriage | marriage_end_dating");
         put("Taggenaue Datierung -4", "marriage_end_dating | marriage_end_dating_exact");
         put("Freie Datierung -4", "marriage_end_dating | marriage_end_dating_sometime");
@@ -288,7 +288,7 @@ public class ExcelTemplateContent {
         put("Kurztitel", "person_refentry | person_refentry_in_reference");
         put("Seiten", "person_refentry | person_refentry_pages");
         put("Hilfreiche Links", "person_helpfullinks");
-        put("Objektbezug", "person_isdepictedby_object");
+        put("Objektbezug", "person_depictedon_object");
     }};
 
     public final static HashMap<String, String> ARCHITECTURE_LABEL_ID_MAP  = new HashMap<String, String>() {{

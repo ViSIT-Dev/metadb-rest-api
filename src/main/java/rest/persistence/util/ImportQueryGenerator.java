@@ -232,7 +232,8 @@ public class ImportQueryGenerator {
             String change = triple;
 
             for(String subKey : substitutions.keySet()) {
-                if(change.contains(subKey)) {
+            	String subKeyWithSpace = subKey + " ";
+                if(change.contains(subKeyWithSpace)) {
                     change = change.replace(subKey, "<" + substitutions.get(subKey) + ">");
                 }
             }
