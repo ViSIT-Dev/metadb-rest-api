@@ -490,7 +490,7 @@ public class ExcelParserTest {
 
 		JSONArray dating2 = birthDatingArray2.getJSONArray("marriage_begin_dating");
 
-		assertEquals("frei", dating2.getJSONObject(0).getString("person_marriage_dating_sometime"));
+		assertEquals("frei", dating2.getJSONObject(0).getString("marriage_begin_dating_sometime"));
 
 		JSONArray refArray2 = person2.getJSONArray("person_refentry");
 

@@ -393,7 +393,7 @@ public class ExcelTemplateContent {
     	put("Künstler", "object_producedby_production | production_doneby_person");
     	put("Werkstatt", "object_producedby_production | production_doneby_group");
     	put("Datierung - Unteruntergruppe", "object_producedby_production | production_dating");
-    	put("Entstehungszeit: Freie Datierung", "production_dating | object_prod_dating_sometime");
+    	put("Entstehungszeit: Freie Datierung", "production_dating | production_date_sometime");
     	put("Entstehungszeit: Beginn des Datierungszeitraums", "production_dating | object_prod_dating_start");
     	put("Entstehungszeit: Ende des Datierungszeitraums", "production_dating | object_prod_dating_end");
     	put("Entstehungszeit: Jahrhundert", "production_dating | object_prod_dating_century");
@@ -407,7 +407,7 @@ public class ExcelTemplateContent {
     	put("Art", "object_prefidentifier_inscriptio | inscription_has_type");
     	put("Anbringung", "object_prefidentifier_inscriptio | inscription_mounting");
     	put("Datierung", "object_prefidentifier_inscriptio | inscription_date");
-    	put("Signatur", "object_prefidentifier_inscriptio | inscription_signatur");
+    	put("Signatur", "object_prefidentifier_inscriptio | inscription_signature");
     	put("Text", "object_prefidentifier_inscriptio | inscription_text");
     	put("Institution/Eigentümer/Verwalter", "object_current_owner");
     	put("Inventarnummer", "object_inventory_number");

@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
 import org.apache.marmotta.ldpath.parser.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,22 +27,16 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.github.anno4j.Anno4j;
-import com.github.anno4j.querying.QueryService;
-
-import model.vismo.Activity;
-import model.vismo.Place;
 import rest.BaseWebTest;
 
 public class ExcelParserLinksTest extends BaseWebTest {
 	private Anno4j anno4j;
-	private QueryService qs;
 	private ObjectConnection connection;
 	
 	@Before
 	public void setUp() throws Exception {
 		// create one mock database, one query service, and one connection that is used
 		this.anno4j = this.importRepository.getAnno4j();
-		this.qs = anno4j.createQueryService();
 		this.connection = anno4j.getObjectRepository().getConnection();
 
 		fillDatabase();
@@ -51,22 +44,129 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 	@Test
 	public void testLinkedExcelFiles() throws Exception {
-		// Query nach allen Activity Objekten
-		List<Activity> activities = qs.execute(Activity.class);
-		Activity activity = activities.get(0);
-		Activity activity2 = activities.get(1);
+		// Query nach Activity
+		String activity1Id = "";
+		// Find Activity "title"
+		String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?s \n";
+		queryString += "WHERE { \n";
+		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
+		queryString += "       ?o erlangen:P3_has_note '" + "titel"
+				+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n";
+		queryString += "    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Activity> .";
+		queryString += "\n }";
 
-		// Query nach allen Place Objekten
-		List<Place> places = qs.execute(Place.class);
-		// Place "place"
-		Place place = places.get(0);
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
 
-		//assertEquals(activity.getP7TookPlaceAt().getResourceAsString(), place.getResourceAsString()); TODO
-		//assertEquals(activity2.getP7TookPlaceAt().getResourceAsString(), place.getResourceAsString());
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value updatedValue = solution.getValue("s");
+				activity1Id = updatedValue.stringValue();
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+		
+		// Query nach Activity
+		String activity2Id = "";
+		// Find Activity "activitytitel"
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?s \n";
+		queryString += "WHERE { \n";
+		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
+		queryString += "       ?o erlangen:P3_has_note '" + "activitytitel"
+				+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n";
+		queryString += "    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Activity> .";
+		queryString += "\n }";
 
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
+
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value updatedValue = solution.getValue("s");
+				activity2Id = updatedValue.stringValue();
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+		
+		// Query nach Place
+		String placeId = "";
+		// Find Place "place"
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?s \n";
+		queryString += "WHERE { \n";
+		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
+		queryString += "       ?o erlangen:P3_has_note '" + "place"
+				+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n";
+		queryString += "    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Place> .";
+		queryString += "\n }";
+
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
+
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value updatedValue = solution.getValue("s");
+				placeId = updatedValue.stringValue();
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+		
+		// Find activity 1 place
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?o \n";
+		queryString += "WHERE { \n";
+		queryString += "    <" + activity1Id + "> erlangen:P7_took_place_at ?o .";
+		queryString += "\n }";
+
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
+
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value place = solution.getValue("o");
+
+				assertEquals(placeId, place.stringValue());
+				System.out.println("0");
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+		
+		// Find activity 2 place
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?o \n";
+		queryString += "WHERE { \n";
+		queryString += "    <" + activity2Id + "> erlangen:P7_took_place_at ?o .";
+		queryString += "\n }";
+
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
+
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value place = solution.getValue("o");
+
+				assertEquals(placeId, place.stringValue());
+				System.out.println("1");
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+
+		
 		// Find Person "BezTest"
 		String bezTestId = "";
-		String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 		queryString += "SELECT ?s \n";
 		queryString += "WHERE { \n";
 		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
@@ -103,8 +203,8 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				BindingSet solution = result.next();
 				Value birthplace = solution.getValue("birthplace");
 
-				assertEquals(birthplace.stringValue(), place.getResourceAsString());
-				System.out.println("1");
+				assertEquals(birthplace.stringValue(), placeId);
+				System.out.println("2");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -193,7 +293,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				Value partner = solution.getValue("partner");
 				marriagePartner = partner.stringValue();
 				assertEquals(marriagePartner, bez2Id);
-				System.out.println("2");
+				System.out.println("3");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -226,8 +326,9 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 		queryString += "SELECT ?person \n";
 		queryString += "WHERE { \n";
-		queryString += "    <" + architectureNameId + "> erlangen:P108i_was_produced_by ?object .\n";
-		queryString += "    ?object erlangen:P14_carried_out_by ?person .\n";
+		queryString += "    <" + architectureNameId + "> erlangen:P108i_was_produced_by ?object . \n";
+		queryString += "    ?object erlangen:P14_carried_out_by ?person . \n";
+		queryString += "    ?person <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Person> .";
 		queryString += "\n }";
 
 		try {
@@ -237,8 +338,8 @@ public class ExcelParserLinksTest extends BaseWebTest {
 			while (result.hasNext()) {
 				BindingSet solution = result.next();
 				Value person = solution.getValue("person");
-				//assertEquals(bez2Id, person.stringValue()); TODO
-				System.out.println("3");
+				assertEquals(bez2Id, person.stringValue()); 
+				System.out.println("4");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -281,8 +382,8 @@ public class ExcelParserLinksTest extends BaseWebTest {
 			while (result.hasNext()) {
 				BindingSet solution = result.next();
 				Value placeValue = solution.getValue("place");
-				assertEquals(place.getResourceAsString(), placeValue.stringValue());
-				System.out.println("4");
+				assertEquals(placeId, placeValue.stringValue());
+				System.out.println("5");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -303,7 +404,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				BindingSet solution = result.next();
 				Value value = solution.getValue("architecture");
 				assertEquals(architectureNameId, value.stringValue());
-				System.out.println("5");
+				System.out.println("6");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -371,7 +472,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				BindingSet solution = result.next();
 				Value group = solution.getValue("group");
 				assertEquals(groupId, group.stringValue());
-				System.out.println("6");
+				System.out.println("7");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -393,7 +494,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				BindingSet solution = result.next();
 				Value institution = solution.getValue("institution");
 				assertEquals(institutionId, institution.stringValue());
-				System.out.println("7");
+				System.out.println("8");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -456,7 +557,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				BindingSet solution = result.next();
 				Value reference = solution.getValue("o");
 				assertEquals(referenceId, reference.stringValue());
-				System.out.println("8");
+				System.out.println("9");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -549,7 +650,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				Value updatedValue = solution.getValue("s");
 				objecttitel_inventnr = updatedValue.stringValue();
 				assertEquals(objecttitel_id, objecttitel_inventnr);
-				System.out.println("9");
+				System.out.println("10");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -571,7 +672,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				BindingSet solution = result.next();
 				Value object = solution.getValue("object");
 				assertEquals(objecttitel_id, object.stringValue());
-				System.out.println("10");
+				System.out.println("11");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
@@ -593,7 +694,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				BindingSet solution = result.next();
 				Value object = solution.getValue("object");
 				assertEquals(objecttitel_id, object.stringValue());
-				System.out.println("11");
+				System.out.println("12");
 			}
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
