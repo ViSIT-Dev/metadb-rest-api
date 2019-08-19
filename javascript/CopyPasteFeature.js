@@ -17,27 +17,22 @@ function triggerMouseEvent(node, eventType) {
 function removeSeparationLines(parts) {
     var pageName = document.title;
     if (pageName.includes("Activity")) {
-        parts.splice(0, 1);
         parts.splice(13, 1);
         parts.splice(2, 1);
     } else if (pageName.includes("Architecture")) {
-        parts.splice(0, 1);
         parts.splice(49, 1);
         parts.splice(27, 1);
         parts.splice(25, 1);
         parts.splice(14, 1);
         parts.splice(13, 1);
     } else if (pageName.includes("Group")) {
-        parts.splice(0, 1);
         parts.splice(12, 1);
     } else if (pageName.includes("Reference")) {
-        parts.splice(0, 1);
         parts.splice(17, 1);
         parts.splice(13, 1);
         parts.splice(4, 1);
         parts.splice(0, 1);
     } else if (pageName.includes("Object")) {
-        parts.splice(0, 1);
         parts.splice(54, 1);
         parts.splice(36, 1);
         parts.splice(35, 1);
@@ -47,7 +42,6 @@ function removeSeparationLines(parts) {
         parts.splice(11, 1);
         parts.splice(3, 1);
     } else if (pageName.includes("Person")) {
-        parts.splice(0, 1);
         parts.splice(49, 1);
         parts.splice(31, 1);
         parts.splice(26, 1);
@@ -57,10 +51,9 @@ function removeSeparationLines(parts) {
         parts.splice(7, 1);
         parts.splice(5, 1);
     } else if (pageName.includes("Place")) {
-        parts.splice(0, 1);
         parts.splice(8, 1);
     } else if (pageName.includes("Institution")) {
-        parts.splice(0, 1);
+        //nothing to do
     }
 
     return parts;
