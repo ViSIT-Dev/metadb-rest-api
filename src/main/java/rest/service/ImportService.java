@@ -56,7 +56,7 @@ public class ImportService {
     public void importExcelUpload(MultipartFile file, String context) throws ExcelParserException {
         try {
             String jsonFromParsedExcelFile = this.excelParser.createJSONFromParsedExcelFile(file);
-            //TODO testing
+     
             jsonFromParsedExcelFile = updateJSON(jsonFromParsedExcelFile, context);
             
             String updateQuery = "";
@@ -124,6 +124,9 @@ public class ImportService {
 										} else {
 											String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 											queryString += "SELECT ?s \n";
+											if (!context.isEmpty()) {
+												queryString += "FROM <" + context +"> \n";
+											}
 											queryString += "WHERE { \n{ \n";
 											queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
 											queryString += "       ?o erlangen:P3_has_note '" + subValue
@@ -170,6 +173,9 @@ public class ImportService {
 							} else {
 								String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 								queryString += "SELECT ?s \n";
+								if (!context.isEmpty()) {
+									queryString += "FROM <" + context +"> \n";
+								}
 								queryString += "WHERE { \n{ \n";
 								queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
 								queryString += "       ?o erlangen:P3_has_note '" + value

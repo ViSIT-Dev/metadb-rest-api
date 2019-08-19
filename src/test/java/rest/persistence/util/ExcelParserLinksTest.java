@@ -4,13 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import org.apache.marmotta.ldpath.parser.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
@@ -18,7 +17,6 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
@@ -28,848 +26,594 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.github.anno4j.Anno4j;
 import rest.BaseWebTest;
+import rest.application.exception.ExcelParserException;
 
 public class ExcelParserLinksTest extends BaseWebTest {
-	private Anno4j anno4j;
-	private ObjectConnection connection;
-	
-	@Before
-	public void setUp() throws Exception {
-		// create one mock database, one query service, and one connection that is used
-		this.anno4j = this.importRepository.getAnno4j();
-		this.connection = anno4j.getObjectRepository().getConnection();
 
-		fillDatabase();
-	}
-
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testLinkedExcelFiles() throws Exception {
-		// Query nach Activity
-		String activity1Id = "";
-		// Find Activity "title"
-		String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "titel"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n";
-		queryString += "    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Activity> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				activity1Id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-		
-		// Query nach Activity
-		String activity2Id = "";
-		// Find Activity "activitytitel"
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "activitytitel"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n";
-		queryString += "    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Activity> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				activity2Id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-		
-		// Query nach Place
-		String placeId = "";
-		// Find Place "place"
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "place"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n";
-		queryString += "    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Place> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				placeId = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-		
-		// Find activity 1 place
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?o \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + activity1Id + "> erlangen:P7_took_place_at ?o .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value place = solution.getValue("o");
-
-				assertEquals(placeId, place.stringValue());
-				System.out.println("0");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-		
-		// Find activity 2 place
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?o \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + activity2Id + "> erlangen:P7_took_place_at ?o .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value place = solution.getValue("o");
-
-				assertEquals(placeId, place.stringValue());
-				System.out.println("1");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		
-		// Find Person "BezTest"
-		String bezTestId = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "BezTest"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				bezTestId = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find birthplace
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?birthplace \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + bezTestId + "> erlangen:P92i_was_brought_into_existence_by ?o .\n";
-		queryString += "    ?o erlangen:P7_took_place_at ?birthplace .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value birthplace = solution.getValue("birthplace");
-
-				assertEquals(birthplace.stringValue(), placeId);
-				System.out.println("2");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Person "Bez2"
-		String bez2Id = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "Bez2" + "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				bez2Id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Person "BezTest2"
-		String bezTest2Id = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "BezTest2"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				bezTest2Id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find marriage partner (middle object) of BezTest2
-		String marriagePartner2 = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?partner \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + bezTest2Id + "> erlangen:P107i_is_current_or_former_member_of ?partner .\n";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value partner = solution.getValue("partner");
-				marriagePartner2 = partner.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find marriage partner of BezTest2
-		String marriagePartner = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?partner \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + marriagePartner2 + "> erlangen:P107_has_current_or_former_member ?partner .\n";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value partner = solution.getValue("partner");
-				marriagePartner = partner.stringValue();
-				assertEquals(marriagePartner, bez2Id);
-				System.out.println("3");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Architecture "architectureName"
-		String architectureNameId = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "architecturename"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				architectureNameId = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find carried out by
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?person \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + architectureNameId + "> erlangen:P108i_was_produced_by ?object . \n";
-		queryString += "    ?object erlangen:P14_carried_out_by ?person . \n";
-		queryString += "    ?person <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Person> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value person = solution.getValue("person");
-				assertEquals(bez2Id, person.stringValue()); 
-				System.out.println("4");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Architecture "Architecture1"
-		String architecture1Id = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "Architecture1"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				architecture1Id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find architecture place
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?place \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + architecture1Id + "> erlangen:P55_has_current_location ?place .\n";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value placeValue = solution.getValue("place");
-				assertEquals(placeId, placeValue.stringValue());
-				System.out.println("5");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find Architecture1 contains Architecturename
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?architecture \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + architecture1Id + "> erlangen:P89i_contains ?architecture .\n";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value value = solution.getValue("architecture");
-				assertEquals(architectureNameId, value.stringValue());
-				System.out.println("6");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Institution "instiname"
-		String institutionId = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "instiname"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				institutionId = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Group "groupname"
-		String groupId = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "groupname"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				groupId = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find owner group
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?group \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + architecture1Id + "> erlangen:P52_has_current_owner ?group .\n";
-		queryString += "    ?group <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Group> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value group = solution.getValue("group");
-				assertEquals(groupId, group.stringValue());
-				System.out.println("7");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find owner institution
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?institution \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + architecture1Id + "> erlangen:P52_has_current_owner ?institution .\n";
-		queryString += "    ?institution <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Institution> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value institution = solution.getValue("institution");
-				assertEquals(institutionId, institution.stringValue());
-				System.out.println("8");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Reference "TitelReferenz"
-		String referenceId = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "TitelReferenz"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				referenceId = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find reference in person (middle object)
-		String referencedID = "";
-		queryString = "SELECT ?reference ?pred \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + bezTestId + "> <http://visit.de/ontologies/vismo/referencedByEntry> ?reference .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value reference = solution.getValue("reference");
-				referencedID = reference.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find reference in person
-		queryString = "SELECT ?o \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + referencedID + "> <http://visit.de/ontologies/vismo/isEntryIn> ?o .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value reference = solution.getValue("o");
-				assertEquals(referenceId, reference.stringValue());
-				System.out.println("9");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Object "Object1"
-		String object1_id = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "Object1"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				object1_id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Object "Object2"
-		String object2_id = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "Object2"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				object2_id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Object "Objekttitel"
-		String objecttitel_id = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "Objekttitel"
-				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				objecttitel_id = updatedValue.stringValue();
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// Find Object "Objekttitel"
-		String objecttitel_inventnr = "";
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?s \n";
-		queryString += "WHERE { \n";
-		queryString += "    ?s erlangen:P48_has_preferred_identifier ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "ivnr" + "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value updatedValue = solution.getValue("s");
-				objecttitel_inventnr = updatedValue.stringValue();
-				assertEquals(objecttitel_id, objecttitel_inventnr);
-				System.out.println("10");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find Object 1 consists of Objekttitel
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?object \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + object1_id + "> erlangen:P46_is_composed_of ?object .\n";
-		queryString += "    ?object <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Object> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value object = solution.getValue("object");
-				assertEquals(objecttitel_id, object.stringValue());
-				System.out.println("11");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-		// find Object 2 consists of Objekttitel
-		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-		queryString += "SELECT ?object \n";
-		queryString += "WHERE { \n";
-		queryString += "    <" + object2_id + "> erlangen:P46_is_composed_of ?object .\n";
-		queryString += "    ?object <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://visit.de/ontologies/vismo/Object> .";
-		queryString += "\n }";
-
-		try {
-			TupleQuery temp = connection.prepareTupleQuery(queryString);
-			TupleQueryResult result = temp.evaluate();
-
-			while (result.hasNext()) {
-				BindingSet solution = result.next();
-				Value object = solution.getValue("object");
-				assertEquals(objecttitel_id, object.stringValue());
-				System.out.println("12");
-			}
-		} catch (MalformedQueryException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private void fillDatabase() throws Exception {
-		// Activity & Place
-		File originalFile = new File("src/test/resources/visitExcelActivityWithLinksTest.xlsx");
+	public void testPersonLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelTwoPersonTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
-
-		MultipartFile file = new MockMultipartFile("visitExcelActivityWithLinksTest.xlsx", is);
-
+		MultipartFile file = new MockMultipartFile("visitExcelPersonTest.xlsx", is);
 		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
 
-		String json = parser.createJSONFromParsedExcelFile(file);
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
 
-		json = updateJSON(json);
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Person");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Person");
 
-		ImportQueryGenerator generator = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSON = generator.createUpdateQueryFromJSON(json);
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
 
-		Update update = connection.prepareUpdate(updateQueryFromJSON);
-		update.execute();
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
 
-		File original = new File("src/test/resources/visitExcelActivityTest.xlsx");
-		InputStream isActivity = new FileInputStream(original);
+		Iterator<String> iterator = jsonInnerNormal.keys();
 
-		MultipartFile fileMock = new MockMultipartFile("visitExcelActivityTest.xlsx", isActivity);
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
 
-		ExcelParser parserActivity = new ExcelParser();
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
 
-		String jsonActivity = parserActivity.createJSONFromParsedExcelFile(fileMock);
+				assertEquals(array.length(), arrayTransformed.length());
 
-		jsonActivity = updateJSON(jsonActivity);
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
 
-		ImportQueryGenerator generatorActivity = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONActivity = generatorActivity.createUpdateQueryFromJSON(jsonActivity);
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
 
-		Update updateActivity = connection.prepareUpdate(updateQueryFromJSONActivity);
-		updateActivity.execute();
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
 
-		// Person
-		File twoPerson = new File("src/test/resources/visitExcelTwoPersonTest.xlsx");
-		InputStream isPerson = new FileInputStream(twoPerson);
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
 
-		MultipartFile fileMockPerson = new MockMultipartFile("visitExcelTwoPersonTest.xlsx", isPerson);
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
 
-		ExcelParser parserPerson = new ExcelParser();
-
-		String jsonPerson = parserPerson.createJSONFromParsedExcelFile(fileMockPerson);
-
-		jsonPerson = updateJSON(jsonPerson);
-
-		ImportQueryGenerator generatorPerson = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONPerson = generatorPerson.createUpdateQueryFromJSON(jsonPerson);
-
-		Update updatePerson = connection.prepareUpdate(updateQueryFromJSONPerson);
-		updatePerson.execute();
-
-		// Institution
-		File institutionPlaceFile = new File("src/test/resources/visitExcelInstitutionAndPlaceTest.xlsx");
-		InputStream isInstitutionPlace = new FileInputStream(institutionPlaceFile);
-
-		MultipartFile fileMockInstitutionPlace = new MockMultipartFile("visitExcelInstitutionAndPlaceTest.xlsx",
-				isInstitutionPlace);
-
-		ExcelParser parserInstitutionPlace = new ExcelParser();
-
-		String jsonInstitutionPlace = parserInstitutionPlace.createJSONFromParsedExcelFile(fileMockInstitutionPlace);
-
-		jsonInstitutionPlace = updateJSON(jsonInstitutionPlace);
-
-		ImportQueryGenerator generatorInstitutionPlace = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONInstitutionPlace = generatorInstitutionPlace
-				.createUpdateQueryFromJSON(jsonInstitutionPlace);
-
-		Update updateInstitutionPlace = connection.prepareUpdate(updateQueryFromJSONInstitutionPlace);
-		updateInstitutionPlace.execute();
-
-		// Object
-		File objectFile = new File("src/test/resources/visitExcelObjectTest.xlsx");
-		InputStream isFile = new FileInputStream(objectFile);
-		MultipartFile fileObject = new MockMultipartFile("visitExcelObjectTest.xlsx", isFile);
-		ExcelParser parserFile = new ExcelParser();
-		String jsonObject = parserFile.createJSONFromParsedExcelFile(fileObject);
-
-		jsonObject = updateJSON(jsonObject);
-
-		ImportQueryGenerator generatorObject = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONObject = generatorObject.createUpdateQueryFromJSON(jsonObject);
-
-		Update updateObject = connection.prepareUpdate(updateQueryFromJSONObject);
-		updateObject.execute();
-
-		// Architecture
-		File architectureFile = new File("src/test/resources/visitExcelArchitectureTest.xlsx");
-		InputStream isArchitecture = new FileInputStream(architectureFile);
-
-		MultipartFile fileMockArchitecture = new MockMultipartFile("visitExcelArchitectureTest.xlsx", isArchitecture);
-
-		ExcelParser parserArchitecture = new ExcelParser();
-
-		String jsonArchitecture = parserArchitecture.createJSONFromParsedExcelFile(fileMockArchitecture);
-
-		jsonArchitecture = updateJSON(jsonArchitecture);
-
-		ImportQueryGenerator generatorArchitecture = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONArchitecture = generatorArchitecture.createUpdateQueryFromJSON(jsonArchitecture);
-
-		Update updateArchitecture = connection.prepareUpdate(updateQueryFromJSONArchitecture);
-		updateArchitecture.execute();
-
-		// Reference
-		File referenceFile = new File("src/test/resources/visitExcelReferenceTest.xlsx");
-		InputStream isReference = new FileInputStream(referenceFile);
-
-		MultipartFile fileMockReference = new MockMultipartFile("visitExcelReferenceTest.xlsx", isReference);
-
-		ExcelParser parserReference = new ExcelParser();
-
-		String jsonReference = parserReference.createJSONFromParsedExcelFile(fileMockReference);
-
-		jsonReference = updateJSON(jsonReference);
-
-		ImportQueryGenerator generatorReference = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONReference = generatorReference.createUpdateQueryFromJSON(jsonReference);
-
-		Update updateReference = connection.prepareUpdate(updateQueryFromJSONReference);
-		updateReference.execute();
-
-		// Group
-		File groupFile = new File("src/test/resources/visitExcelGroupTest.xlsx");
-		InputStream isGroup = new FileInputStream(groupFile);
-
-		MultipartFile fileMockGroup = new MockMultipartFile("visitExcelGroupTest.xlsx", isGroup);
-
-		ExcelParser parserGroup = new ExcelParser();
-
-		String jsonGroup = parserGroup.createJSONFromParsedExcelFile(fileMockGroup);
-
-		jsonGroup = updateJSON(jsonGroup);
-
-		ImportQueryGenerator generatorGroup = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONGroup = generatorGroup.createUpdateQueryFromJSON(jsonGroup);
-
-		Update updateGroup = connection.prepareUpdate(updateQueryFromJSONGroup);
-		updateGroup.execute();
-
-		// Links
-		File linkFile = new File("src/test/resources/visitLinkTest.xlsx");
-		InputStream isLinked = new FileInputStream(linkFile);
-
-		MultipartFile fileMockLink = new MockMultipartFile("visitLinkTest.xlsx", isLinked);
-
-		ExcelParser parserLink = new ExcelParser();
-
-		String jsonLink = parserLink.createJSONFromParsedExcelFile(fileMockLink);
-
-		jsonLink = updateJSON(jsonLink);
-
-		ImportQueryGenerator generatorLink = new ImportQueryGenerator("none", "none", "somePath");
-		String updateQueryFromJSONLink = generatorLink.createUpdateQueryFromJSON(jsonLink);
-
-		Update updateLink = connection.prepareUpdate(updateQueryFromJSONLink);
-		updateLink.execute();
+		}
 
 	}
 
-	private String updateJSON(String json) throws RepositoryException, QueryEvaluationException, JSONException,
-			MalformedQueryException, ParseException {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testArchitectureLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelArchitectureTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MultipartFile file = new MockMultipartFile("visitExcelArchitectureTest.xlsx", is);
+		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
+
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
+
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Architecture");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Architecture");
+
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
+
+		Iterator<String> iterator = jsonInnerNormal.keys();
+
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
+
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
+
+				assertEquals(array.length(), arrayTransformed.length());
+
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
+
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
+
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
+
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
+
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
+
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testPlaceLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelInstitutionAndPlaceTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MultipartFile file = new MockMultipartFile("visitExcelInstitutionAndPlaceTest.xlsx", is);
+		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
+
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
+
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Place");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Place");
+
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
+
+		Iterator<String> iterator = jsonInnerNormal.keys();
+
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
+
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
+
+				assertEquals(array.length(), arrayTransformed.length());
+
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
+
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
+
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
+
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
+
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
+
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testInstitutionLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelInstitutionAndPlaceTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MultipartFile file = new MockMultipartFile("visitExcelInstitutionTest.xlsx", is);
+		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
+
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
+
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Institution");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Institution");
+
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
+
+		Iterator<String> iterator = jsonInnerNormal.keys();
+
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
+
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
+
+				assertEquals(array.length(), arrayTransformed.length());
+
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
+
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
+
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
+
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
+
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
+
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testActivityLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelActivityTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MultipartFile file = new MockMultipartFile("visitExcelActivityTest.xlsx", is);
+		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
+
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
+
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Activity");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Activity");
+
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
+
+		Iterator<String> iterator = jsonInnerNormal.keys();
+
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
+
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
+
+				assertEquals(array.length(), arrayTransformed.length());
+
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
+
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
+
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
+
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
+
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
+
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testReferenceLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelReferenceTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MultipartFile file = new MockMultipartFile("visitExcelReferenceTest.xlsx", is);
+		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
+
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
+
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Reference");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Reference");
+
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
+
+		Iterator<String> iterator = jsonInnerNormal.keys();
+
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
+
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
+
+				assertEquals(array.length(), arrayTransformed.length());
+
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
+
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
+
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
+
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
+
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
+
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testObjectLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelObjectTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MultipartFile file = new MockMultipartFile("visitExcelObjectTest.xlsx", is);
+		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
+
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
+
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Object");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Object");
+
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
+
+		Iterator<String> iterator = jsonInnerNormal.keys();
+
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
+
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
+
+				assertEquals(array.length(), arrayTransformed.length());
+
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
+
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
+
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
+
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
+
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
+
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testGroupLinking()
+			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+		File originalFile = new File("src/test/resources/visitExcelGroupTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MultipartFile file = new MockMultipartFile("visitExcelGroupTest.xlsx", is);
+		ExcelParser parser = new ExcelParser();
+		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
+		String jsonTransformed = updateJSON(jsonNormal, "");
+
+		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
+		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
+
+		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Group");
+		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Group");
+
+		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+
+		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
+
+		Iterator<String> iterator = jsonInnerNormal.keys();
+
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Object value = jsonInnerNormal.get(key);
+
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				JSONArray arrayTransformed = (JSONArray) jsonInnerTransformed.get(key);
+
+				assertEquals(array.length(), arrayTransformed.length());
+
+				JSONObject subgroup = (JSONObject) array.get(0);
+				JSONObject subgroupTransformed = (JSONObject) arrayTransformed.get(0);
+				Iterator<String> subgroupIterator = subgroup.keys();
+				while (subgroupIterator.hasNext()) {
+					String subgroupKey = subgroupIterator.next();
+					Object subgroupValues = subgroup.get(subgroupKey);
+				
+					if (subgroupValues instanceof JSONArray) {
+						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
+						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
+
+						for (int i = 0; i < subgroupValueArray.length(); i++) {
+							JSONObject subgroupValue = (JSONObject) subgroupValueArray.get(i);
+							JSONObject subgroupValueTransformed = (JSONObject) subgroupValueTransformedArray.get(i);
+							Iterator<String> subgroupIteratorObjects = subgroupValue.keys();
+
+							while (subgroupIteratorObjects.hasNext()) {
+								String subgroupValueKey = subgroupIteratorObjects.next();
+								assertEquals(subgroupValue.get(subgroupValueKey).toString(),
+										subgroupValueTransformed.get(subgroupValueKey).toString());
+							}
+
+						}
+					} else {
+						String valueTransformed = subgroupTransformed.getString(subgroupKey);
+						assertEquals(subgroupValues.toString(), valueTransformed.toString());
+					}
+
+				}
+			} else {
+				Object valueTransformed = jsonInnerTransformed.get(key);
+				assertEquals(value.toString(), valueTransformed.toString());
+			}
+
+		}
+
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	private String updateJSON(String json, String context)
+			throws RepositoryException, JSONException, QueryEvaluationException {
+		Anno4j anno4j = this.importRepository.getAnno4j();
+		ObjectConnection connection = anno4j.getObjectRepository().getConnection();
 		JSONObject jsonObject = new JSONObject(json);
 
-		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonObject.keys();
 		String key;
 
@@ -886,7 +630,6 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				Object subObject;
 				for (int i = 0; i < array.length(); ++i) {
 					JSONObject jsonObjectFromArray = array.getJSONObject(i);
-					@SuppressWarnings("unchecked")
 					Iterator<String> iteratorValues = jsonObjectFromArray.keys();
 					while (iteratorValues.hasNext()) {
 						currentKey = iteratorValues.next();
@@ -900,7 +643,6 @@ public class ExcelParserLinksTest extends BaseWebTest {
 							JSONObject updatedJSONObject = new JSONObject();
 							for (int j = 0; j < subObjectArray.length(); j++) {
 								subJSONObject = subObjectArray.getJSONObject(j);
-								@SuppressWarnings("unchecked")
 								Iterator<String> subKeys = subJSONObject.keys();
 								while (subKeys.hasNext()) {
 									subKey = subKeys.next();
@@ -917,6 +659,9 @@ public class ExcelParserLinksTest extends BaseWebTest {
 										} else {
 											String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 											queryString += "SELECT ?s \n";
+											if (!context.isEmpty()) {
+												queryString += "FROM <" + context + "> \n";
+											}
 											queryString += "WHERE { \n{ \n";
 											queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
 											queryString += "       ?o erlangen:P3_has_note '" + subValue
@@ -963,6 +708,9 @@ public class ExcelParserLinksTest extends BaseWebTest {
 							} else {
 								String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 								queryString += "SELECT ?s \n";
+								if (!context.isEmpty()) {
+									queryString += "FROM <" + context + "> \n";
+								}
 								queryString += "WHERE { \n{ \n";
 								queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
 								queryString += "       ?o erlangen:P3_has_note '" + value
@@ -995,6 +743,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 			}
 		}
 
+		connection.close();
 		return jsonObject.toString();
 
 	}
@@ -1002,7 +751,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 	@Override
 	public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException,
 			RepositoryConfigException, MalformedQueryException, UpdateExecutionException {
-		
+
 	}
 
 }
