@@ -321,6 +321,10 @@ public class ExcelParser {
                 json.add(entity, jsonArray);
             }
         }
+        
+        if (json.size() == 0) {
+        	throw new ExcelParserException("File is empty or has missing ids.");
+        }
 
         return json.toString();
     }

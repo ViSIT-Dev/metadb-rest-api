@@ -33,9 +33,21 @@ public class ImportController {
     @PostMapping(value = "excel")
     public ResponseEntity importExcelUpload(
             @RequestParam MultipartFile file,
-            @RequestParam("context") String context) throws ExcelParserException {
-        this.importService.importExcelUpload(file, context);
-
+            @RequestParam("context") String context) {
+        try {
+			this.importService.importExcelUpload(file, context);
+		} catch (ExcelParserException e) {
+			if (e.getMessage().contains("baseID")) {
+				//clashing ids
+				return new ResponseEntity(HttpStatus.CONFLICT);
+			} else if (e.getMessage().contains("empty")){
+				//empty file or missing ids
+				return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+			} else {
+				return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
+			}
+		}
+        
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }
