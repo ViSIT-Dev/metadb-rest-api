@@ -800,22 +800,21 @@ public class ImportControllerTest extends BaseWebTest {
 		ObjectConnection connection = anno4j.getObjectRepository().getConnection();
 		
 		// Person
-		File twoPerson = new File("src/test/resources/visitExcelTwoPersonTest.xlsx");
+		File twoPerson = new File("src/test/resources/visitExcelTwoPersonContextTest.xlsx");
 		InputStream isPerson = new FileInputStream(twoPerson);
-		MockMultipartFile filePerson = new MockMultipartFile("file", "visitExcelTwoPersonTest.xlsx", "text/plain",
+		MockMultipartFile filePerson = new MockMultipartFile("file", "visitExcelTwoPersonContextTest.xlsx", "text/plain",
 				isPerson);
 		MockHttpServletRequestBuilder builderPerson = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel")
 				.file(filePerson);
 		MvcResult mvcResultPerson = this.mockMvc.perform(builderPerson.param("context", "http://context.de/")).andDo(print())
 				.andExpect(status().isNoContent()).andReturn();
 		
-		File originalFile = new File("src/test/resources/visitExcelArchitectureTest.xlsx");
+		File originalFile = new File("src/test/resources/visitExcelArchitectureContextTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
-		MockMultipartFile file = new MockMultipartFile("file", "visitExcelArchitectureTest.xlsx", "text/plain", is);
+		MockMultipartFile file = new MockMultipartFile("file", "visitExcelArchitectureContextTest.xlsx", "text/plain", is);
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
 		MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "http://context.de/")).andDo(print())
-				.andExpect(status().isNoContent()).andReturn();
-
+				.andExpect(status().isNoContent()).andReturn(); 
 		String queryString = "";
 		// Find Person "Bez2"
 		String bez2Id = "";
@@ -824,7 +823,7 @@ public class ImportControllerTest extends BaseWebTest {
 		queryString += "FROM <http://context.de/> \n";
 		queryString += "WHERE { \n";
 		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "Bez2" + "'^^<http://www.w3.org/2001/XMLSchema#string> .";
+		queryString += "       ?o erlangen:P3_has_note '" + "Person2" + "'^^<http://www.w3.org/2001/XMLSchema#string> .";
 		queryString += "\n }";
 
 		try {
@@ -847,7 +846,7 @@ public class ImportControllerTest extends BaseWebTest {
 		queryString += "FROM <http://context.de/> \n";
 		queryString += "WHERE { \n";
 		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "architecturename"
+		queryString += "       ?o erlangen:P3_has_note '" + "Architektur1"
 				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
 		queryString += "\n }";
 
@@ -890,6 +889,37 @@ public class ImportControllerTest extends BaseWebTest {
 		assertEquals(bez2Id, person.stringValue());
 
 	}
+
+	@Test
+	public void testExcelUploadDuplicateId() throws Exception {
+		File originalFile = new File("src/test/resources/visitExcelDuplicateIdTest.xlsx");
+
+		InputStream is = new FileInputStream(originalFile);
+
+		MockMultipartFile file = new MockMultipartFile("file", "visitExcelDuplicateIdTest.xlsx", "text/plain", is);
+
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
+
+		@SuppressWarnings("unused")
+		MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "")).andDo(print())
+				.andExpect(status().isConflict()).andReturn();
+	}
+	
+	@Test
+	public void testExcelUploadMissingId() throws Exception {
+		File originalFile = new File("src/test/resources/visitExcelMissingIdTest.xlsx");
+
+		InputStream is = new FileInputStream(originalFile);
+
+		MockMultipartFile file = new MockMultipartFile("file", "visitExcelMissingIdTest.xlsx", "text/plain", is);
+
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
+
+		@SuppressWarnings("unused")
+		MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "")).andDo(print())
+				.andExpect(status().isNotAcceptable()).andReturn();
+	}
+	
 
     @SuppressWarnings("unused")
 	@Test

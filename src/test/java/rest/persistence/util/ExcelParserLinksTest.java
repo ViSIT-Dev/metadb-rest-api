@@ -633,106 +633,108 @@ public class ExcelParserLinksTest extends BaseWebTest {
 					Iterator<String> iteratorValues = jsonObjectFromArray.keys();
 					while (iteratorValues.hasNext()) {
 						currentKey = iteratorValues.next();
-						subObject = jsonObjectFromArray.get(currentKey);
-						String subKey = "";
+						if (!(currentKey.equals("id") || currentKey.contains("idby")
+								|| currentKey.contains("identifiedby"))) {
+							subObject = jsonObjectFromArray.get(currentKey);
+							String subKey = "";
 
-						if (subObject instanceof JSONArray) {
-							JSONArray subObjectArray = (JSONArray) subObject;
-							JSONArray subArrayChanged = new JSONArray();
-							JSONObject subJSONObject = new JSONObject();
-							JSONObject updatedJSONObject = new JSONObject();
-							for (int j = 0; j < subObjectArray.length(); j++) {
-								subJSONObject = subObjectArray.getJSONObject(j);
-								Iterator<String> subKeys = subJSONObject.keys();
-								while (subKeys.hasNext()) {
-									subKey = subKeys.next();
-									// there are no reference field in subsubparts
-									if (!(subJSONObject.get(subKey) instanceof JSONArray)) {
-										final String subValue = subJSONObject.getString(subKey);
+							if (subObject instanceof JSONArray) {
+								JSONArray subObjectArray = (JSONArray) subObject;
+								JSONArray subArrayChanged = new JSONArray();
+								JSONObject subJSONObject = new JSONObject();
+								JSONObject updatedJSONObject = new JSONObject();
+								for (int j = 0; j < subObjectArray.length(); j++) {
+									subJSONObject = subObjectArray.getJSONObject(j);
+									Iterator<String> subKeys = subJSONObject.keys();
+									while (subKeys.hasNext()) {
+										subKey = subKeys.next();
+										// there are no reference field in subsubparts
+										if (!(subJSONObject.get(subKey) instanceof JSONArray)) {
+											final String subValue = subJSONObject.getString(subKey);
 
-										if (subValue.contains("http:") && subValue.contains("visit")) {
-											// ignore field as it has already an id
-											updatedJSONObject.put(subKey, subValue);
-										} else if (subKey.contains("dating")) {
-											// ignore field as it is a date
-											updatedJSONObject.put(subKey, subValue);
+											if (subKey.equals("reference_title_title")) {
+												// ignore field as it is the id
+												updatedJSONObject.put(subKey, subValue);
+											} else if (subValue.contains("http:") && subValue.contains("visit")) {
+												// ignore field as it has already an id
+												updatedJSONObject.put(subKey, subValue);
+											} else if (subKey.contains("dating")) {
+												// ignore field as it is a date
+												updatedJSONObject.put(subKey, subValue);
+											} else {
+												String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+												queryString += "SELECT ?s \n";
+												queryString += "WHERE { \n{ \n";
+												queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
+												queryString += "       ?o erlangen:P3_has_note '" + subValue
+														+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
+												queryString += "\n } \n UNION \n { \n";
+												queryString += "    ?s erlangen:P48_has_preferred_identifier ?o . \n";
+												queryString += "       ?o erlangen:P3_has_note '" + subValue
+														+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n } \n }";
+
+												try {
+													TupleQuery temp = connection.prepareTupleQuery(queryString);
+													TupleQueryResult result = temp.evaluate();
+
+													// no results found
+													if (!result.hasNext()) {
+														updatedJSONObject.put(subKey, subValue);
+													}
+
+													while (result.hasNext()) {
+														BindingSet solution = result.next();
+														Value updatedValue = solution.getValue("s");
+														updatedJSONObject.put(subKey, updatedValue);
+													}
+												} catch (MalformedQueryException e) {
+													e.printStackTrace();
+												}
+											}
 										} else {
-											String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-											queryString += "SELECT ?s \n";
-											if (!context.isEmpty()) {
-												queryString += "FROM <" + context + "> \n";
-											}
-											queryString += "WHERE { \n{ \n";
-											queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-											queryString += "       ?o erlangen:P3_has_note '" + subValue
-													+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-											queryString += "\n } \n UNION \n { \n";
-											queryString += "    ?s erlangen:P48_has_preferred_identifier ?o . \n";
-											queryString += "       ?o erlangen:P3_has_note '" + subValue
-													+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n } \n }";
-
-											try {
-												TupleQuery temp = connection.prepareTupleQuery(queryString);
-												TupleQueryResult result = temp.evaluate();
-
-												// no results found
-												if (!result.hasNext()) {
-													updatedJSONObject.put(subKey, subValue);
-												}
-
-												while (result.hasNext()) {
-													BindingSet solution = result.next();
-													Value updatedValue = solution.getValue("s");
-													updatedJSONObject.put(subKey, updatedValue);
-												}
-											} catch (MalformedQueryException e) {
-												e.printStackTrace();
-											}
+											JSONArray secondDimension = (JSONArray) subJSONObject.get(subKey);
+											updatedJSONObject.put(subKey, secondDimension);
 										}
-									} else {
-										JSONArray secondDimension = (JSONArray) subJSONObject.get(subKey);
-										updatedJSONObject.put(subKey, secondDimension);
 									}
 								}
-							}
-							if (updatedJSONObject.length() > 0) {
-								subArrayChanged.put(updatedJSONObject);
-								jsonObjectFromArray.put(currentKey, subArrayChanged);
+								if (updatedJSONObject.length() > 0) {
+									subArrayChanged.put(updatedJSONObject);
+									jsonObjectFromArray.put(currentKey, subArrayChanged);
+								}
+							} else {
+
+								final String value = jsonObjectFromArray.getString(currentKey);
+
+								if (value.contains("http:") && value.contains("visit")) {
+									// ignore field as it has already an id
+								} else {
+									String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+									queryString += "SELECT ?s \n";
+									queryString += "WHERE { \n{ \n";
+									queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
+									queryString += "       ?o erlangen:P3_has_note '" + value
+											+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
+									queryString += "\n } \n UNION \n { \n";
+									queryString += "    ?s erlangen:P48_has_preferred_identifier ?o . \n";
+									queryString += "       ?o erlangen:P3_has_note '" + value
+											+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n } \n }";
+
+									try {
+										TupleQuery temp = connection.prepareTupleQuery(queryString);
+										TupleQueryResult result = temp.evaluate();
+										while (result.hasNext()) {
+											BindingSet solution = result.next();
+											Value updatedValue = solution.getValue("s");
+											jsonObjectFromArray.put(currentKey, updatedValue);
+										}
+
+									} catch (MalformedQueryException e) {
+										e.printStackTrace();
+									}
+								}
 							}
 						} else {
-
-							final String value = jsonObjectFromArray.getString(currentKey);
-
-							if (value.contains("http:") && value.contains("visit")) {
-								// ignore field as it has already an id
-							} else {
-								String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-								queryString += "SELECT ?s \n";
-								if (!context.isEmpty()) {
-									queryString += "FROM <" + context + "> \n";
-								}
-								queryString += "WHERE { \n{ \n";
-								queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-								queryString += "       ?o erlangen:P3_has_note '" + value
-										+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
-								queryString += "\n } \n UNION \n { \n";
-								queryString += "    ?s erlangen:P48_has_preferred_identifier ?o . \n";
-								queryString += "       ?o erlangen:P3_has_note '" + value
-										+ "'^^<http://www.w3.org/2001/XMLSchema#string> . \n } \n }";
-
-								try {
-									TupleQuery temp = connection.prepareTupleQuery(queryString);
-									TupleQueryResult result = temp.evaluate();
-									while (result.hasNext()) {
-										BindingSet solution = result.next();
-										Value updatedValue = solution.getValue("s");
-										jsonObjectFromArray.put(currentKey, updatedValue);
-									}
-
-								} catch (MalformedQueryException e) {
-									e.printStackTrace();
-								}
-							}
+							jsonObjectFromArray.put(currentKey, jsonObjectFromArray.getString(currentKey));
 						}
 					}
 
@@ -745,7 +747,6 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 		connection.close();
 		return jsonObject.toString();
-
 	}
 
 	@Override
