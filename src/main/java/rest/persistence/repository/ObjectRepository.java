@@ -1,10 +1,7 @@
 package rest.persistence.repository;
 
 import com.github.anno4j.Anno4j;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import model.namespace.JSONVISMO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -173,16 +170,30 @@ public class ObjectRepository {
                 for (String binding : jsonObject.keySet()) {
                     if (!binding.equals(JSONVISMO.TYPE)) {
 
-                        String[] bindingSplit = jsonObject.get(binding).getAsString().split(",");
-                        if (bindingSplit.length > 1) {
-                            splitObject.addProperty(binding, bindingSplit[i]);
-                            if (binding.equals(JSONVISMO.ID)) {
-                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(bindingSplit[i]));
+                        // Problem here: sometimes an Array is returned. On arrays, no getAsString is possible
+                        // Therefore: check if it is an array and return the contained objects depending on i
+                        JsonElement bindingElement = jsonObject.get(binding);
+
+                        if (bindingElement instanceof JsonObject || bindingElement instanceof JsonPrimitive) {
+                            String[] bindingSplit = bindingElement.getAsString().split(",");
+                            if (bindingSplit.length > 1) {
+                                splitObject.addProperty(binding, bindingSplit[i]);
+                                if (binding.equals(JSONVISMO.ID)) {
+                                    splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(bindingSplit[i]));
+                                }
+                            } else {
+                                splitObject.addProperty(binding, bindingSplit[0]);
+                                if (binding.equals(JSONVISMO.ID)) {
+                                    splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(bindingSplit[0]));
+                                }
                             }
-                        } else {
-                            splitObject.addProperty(binding, bindingSplit[0]);
-                            if (binding.equals(JSONVISMO.ID)) {
-                                splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(bindingSplit[0]));
+                        } else if(bindingElement instanceof JsonArray) {
+                            JsonArray bindingArray = bindingElement.getAsJsonArray();
+
+                            if (bindingArray.size() > 1) {
+                                splitObject.add(binding, bindingArray.get(i));
+                            } else {
+                                splitObject.add(binding, bindingArray.get(0));
                             }
                         }
                     }
