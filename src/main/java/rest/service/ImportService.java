@@ -27,7 +27,9 @@ import rest.persistence.util.ExcelParser;
 import rest.persistence.util.ImportQueryGenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Service class for the import functionality.
@@ -159,6 +161,9 @@ public class ImportService {
 
 	private String updateJSON(String json, String context) throws RepositoryException, QueryEvaluationException,
 			JSONException, MalformedQueryException, ParseException {
+		String[] result = json.split(",\"");
+		boolean change = false;
+
 		Anno4j anno4j = this.importRepository.getAnno4j();
 		ObjectConnection connection = anno4j.getObjectRepository().getConnection();
 		JSONObject jsonObject = new JSONObject(json);
@@ -174,7 +179,6 @@ public class ImportService {
 
 			if (object instanceof JSONArray) {
 				JSONArray array = (JSONArray) object;
-				JSONArray changedArray = new JSONArray();
 				String currentKey = "";
 				Object subObject;
 				for (int i = 0; i < array.length(); ++i) {
@@ -189,9 +193,7 @@ public class ImportService {
 
 							if (subObject instanceof JSONArray) {
 								JSONArray subObjectArray = (JSONArray) subObject;
-								JSONArray subArrayChanged = new JSONArray();
 								JSONObject subJSONObject = new JSONObject();
-								JSONObject updatedJSONObject = new JSONObject();
 								for (int j = 0; j < subObjectArray.length(); j++) {
 									subJSONObject = subObjectArray.getJSONObject(j);
 									Iterator<String> subKeys = subJSONObject.keys();
@@ -203,13 +205,10 @@ public class ImportService {
 
 											if (subKey.equals("reference_title_title")) {
 												// ignore field as it is the id
-												updatedJSONObject.put(subKey, subValue);
 											} else if (subValue.contains("http:") && subValue.contains("visit")) {
 												// ignore field as it has already an id
-												updatedJSONObject.put(subKey, subValue);
 											} else if (subKey.contains("dating")) {
 												// ignore field as it is a date
-												updatedJSONObject.put(subKey, subValue);
 											} else {
 												String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 												queryString += "SELECT ?s \n";
@@ -224,31 +223,51 @@ public class ImportService {
 
 												try {
 													TupleQuery temp = connection.prepareTupleQuery(queryString);
-													TupleQueryResult result = temp.evaluate();
+													TupleQueryResult resultQuery = temp.evaluate();
 
-													// no results found
-													if (!result.hasNext()) {
-														updatedJSONObject.put(subKey, subValue);
-													}
-
-													while (result.hasNext()) {
-														BindingSet solution = result.next();
+													while (resultQuery.hasNext()) {
+														BindingSet solution = resultQuery.next();
 														Value updatedValue = solution.getValue("s");
-														updatedJSONObject.put(subKey, updatedValue);
+														for (int k = 0; k < result.length; k++) {
+															if (result[k].contains(subKey)
+																	&& result[k].contains(subValue)) {
+																change = true;
+																String[] split = result[k].split("\":\"");
+																String[] subSplit = split[1].split("\"");
+																subSplit[0] = updatedValue.stringValue();
+
+																split[1] = "";
+
+																for (int l = 0; l < subSplit.length; l++) {
+																	if (subSplit.length == 1
+																			|| l < (subSplit.length - 1)) {
+																		split[1] = split[1] + subSplit[l] + "\"";
+																	} else {
+																		split[1] = split[1] + subSplit[l];
+																	}
+																}
+
+																result[k] = "";
+
+																for (int j1 = 0; j1 < split.length; j1++) {
+																	if (j1 < (split.length - 1)) {
+																		result[k] = result[k] + split[j1] + "\":\"";
+																	} else {
+																		result[k] = result[k] + split[j1];
+																	}
+																}
+
+																k = result.length + 1;
+
+															}
+														}
 													}
 												} catch (MalformedQueryException e) {
 													e.printStackTrace();
 												}
 											}
-										} else {
-											JSONArray secondDimension = (JSONArray) subJSONObject.get(subKey);
-											updatedJSONObject.put(subKey, secondDimension);
 										}
 									}
-								}
-								if (updatedJSONObject.length() > 0) {
-									subArrayChanged.put(updatedJSONObject);
-									jsonObjectFromArray.put(currentKey, subArrayChanged);
 								}
 							} else {
 
@@ -270,11 +289,43 @@ public class ImportService {
 
 									try {
 										TupleQuery temp = connection.prepareTupleQuery(queryString);
-										TupleQueryResult result = temp.evaluate();
-										while (result.hasNext()) {
-											BindingSet solution = result.next();
+										TupleQueryResult resultQuery = temp.evaluate();
+										while (resultQuery.hasNext()) {
+											BindingSet solution = resultQuery.next();
 											Value updatedValue = solution.getValue("s");
-											jsonObjectFromArray.put(currentKey, updatedValue);
+
+											for (int k = 0; k < result.length; k++) {
+												if (result[k].contains(currentKey) && result[k].contains(value)) {
+													change = true;
+													String[] split = result[k].split("\":\"");
+													String[] subSplit = split[1].split("\"");
+													subSplit[0] = updatedValue.stringValue();
+
+													split[1] = "";
+
+													for (int l = 0; l < subSplit.length; l++) {
+														if (subSplit.length == 1 || l < (subSplit.length - 1)) {
+															split[1] = split[1] + subSplit[l] + "\"";
+														} else {
+															split[1] = split[1] + subSplit[l];
+														}
+													}
+
+													result[k] = "";
+
+													for (int j = 0; j < split.length; j++) {
+														if (j < (split.length - 1)) {
+															result[k] = result[k] + split[j] + "\":\"";
+														} else {
+															result[k] = result[k] + split[j];
+														}
+													}
+
+													k = result.length + 1;
+
+												}
+											}
+
 										}
 
 									} catch (MalformedQueryException e) {
@@ -282,20 +333,30 @@ public class ImportService {
 									}
 								}
 							}
-						} else {
-							jsonObjectFromArray.put(currentKey, jsonObjectFromArray.getString(currentKey));
 						}
 					}
-
-					changedArray.put(jsonObjectFromArray);
-					jsonObject.put(key, changedArray);
 
 				}
 			}
 		}
 
 		connection.close();
-		return jsonObject.toString();
+
+		if (change) {
+			String resultString = "";
+
+			for (int i = 0; i < result.length; i++) {
+				if (i < result.length - 1) {
+					resultString = resultString + result[i] + ",\"";
+				} else {
+					resultString = resultString + result[i];
+				}
+			}
+
+			return resultString;
+		} else {
+			return json;
+		}
 
 	}
 }

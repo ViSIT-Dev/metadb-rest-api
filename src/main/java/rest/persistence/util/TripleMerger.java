@@ -132,18 +132,24 @@ public class TripleMerger {
 
     private static LinkedList<String> mergeTwoTriples(String triple1, String triple2, HashMap<String, String> substitutions) {
 
+    	triple1 = triple1 + " ";
+    	triple2 = triple2 + " ";
         LinkedList<String> result = new LinkedList<String>();
 
         // Check substitutions and do them if found
         for(String subKey : substitutions.keySet()) {
-            if(triple1.contains(subKey)) {
+        	String fullSubKey = subKey + " ";
+            if(triple1.contains(fullSubKey)) {
                 triple1 = triple1.replace(subKey, substitutions.get(subKey));
             }
 
-            if(triple2.contains(subKey)) {
+            if(triple2.contains(fullSubKey)) {
                 triple2 = triple2.replace(subKey, substitutions.get(subKey));
             }
         }
+        
+        triple1 = triple1.substring(0, triple1.length()-1);
+        triple2 = triple2.substring(0, triple2.length()-1);
 
         // Check if the same triples are given
         if(triple1.equals(triple2)) {

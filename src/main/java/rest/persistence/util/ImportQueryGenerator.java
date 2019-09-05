@@ -19,393 +19,495 @@ import java.util.*;
 
 public class ImportQueryGenerator {
 
-    private String sparqlEndpointQuery;
+	private String sparqlEndpointQuery;
 
-    private String sparqlEndpointUpdate;
+	private String sparqlEndpointUpdate;
 
-    private String pathToTemplates;
+	private String pathToTemplates;
 
-    private HashMap<String, HashMap<String, String>> basicGroups;
-    private HashMap<String, HashMap<String, String>> subGroups;
+	private HashMap<String, HashMap<String, String>> basicGroups;
+	private HashMap<String, HashMap<String, String>> subGroups;
 
-    private HashSet<String> basicGroupNames;
-    private HashSet<String> idnames;
+	private HashSet<String> basicGroupNames;
+	private HashSet<String> idnames;
 
-    private HashMap<String, String> datatypes;
+	private HashMap<String, String> datatypes;
 
-    private IdMapper mapper;
+	List<String> totalList = new ArrayList<String>();
 
-    private String errors;
+	private IdMapper mapper;
 
-    private static Log logger = LogFactory.getLog(VisitRestApplication.class);
+	private String errors;
 
-    public ImportQueryGenerator(String sparqlEndpointQuery, String sparqlEndpointUpdate, String pathToTemplates) {
-        this.sparqlEndpointQuery = sparqlEndpointQuery;
-        this.sparqlEndpointUpdate = sparqlEndpointUpdate;
-        this.pathToTemplates = pathToTemplates;
+	private static Log logger = LogFactory.getLog(VisitRestApplication.class);
 
-        this.initialiseQueryWrappers();
+	public ImportQueryGenerator(String sparqlEndpointQuery, String sparqlEndpointUpdate, String pathToTemplates) {
+		this.sparqlEndpointQuery = sparqlEndpointQuery;
+		this.sparqlEndpointUpdate = sparqlEndpointUpdate;
+		this.pathToTemplates = pathToTemplates;
 
-        this.mapper = new IdMapper();
-    }
+		this.initialiseQueryWrappers();
 
-    public String createUpdateQueryFromJSON(String json) throws QueryGenerationException, IdMapperException {
-        JSONObject jsonObject = new JSONObject(json);
-        LinkedList<String> queries = new LinkedList<String>();
+		this.mapper = new IdMapper();
+	}
 
-        Iterator<String> iterator = jsonObject.keys();
+	public String createUpdateQueryFromJSON(String json) throws QueryGenerationException, IdMapperException {
+		JSONObject jsonObject = new JSONObject(json);
+		LinkedList<String> queries = new LinkedList<String>();
 
-        while(iterator.hasNext()) {
-            String rootObjectName = iterator.next();
+		Iterator<String> iterator = jsonObject.keys();
 
-            if (this.basicGroupNames.contains(rootObjectName)) {
-                Object rootObject = jsonObject.get(rootObjectName);
+		while (iterator.hasNext()) {
+			String rootObjectName = iterator.next();
 
-                if (rootObject instanceof JSONArray) {
-                    JSONArray array = (JSONArray) rootObject;
+			if (this.basicGroupNames.contains(rootObjectName)) {
+				Object rootObject = jsonObject.get(rootObjectName);
 
-                    for(int i = 0; i < array.length(); ++i) {
-                        JSONObject object = array.getJSONObject(i);
+				if (rootObject instanceof JSONArray) {
+					JSONArray array = (JSONArray) rootObject;
 
-                        LinkedList<String> queryParts = this.processJSONObject(object, rootObjectName);
-                        String mergedTriples = TripleMerger.mergeTriples(queryParts);
-                        
-                        String objectID = "";
+					for (int i = 0; i < array.length(); ++i) {
+						JSONObject object = array.getJSONObject(i);
 
-                        if (object.getString(JSONVISMO.ID) == null) {
-                        	objectID = this.mapper.addBaseID(object.getString(JSONVISMO.SECONDARY_IDENTIFIER), object.getString(JSONVISMO.TYPE));
-                        } else {
-                        	objectID = this.mapper.addBaseID(object.getString(JSONVISMO.ID), object.getString(JSONVISMO.TYPE));
-                        }
-                        queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
-                    }
-                } else if (rootObject instanceof JSONObject) {
-                    JSONObject currentObject = (JSONObject) rootObject;
-                    LinkedList<String> queryParts = this.processJSONObject(currentObject, rootObjectName);
-                    String mergedTriples = TripleMerger.mergeTriples(queryParts);
+						LinkedList<String> queryParts = this.processJSONObject(object, rootObjectName);
+						String mergedTriples = TripleMerger.mergeTriples(queryParts);
 
-                    String objectID = "";
-                    
-                    if (currentObject.getString(JSONVISMO.ID) == null) {
-                    	objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.SECONDARY_IDENTIFIER), currentObject.getString(JSONVISMO.TYPE));
-                    } else {
-                    	objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.ID), currentObject.getString(JSONVISMO.TYPE));
-                    }
-                    queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
-                } else {
-                    // TODO Can this happen?
-                    throw new QueryGenerationException("Input JSON String contained an incorrect object.");
-                }
-            } else {
-                throw new QueryGenerationException("Root name " + rootObjectName + " is not an accepted entity.");
-            }
-        }
+						String objectID = "";
 
-        String overallQuery = "INSERT DATA {\n";
-        for(String query : queries) {
-            overallQuery += query;
-        }
-        overallQuery += "}";
+						if (object.getString(JSONVISMO.ID) == null) {
+							objectID = this.mapper.addBaseID(object.getString(JSONVISMO.SECONDARY_IDENTIFIER),
+									object.getString(JSONVISMO.TYPE));
+						} else {
+							objectID = this.mapper.addBaseID(object.getString(JSONVISMO.ID),
+									object.getString(JSONVISMO.TYPE));
+						}
+						queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
+					}
+				} else if (rootObject instanceof JSONObject) {
+					JSONObject currentObject = (JSONObject) rootObject;
+					LinkedList<String> queryParts = this.processJSONObject(currentObject, rootObjectName);
+					String mergedTriples = TripleMerger.mergeTriples(queryParts);
 
-        return overallQuery;
-    }
+					String objectID = "";
 
-    public String createUpdateQueryFromJSONIntoContext(String json, String context) throws IdMapperException, QueryGenerationException {
-        String updateQueryFromJSON = this.createUpdateQueryFromJSON(json);
+					if (currentObject.getString(JSONVISMO.ID) == null) {
+						objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.SECONDARY_IDENTIFIER),
+								currentObject.getString(JSONVISMO.TYPE));
+					} else {
+						objectID = this.mapper.addBaseID(currentObject.getString(JSONVISMO.ID),
+								currentObject.getString(JSONVISMO.TYPE));
+					}
+					queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
+				} else {
+					// TODO Can this happen?
+					throw new QueryGenerationException("Input JSON String contained an incorrect object.");
+				}
+			} else {
+				throw new QueryGenerationException("Root name " + rootObjectName + " is not an accepted entity.");
+			}
+		}
 
-        String updateQueryFromJSONWithContext = "";
+		String overallQuery = "INSERT DATA {\n";
+		for (String query : queries) {
+			overallQuery += query;
+		}
+		overallQuery += "}";
 
-        if(!context.isEmpty()) {
-            updateQueryFromJSONWithContext = updateQueryFromJSON.replace("INSERT DATA {\n", "INSERT DATA { GRAPH <" + context + "> {\n");
-            updateQueryFromJSONWithContext = updateQueryFromJSONWithContext.concat("\n}");
-        }
+		return overallQuery;
+	}
 
-        return updateQueryFromJSONWithContext;
-    }
+	public String createUpdateQueryFromJSONIntoContext(String json, String context)
+			throws IdMapperException, QueryGenerationException {
+		String updateQueryFromJSON = this.createUpdateQueryFromJSON(json);
 
-    private LinkedList<String> processJSONObject(JSONObject jsonObject, String groupName) throws IdMapperException {
+		String updateQueryFromJSONWithContext = "";
 
-        LinkedList<String> queryParts = new LinkedList<String>();
-        if(this.basicGroups.keySet().contains(groupName)) {
-            queryParts.add(this.typeAssociationTriple(groupName));
-        }
+		if (!context.isEmpty()) {
+			updateQueryFromJSONWithContext = updateQueryFromJSON.replace("INSERT DATA {\n",
+					"INSERT DATA { GRAPH <" + context + "> {\n");
+			updateQueryFromJSONWithContext = updateQueryFromJSONWithContext.concat("\n}");
+		}
 
-        String objectID = "";
+		return updateQueryFromJSONWithContext;
+	}
 
-        Iterator<String> iterator = jsonObject.keys();
+	private LinkedList<String> processJSONObject(JSONObject jsonObject, String groupName) throws IdMapperException {
+		boolean marriage = false;
 
-        while(iterator.hasNext()) {
-            String id = iterator.next();
+		LinkedList<String> queryParts = new LinkedList<String>();
+		if (this.basicGroups.keySet().contains(groupName)) {
+			queryParts.add(this.typeAssociationTriple(groupName));
+		}
 
-            if (id.equals(JSONVISMO.TYPE)) {
+		Iterator<String> iterator = jsonObject.keys();
 
-            } else if(id.equals(JSONVISMO.ID)) {
-                // Supposedly not needed here, done in a step before
+		if (groupName.contains("dating")) {
+			ArrayList<String> ids = new ArrayList<String>();
+
+			while (iterator.hasNext()) {
+				ids.add(iterator.next());
+			}
+
+			// sort ids
+
+			if (groupName.equals("activity_dating")) {
+				ids.sort(new IdComparatorDating(true));
+			} else {
+				ids.sort(new IdComparatorDating(false));
+			}
+
+			String id = "";
+			String value = "";
+			for (int i = 0; i < ids.size(); i++) {
+				id = ids.get(i);
+				value = jsonObject.getString(id);
+
+				if (this.isSingleValue(value)) {
+					queryParts.add(this.createQueryAddition(groupName, value, id));
+				} else {
+					for (String split : value.split(", ")) {
+
+						split = split.trim();
+						queryParts.add(this.createQueryAddition(groupName, split, id));
+					}
+				}
+			}
+		}
+
+		while (iterator.hasNext()) {
+			String id = iterator.next();
+
+			if (id.equals(JSONVISMO.TYPE)) {
+
+			} else if (id.equals(JSONVISMO.ID)) {
+				// Supposedly not needed here, done in a step before
 //                objectID = this.mapper.addBaseID(jsonObject.getString(JSONVISMO.ID), jsonObject.getString(JSONVISMO.TYPE));
-            } else {
+			} else {
 
-                // Check if id is given in the supported model
-                if (this.idnames.contains(id)) {
-                    // Check if id stands for a property/relationship or for a subgroup
-                    if (this.subGroups.keySet().contains(id)) {
-                        // Subgroup
-                        Object subgroup = jsonObject.get(id);
+				// Check if id is given in the supported model
+				if (this.idnames.contains(id)) {
+					// Check if id stands for a property/relationship or for a subgroup
+					if (this.subGroups.keySet().contains(id)) {
+						// Subgroup
+						Object subgroup = jsonObject.get(id);
 
-                        if(subgroup instanceof JSONArray) {
-                            JSONArray subGroupArray = (JSONArray) subgroup;
+						if (subgroup instanceof JSONArray) {
+							JSONArray subGroupArray = (JSONArray) subgroup;
 
-                            for(int i = 0; i < subGroupArray.length(); ++i) {
-                                LinkedList<String> intermediateQueryParts = processJSONObject(subGroupArray.getJSONObject(i), id);
+							for (int i = 0; i < subGroupArray.length(); ++i) {
+								LinkedList<String> intermediateQueryParts = processJSONObject(
+										subGroupArray.getJSONObject(i), id);
 
-                                String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
+								String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
+								List<String> splitList = Arrays.asList(split);
 
-                                queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
+								if (splitList.get(0).contains("P107i_is_current_or_former_member_of")) {
+									marriage = true; 
+									totalList.addAll(splitList);
+								} else if (totalList.size() > 0 && totalList.get(0).contains("P107i_is_current_or_former_member_of")) {
+									marriage = true; 
+								} else {
+									queryParts.addAll(this.exchangeRDFVariablesInList(splitList));
+								}
+							}
 
+							if (marriage && id.equals("person_marriage")) {
+								String[] split = TripleMerger.mergeTriples(totalList).split(" .\n");
+								queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
+								totalList.clear();
+							}
+						} else {
+							LinkedList<String> intermediateQueryParts = processJSONObject((JSONObject) subgroup, id);
 
-//                                queryParts.add(TripleMerger.mergeTriples(processJSONObject(subGroupArray.getJSONObject(i), id)));
-                            }
-                        } else {
-                            LinkedList<String> intermediateQueryParts = processJSONObject((JSONObject) subgroup, id);
+							String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
 
-                            String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
-
-                            queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
+							queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
 //                            queryParts.add(TripleMerger.mergeTriples(processJSONObject((JSONObject) subgroup, id)));
-                        }
-                    } else {
-                        String value = jsonObject.getString(id);
+						}
+					} else {
+						String value = jsonObject.getString(id);
 
-                        // Normal id, check if multiple or single value supported
-                        if (this.isSingleValue(value)) {
+						// Normal id, check if multiple or single value supported
+						if (this.isSingleValue(value)) {
 //                            query += this.createQueryAddition(groupName, value, id);
-                            queryParts.add(this.createQueryAddition(groupName, value, id));
-                        } else {
-                            for (String split : value.split(", ")) {
+							queryParts.add(this.createQueryAddition(groupName, value, id));
+						} else {
+							for (String split : value.split(", ")) {
 //                                query += this.createQueryAddition(groupName, split, id);
 
-                                split = split.trim();
-                                queryParts.add(this.createQueryAddition(groupName, split, id));
-                            }
-                        }
-                    }
-                } else {
-                    this.errors += "The given id " + id + " is not supported in the underlying model and thereby ignored.\n";
-                }
-            }
-        }
+								split = split.trim();
+								queryParts.add(this.createQueryAddition(groupName, split, id));
+							}
+						}
+					}
+				} else {
+					this.errors += "The given id " + id
+							+ " is not supported in the underlying model and thereby ignored.\n";
+				}
+			}
+		}
 
-        return queryParts;
-    }
+		return queryParts;
+	}
 
-    private String typeAssociationTriple(String groupName) {
-        String id = VISMO.typeAssociation(groupName);
+	private String typeAssociationTriple(String groupName) {
+		String id = VISMO.typeAssociation(groupName);
 
-        return "?x rdf:type <" + id + ">";
-    }
+		return "?x rdf:type <" + id + ">";
+	}
 
-    private String exchangeRDFVariables(String input, String objectID) {
-        String result = input.replace("?x", "<" + objectID + ">");
+	private String exchangeRDFVariables(String input, String objectID) {
+		String result = input.replace("?x", "<" + objectID + ">");
 
-        // Find all occurences of intermediary variables (written as ?y + a number) and replace them with same URIs
-        int index = input.indexOf("?y");
-        while(index > 0) {
-            int start = index;
-            int end = input.indexOf(" ", index);
+		// Find all occurences of intermediary variables (written as ?y + a number) and
+		// replace them with same URIs
+		int index = input.indexOf("?y");
+		while (index > 0) {
+			int start = index;
+			int end = input.indexOf(" ", index);
 
-            String intermediary = input.substring(start, end);
-            String uri = VisitIDGenerator.generateVisitDBID();
+			String intermediary = input.substring(start, end);
+			String uri = VisitIDGenerator.generateVisitDBID();
 
-            result = result.replace(intermediary + " ", "<" + uri + "> ");
+			result = result.replace(intermediary + " ", "<" + uri + "> ");
 
-            index = input.indexOf("?y", start + 1);
-        }
+			index = input.indexOf("?y", start + 1);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    private LinkedList<String> exchangeRDFVariablesInList(List<String> input) {
-        LinkedList<String> result = new LinkedList<String>();
-        HashMap<String, String> substitutions = new HashMap<String, String>();
+	private LinkedList<String> exchangeRDFVariablesInList(List<String> input) {
+		LinkedList<String> result = new LinkedList<String>();
+		HashMap<String, String> substitutions = new HashMap<String, String>();
 //        substitutions.put("?x", VisitIDGenerator.generateVisitDBID());
 
-        for(String triple : input) {
-            String change = triple;
+		for (String triple : input) {
+			String change = triple;
 
-            for(String subKey : substitutions.keySet()) {
-            	String subKeyWithSpace = subKey + " ";
-                if(change.contains(subKeyWithSpace)) {
-                    change = change.replace(subKey, "<" + substitutions.get(subKey) + ">");
-                }
-            }
+			for (String subKey : substitutions.keySet()) {
+				String fullSubKey = subKey + " ";
+				if (change.contains(fullSubKey)) {
+					change = change.replace(subKey, "<" + substitutions.get(subKey) + ">");
+				}
+			}
 
-            int index = change.indexOf("?y");
-            while(index > 0) {
-                int start = index;
-                int end = change.indexOf(" ", index);
-                if(end == -1) {
-                    end = change.length();
-                }
+			int index = change.indexOf("?y");
+			while (index > 0) {
+				int start = index;
+				int end = change.indexOf(" ", index);
+				if (end == -1) {
+					end = change.length();
+				}
 
-                String intermediary = change.substring(start, end);
-                String uri = VisitIDGenerator.generateVisitDBID();
+				String intermediary = change.substring(start, end);
+				String uri = VisitIDGenerator.generateVisitDBID();
 
-                change = change.replace(intermediary, "<" + uri + ">");
-                substitutions.put(intermediary, uri);
+				change = change.replace(intermediary, "<" + uri + ">");
+				substitutions.put(intermediary, uri);
 
-                index = change.indexOf("?y", start + 1);
-            }
+				index = change.indexOf("?y", start + 1);
+			}
 
-            result.add(change);
-        }
+			result.add(change);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    private String createQueryAddition(String groupName, String value, String id) {
-        String queryAddition = "";
+	private String createQueryAddition(String groupName, String value, String id) {
+		String queryAddition = "";
 
-        if(this.basicGroups.containsKey(groupName)) {
-            queryAddition = this.basicGroups.get(groupName).get(id);
-        } else {
-            queryAddition = this.subGroups.get(groupName).get(id);
-        }
+		if (this.basicGroups.containsKey(groupName)) {
+			queryAddition = this.basicGroups.get(groupName).get(id);
+		} else {
+			queryAddition = this.subGroups.get(groupName).get(id);
+		}
 
-        String queryValue = value;
+		String queryValue = value;
 
-        if(this.datatypes.get(id).startsWith("entity_reference")) {
-        	if (value.contains("http") && value.contains("visit")) {
-        		queryValue = "<" + value + ">";
-        	} else {
-        		queryValue = "<" + this.mapper.addReferenceID(value) + ">";
-        	}
-        } else if(this.datatypes.get(id).startsWith("string")) {
-            queryValue = "\"" + value + "\"";
+		if (this.datatypes.get(id).startsWith("entity_reference")) {
+			if (value.contains("http") && value.contains("visit")) {
+				queryValue = "<" + value + ">";
+			} else {
+				queryValue = "<" + this.mapper.addReferenceID(value) + ">";
+			}
+		} else if (this.datatypes.get(id).startsWith("string")) {
+			queryValue = "\"" + value + "\"";
 
-            // Remove protected Komma from ExcelParser
-            queryValue = queryValue.replaceAll("\\[,\\]", ",");
+			// Remove protected Komma from ExcelParser
+			queryValue = queryValue.replaceAll("\\[,\\]", ",");
 
-            if(StringUtils.isNumeric(value)) {
-                queryValue += "^^xsd:integer";
-            }
-        }
+			if (StringUtils.isNumeric(value)) {
+				queryValue += "^^xsd:integer";
+			}
+		}
 
-        return queryAddition.replace("?" + id, queryValue);
-    }
+		return queryAddition.replace("?" + id, queryValue);
+	}
 
-    private boolean isSingleValue(String text) {
-        return !text.contains(",");
-    }
+	private boolean isSingleValue(String text) {
+		return !text.contains(",");
+	}
 
-    private void initialiseQueryWrappers() {
-        this.basicGroups = new HashMap<String, HashMap<String, String>>();
-        this.subGroups = new HashMap<String, HashMap<String, String>>();
+	private void initialiseQueryWrappers() {
+		this.basicGroups = new HashMap<String, HashMap<String, String>>();
+		this.subGroups = new HashMap<String, HashMap<String, String>>();
 
-        this.basicGroupNames = new HashSet<String>();
-        this.idnames = new HashSet<String>();
+		this.basicGroupNames = new HashSet<String>();
+		this.idnames = new HashSet<String>();
 
-        this.datatypes = new HashMap<String, String>();
+		this.datatypes = new HashMap<String, String>();
 
-        String csv = "";
+		String csv = "";
 
-        if(this.sparqlEndpointUpdate.equals("none") && this.sparqlEndpointQuery.equals("none")) {
-            csv = "templates/wrapper.csv";
-        } else {
-            csv = this.pathToTemplates + "/wrapper.csv";
-        }
+		if (this.sparqlEndpointUpdate.equals("none") && this.sparqlEndpointQuery.equals("none")) {
+			csv = "templates/wrapper.csv";
+		} else {
+			csv = this.pathToTemplates + "/wrapper.csv";
+		}
 
-        CSVReader reader = null;
+		CSVReader reader = null;
 
-        try {
-            reader = new CSVReader(new FileReader(csv));
+		try {
+			reader = new CSVReader(new FileReader(csv));
 
-            String line[];
+			String line[];
 
-            while ((line = reader.readNext()) != null) {
-                String group = line[2];
+			while ((line = reader.readNext()) != null) {
+				String group = line[2];
 
-                if (Character.isUpperCase(group.charAt(0))) {
-                    // Basic group
-                    if (!this.basicGroups.containsKey(group)) {
-                        this.basicGroups.put(group, new HashMap<String, String>());
-                        this.basicGroupNames.add(group);
-                    }
+				if (Character.isUpperCase(group.charAt(0))) {
+					// Basic group
+					if (!this.basicGroups.containsKey(group)) {
+						this.basicGroups.put(group, new HashMap<String, String>());
+						this.basicGroupNames.add(group);
+					}
 
-                    this.basicGroups.get(group).put(line[1], line[3]);
-                } else {
-                    // Subgroup
-                    if (!this.subGroups.containsKey(group)) {
-                        this.subGroups.put(group, new HashMap<String, String>());
-                        this.idnames.add(group);
-                    }
+					this.basicGroups.get(group).put(line[1], line[3]);
+				} else {
+					// Subgroup
+					if (!this.subGroups.containsKey(group)) {
+						this.subGroups.put(group, new HashMap<String, String>());
+						this.idnames.add(group);
+					}
 
-                    this.subGroups.get(group).put(line[1], line[3]);
-                }
+					this.subGroups.get(group).put(line[1], line[3]);
+				}
 
-                this.idnames.add(line[1]);
+				this.idnames.add(line[1]);
 
-                String datatype = line[4];
-                if(datatype.equals("datetime") || datatype.equals("list_string")) {
-                    this.datatypes.put(line[1], "string");
-                } else {
-                    this.datatypes.put(line[1], line[4]);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+				String datatype = line[4];
+				if (datatype.equals("datetime") || datatype.equals("list_string")) {
+					this.datatypes.put(line[1], "string");
+				} else {
+					this.datatypes.put(line[1], line[4]);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    /**
-     * Gets basicGroups.
-     *
-     * @return Value of basicGroups.
-     */
-    public HashMap<String, HashMap<String, String>> getBasicGroups() {
-        return basicGroups;
-    }
+	/**
+	 * Gets basicGroups.
+	 *
+	 * @return Value of basicGroups.
+	 */
+	public HashMap<String, HashMap<String, String>> getBasicGroups() {
+		return basicGroups;
+	}
 
-    /**
-     * Gets subGroups.
-     *
-     * @return Value of subGroups.
-     */
-    public HashMap<String, HashMap<String, String>> getSubGroups() {
-        return subGroups;
-    }
+	/**
+	 * Gets subGroups.
+	 *
+	 * @return Value of subGroups.
+	 */
+	public HashMap<String, HashMap<String, String>> getSubGroups() {
+		return subGroups;
+	}
 
-    /**
-     * Gets basicGroupNames.
-     *
-     * @return Value of basicGroupNames.
-     */
-    public HashSet<String> getBasicGroupNames() {
-        return basicGroupNames;
-    }
+	/**
+	 * Gets basicGroupNames.
+	 *
+	 * @return Value of basicGroupNames.
+	 */
+	public HashSet<String> getBasicGroupNames() {
+		return basicGroupNames;
+	}
 
-    /**
-     * Gets idnames.
-     *
-     * @return Value of idnames.
-     */
-    public HashSet<String> getIdnames() {
-        return idnames;
-    }
+	/**
+	 * Gets idnames.
+	 *
+	 * @return Value of idnames.
+	 */
+	public HashSet<String> getIdnames() {
+		return idnames;
+	}
 
-    /**
-     * Gets datatypes.
-     *
-     * @return Value of datatypes.
-     */
-    public HashMap<String, String> getDatatypes() {
-        return datatypes;
-    }
+	/**
+	 * Gets datatypes.
+	 *
+	 * @return Value of datatypes.
+	 */
+	public HashMap<String, String> getDatatypes() {
+		return datatypes;
+	}
 
-    /**
-     * Gets mapper.
-     *
-     * @return Value of mapper.
-     */
-    public IdMapper getMapper() {
-        return mapper;
-    }
+	/**
+	 * Gets mapper.
+	 *
+	 * @return Value of mapper.
+	 */
+	public IdMapper getMapper() {
+		return mapper;
+	}
+
+	private class IdComparatorDating implements Comparator<String> {
+		private boolean activityDating = false;
+
+		public IdComparatorDating(boolean activityDating) {
+			this.activityDating = activityDating;
+		}
+
+		@Override
+		public int compare(String o1, String o2) {
+			if (this.activityDating) {
+				if (o1.contains("exact")) {
+					return -1;
+				} else if (o2.contains("exact")) {
+					return 1;
+				} else if (o1.contains("end")) {
+					return -1;
+				} else if (o2.contains("end")) {
+					return 1;
+				} else if (o1.contains("start")) {
+					return -1;
+				} else if (o2.contains("start")) {
+					return 1;
+				}
+			} else {
+				if (o1.contains("exact")) {
+					return -1;
+				} else if (o2.contains("exact")) {
+					return 1;
+				} else if (o1.contains("start")) {
+					return -1;
+				} else if (o2.contains("start")) {
+					return 1;
+				} else if (o1.contains("end")) {
+					return -1;
+				} else if (o2.contains("end")) {
+					return 1;
+				} else if (o1.contains("some")) {
+					return -1;
+				} else if (o2.contains("some")) {
+					return 1;
+				}
+			}
+
+			return 0;
+		}
+
+	}
 }

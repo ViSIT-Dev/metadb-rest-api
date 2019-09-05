@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+
+import org.apache.marmotta.ldpath.parser.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,8 +34,8 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testPersonLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testPersonLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelTwoPersonTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelPersonTest.xlsx", is);
@@ -70,7 +72,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -104,8 +106,8 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testArchitectureLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testArchitectureLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelArchitectureTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelArchitectureTest.xlsx", is);
@@ -142,7 +144,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -173,11 +175,11 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		}
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testPlaceLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testPlaceLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelInstitutionAndPlaceTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelInstitutionAndPlaceTest.xlsx", is);
@@ -214,7 +216,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -245,11 +247,11 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		}
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testInstitutionLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testInstitutionLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelInstitutionAndPlaceTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelInstitutionTest.xlsx", is);
@@ -286,7 +288,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -317,11 +319,11 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		}
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testActivityLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testActivityLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelActivityTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelActivityTest.xlsx", is);
@@ -358,7 +360,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -389,11 +391,11 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		}
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testReferenceLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testReferenceLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelReferenceTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelReferenceTest.xlsx", is);
@@ -401,14 +403,16 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		String jsonNormal = parser.createJSONFromParsedExcelFile(file);
 		String jsonTransformed = updateJSON(jsonNormal, "");
 
+		assertEquals(jsonNormal, jsonTransformed);
+
 		JSONObject jsonObjectNormal = new JSONObject(jsonNormal);
 		JSONObject jsonObjectTransformed = new JSONObject(jsonTransformed);
 
-		JSONArray architectureArrayNormal = jsonObjectNormal.getJSONArray("Reference");
-		JSONArray architectureArrayTransformed = jsonObjectTransformed.getJSONArray("Reference");
+		JSONArray refernceArrayNormal = jsonObjectNormal.getJSONArray("Reference");
+		JSONArray referenceArrayTransformed = jsonObjectTransformed.getJSONArray("Reference");
 
-		JSONObject jsonInnerNormal = (JSONObject) architectureArrayNormal.get(0);
-		JSONObject jsonInnerTransformed = (JSONObject) architectureArrayTransformed.get(0);
+		JSONObject jsonInnerNormal = (JSONObject) refernceArrayNormal.get(0);
+		JSONObject jsonInnerTransformed = (JSONObject) referenceArrayTransformed.get(0);
 
 		assertEquals(jsonInnerNormal.length(), jsonInnerTransformed.length());
 
@@ -430,7 +434,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -461,11 +465,11 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		}
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testObjectLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testObjectLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelObjectTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelObjectTest.xlsx", is);
@@ -502,7 +506,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -533,11 +537,11 @@ public class ExcelParserLinksTest extends BaseWebTest {
 		}
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testGroupLinking()
-			throws IOException, ExcelParserException, JSONException, RepositoryException, QueryEvaluationException {
+	public void testGroupLinking() throws IOException, ExcelParserException, JSONException, RepositoryException,
+			QueryEvaluationException, MalformedQueryException, ParseException {
 		File originalFile = new File("src/test/resources/visitExcelGroupTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
 		MultipartFile file = new MockMultipartFile("visitExcelGroupTest.xlsx", is);
@@ -574,7 +578,7 @@ public class ExcelParserLinksTest extends BaseWebTest {
 				while (subgroupIterator.hasNext()) {
 					String subgroupKey = subgroupIterator.next();
 					Object subgroupValues = subgroup.get(subgroupKey);
-				
+
 					if (subgroupValues instanceof JSONArray) {
 						JSONArray subgroupValueArray = (JSONArray) subgroupValues;
 						JSONArray subgroupValueTransformedArray = (JSONArray) subgroupTransformed.get(subgroupKey);
@@ -606,14 +610,16 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 	}
 
-	
-	@SuppressWarnings("unchecked")
-	private String updateJSON(String json, String context)
-			throws RepositoryException, JSONException, QueryEvaluationException {
+	private String updateJSON(String json, String context) throws RepositoryException, QueryEvaluationException,
+			JSONException, MalformedQueryException, ParseException {
+		String[] result = json.split(",\"");
+		boolean change = false;
+
 		Anno4j anno4j = this.importRepository.getAnno4j();
 		ObjectConnection connection = anno4j.getObjectRepository().getConnection();
 		JSONObject jsonObject = new JSONObject(json);
 
+		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonObject.keys();
 		String key;
 
@@ -625,11 +631,11 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 			if (object instanceof JSONArray) {
 				JSONArray array = (JSONArray) object;
-				JSONArray changedArray = new JSONArray();
 				String currentKey = "";
 				Object subObject;
 				for (int i = 0; i < array.length(); ++i) {
 					JSONObject jsonObjectFromArray = array.getJSONObject(i);
+					@SuppressWarnings("unchecked")
 					Iterator<String> iteratorValues = jsonObjectFromArray.keys();
 					while (iteratorValues.hasNext()) {
 						currentKey = iteratorValues.next();
@@ -640,11 +646,10 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 							if (subObject instanceof JSONArray) {
 								JSONArray subObjectArray = (JSONArray) subObject;
-								JSONArray subArrayChanged = new JSONArray();
 								JSONObject subJSONObject = new JSONObject();
-								JSONObject updatedJSONObject = new JSONObject();
 								for (int j = 0; j < subObjectArray.length(); j++) {
 									subJSONObject = subObjectArray.getJSONObject(j);
+									@SuppressWarnings("unchecked")
 									Iterator<String> subKeys = subJSONObject.keys();
 									while (subKeys.hasNext()) {
 										subKey = subKeys.next();
@@ -654,13 +659,10 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 											if (subKey.equals("reference_title_title")) {
 												// ignore field as it is the id
-												updatedJSONObject.put(subKey, subValue);
 											} else if (subValue.contains("http:") && subValue.contains("visit")) {
 												// ignore field as it has already an id
-												updatedJSONObject.put(subKey, subValue);
 											} else if (subKey.contains("dating")) {
 												// ignore field as it is a date
-												updatedJSONObject.put(subKey, subValue);
 											} else {
 												String queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 												queryString += "SELECT ?s \n";
@@ -675,31 +677,51 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 												try {
 													TupleQuery temp = connection.prepareTupleQuery(queryString);
-													TupleQueryResult result = temp.evaluate();
+													TupleQueryResult resultQuery = temp.evaluate();
 
-													// no results found
-													if (!result.hasNext()) {
-														updatedJSONObject.put(subKey, subValue);
-													}
-
-													while (result.hasNext()) {
-														BindingSet solution = result.next();
+													while (resultQuery.hasNext()) {
+														BindingSet solution = resultQuery.next();
 														Value updatedValue = solution.getValue("s");
-														updatedJSONObject.put(subKey, updatedValue);
+														for (int k = 0; k < result.length; k++) {
+															if (result[k].contains(subKey)
+																	&& result[k].contains(subValue)) {
+																change = true;
+																String[] split = result[k].split("\":\"");
+																String[] subSplit = split[1].split("\"");
+																subSplit[0] = updatedValue.stringValue();
+
+																split[1] = "";
+
+																for (int l = 0; l < subSplit.length; l++) {
+																	if (subSplit.length == 1
+																			|| l < (subSplit.length - 1)) {
+																		split[1] = split[1] + subSplit[l] + "\"";
+																	} else {
+																		split[1] = split[1] + subSplit[l];
+																	}
+																}
+
+																result[k] = "";
+
+																for (int j1 = 0; j1 < split.length; j1++) {
+																	if (j1 < (split.length - 1)) {
+																		result[k] = result[k] + split[j1] + "\":\"";
+																	} else {
+																		result[k] = result[k] + split[j1];
+																	}
+																}
+
+																k = result.length + 1;
+
+															}
+														}
 													}
 												} catch (MalformedQueryException e) {
 													e.printStackTrace();
 												}
 											}
-										} else {
-											JSONArray secondDimension = (JSONArray) subJSONObject.get(subKey);
-											updatedJSONObject.put(subKey, secondDimension);
 										}
 									}
-								}
-								if (updatedJSONObject.length() > 0) {
-									subArrayChanged.put(updatedJSONObject);
-									jsonObjectFromArray.put(currentKey, subArrayChanged);
 								}
 							} else {
 
@@ -721,11 +743,43 @@ public class ExcelParserLinksTest extends BaseWebTest {
 
 									try {
 										TupleQuery temp = connection.prepareTupleQuery(queryString);
-										TupleQueryResult result = temp.evaluate();
-										while (result.hasNext()) {
-											BindingSet solution = result.next();
+										TupleQueryResult resultQuery = temp.evaluate();
+										while (resultQuery.hasNext()) {
+											BindingSet solution = resultQuery.next();
 											Value updatedValue = solution.getValue("s");
-											jsonObjectFromArray.put(currentKey, updatedValue);
+
+											for (int k = 0; k < result.length; k++) {
+												if (result[k].contains(currentKey) && result[k].contains(value)) {
+													change = true;
+													String[] split = result[k].split("\":\"");
+													String[] subSplit = split[1].split("\"");
+													subSplit[0] = updatedValue.stringValue();
+
+													split[1] = "";
+
+													for (int l = 0; l < subSplit.length; l++) {
+														if (subSplit.length == 1 || l < (subSplit.length - 1)) {
+															split[1] = split[1] + subSplit[l] + "\"";
+														} else {
+															split[1] = split[1] + subSplit[l];
+														}
+													}
+
+													result[k] = "";
+
+													for (int j = 0; j < split.length; j++) {
+														if (j < (split.length - 1)) {
+															result[k] = result[k] + split[j] + "\":\"";
+														} else {
+															result[k] = result[k] + split[j];
+														}
+													}
+
+													k = result.length + 1;
+
+												}
+											}
+
 										}
 
 									} catch (MalformedQueryException e) {
@@ -733,20 +787,31 @@ public class ExcelParserLinksTest extends BaseWebTest {
 									}
 								}
 							}
-						} else {
-							jsonObjectFromArray.put(currentKey, jsonObjectFromArray.getString(currentKey));
 						}
 					}
-
-					changedArray.put(jsonObjectFromArray);
-					jsonObject.put(key, changedArray);
 
 				}
 			}
 		}
 
 		connection.close();
-		return jsonObject.toString();
+
+		if (change) {
+			String resultString = "";
+
+			for (int i = 0; i < result.length; i++) {
+				if (i < result.length - 1) {
+					resultString = resultString + result[i] + ",\"";
+				} else {
+					resultString = resultString + result[i];
+				}
+			}
+
+			return resultString;
+		} else {
+			return json;
+		}
+
 	}
 
 	@Override
