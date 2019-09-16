@@ -4,11 +4,8 @@ import com.opencsv.CSVReader;
 import model.namespace.JSONVISMO;
 import model.namespace.VISMO;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import rest.VisitRestApplication;
 import rest.application.exception.IdMapperException;
 import rest.application.exception.QueryGenerationException;
 import rest.configuration.VisitIDGenerator;
@@ -37,9 +34,7 @@ public class ImportQueryGenerator {
 
 	private IdMapper mapper;
 
-	private String errors;
-
-	private static Log logger = LogFactory.getLog(VisitRestApplication.class);
+	private String errors = "";
 
 	public ImportQueryGenerator(String sparqlEndpointQuery, String sparqlEndpointUpdate, String pathToTemplates) {
 		this.sparqlEndpointQuery = sparqlEndpointQuery;
@@ -51,6 +46,14 @@ public class ImportQueryGenerator {
 		this.mapper = new IdMapper();
 	}
 
+	/**
+	 * Creates an update query String from a JSON string for the default graph.
+	 * 
+	 * @param json the JSON, e.g. created by the {@link ExcelParser}
+	 * @return the update query as a String
+	 * @throws QueryGenerationException if the query couldn't be created, e.g. for syntax reasons
+	 * @throws IdMapperException if there was a problem with the identifiers within the JSON
+	 */
 	public String createUpdateQueryFromJSON(String json) throws QueryGenerationException, IdMapperException {
 		JSONObject jsonObject = new JSONObject(json);
 		LinkedList<String> queries = new LinkedList<String>();
@@ -115,6 +118,15 @@ public class ImportQueryGenerator {
 		return overallQuery;
 	}
 
+	/**
+	 * Creates an update query String from a JSON string for a context
+	 * 
+	 * @param json the JSON, e.g. created by the {@link ExcelParser}
+	 * @param context the context for the graph
+	 * @return the update query as a String
+	 * @throws QueryGenerationException if the query couldn't be created, e.g. for syntax reasons
+	 * @throws IdMapperException if there was a problem with the identifiers within the JSON
+	 */
 	public String createUpdateQueryFromJSONIntoContext(String json, String context)
 			throws IdMapperException, QueryGenerationException {
 		String updateQueryFromJSON = this.createUpdateQueryFromJSON(json);
@@ -140,6 +152,7 @@ public class ImportQueryGenerator {
 
 		Iterator<String> iterator = jsonObject.keys();
 
+		// special case for dating as the elements within this group need to be sorted
 		if (groupName.contains("dating")) {
 			ArrayList<String> ids = new ArrayList<String>();
 
@@ -148,8 +161,8 @@ public class ImportQueryGenerator {
 			}
 
 			// sort ids
-
 			if (groupName.equals("activity_dating")) {
+				//there is another order for activity dating
 				ids.sort(new IdComparatorDating(true));
 			} else {
 				ids.sort(new IdComparatorDating(false));
@@ -200,6 +213,7 @@ public class ImportQueryGenerator {
 								String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
 								List<String> splitList = Arrays.asList(split);
 
+								//special case for marriage as this includes subsubgroups
 								if (splitList.get(0).contains("P107i_is_current_or_former_member_of")) {
 									marriage = true; 
 									totalList.addAll(splitList);
@@ -210,6 +224,7 @@ public class ImportQueryGenerator {
 								}
 							}
 
+							//if the recursion reaches the start again, add all parts to the query only now
 							if (marriage && id.equals("person_marriage")) {
 								String[] split = TripleMerger.mergeTriples(totalList).split(" .\n");
 								queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
@@ -240,7 +255,7 @@ public class ImportQueryGenerator {
 						}
 					}
 				} else {
-					this.errors += "The given id " + id
+					this.errors  += "The given id " + id
 							+ " is not supported in the underlying model and thereby ignored.\n";
 				}
 			}
@@ -334,7 +349,7 @@ public class ImportQueryGenerator {
 		} else if (this.datatypes.get(id).startsWith("string")) {
 			queryValue = "\"" + value + "\"";
 
-			// Remove protected Komma from ExcelParser
+			// Remove protected comma from ExcelParser
 			queryValue = queryValue.replaceAll("\\[,\\]", ",");
 
 			if (StringUtils.isNumeric(value)) {
@@ -360,6 +375,7 @@ public class ImportQueryGenerator {
 
 		String csv = "";
 
+		//loads the parts of the queries from the csv file
 		if (this.sparqlEndpointUpdate.equals("none") && this.sparqlEndpointQuery.equals("none")) {
 			csv = "templates/wrapper.csv";
 		} else {
@@ -462,9 +478,20 @@ public class ImportQueryGenerator {
 		return mapper;
 	}
 
+	/**
+	 * Dating attributes need to be in a special order to be handled in the right
+	 * way. This order is messed up, when the string is changed to a JSONObject.
+	 * This Comparator is used to bring them into the right order again.
+	 *
+	 */
 	private class IdComparatorDating implements Comparator<String> {
 		private boolean activityDating = false;
 
+		/**
+		 * Activity dating needs a different order than all other dating attributes.
+		 * 
+		 * @param activityDating true, if the id is 'activity_dating'
+		 */
 		public IdComparatorDating(boolean activityDating) {
 			this.activityDating = activityDating;
 		}

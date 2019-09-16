@@ -41,6 +41,13 @@ public class ExcelParser {
         this.formatter = new DataFormatter();
     }
 
+    /**
+     * Parses an excel file and returns a JSON representation as a String
+     * 
+     * @param file a {@link MultipartFile}
+     * @return a JSON String representation 
+     * @throws ExcelParserException if the file is invalid
+     */
     public String createJSONFromParsedExcelFile(MultipartFile file) throws ExcelParserException {
 
         // Read in Excel file
@@ -75,54 +82,57 @@ public class ExcelParser {
                 // This list is later used to "revisit" the created JsonObjects for subgroups and check if these are empty
                 LinkedList<LinkedList<String>> subgroupTracker = new LinkedList<LinkedList<String>>();
 
-                String identifierValue = "";
-                
-					switch (entity) {
-					case "Activity":
-						if (sheet.getRow(0).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
-						}
-						break;
-					case "Architecture":
-						if (sheet.getRow(0).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
-						}
-						break;
-					case "Group":
-						if (sheet.getRow(0).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
-						}
-						break;
-					case "Institution":
-						if (sheet.getRow(0).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
-						}
-						break;
-					case "Object":
-						if (sheet.getRow(0).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
-						} else if (sheet.getRow(32).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(32).getCell(cellIterator).getStringCellValue();
-							}
-						break;
-					case "Person":
-						if (sheet.getRow(4).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(4).getCell(cellIterator).getStringCellValue();
-						}
-						break;
-					case "Place":
-						if (sheet.getRow(0).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
-						}
-						break;
-					case "Reference":
-						if (sheet.getRow(2).getCell(cellIterator) != null) {
-							identifierValue = sheet.getRow(2).getCell(cellIterator).getStringCellValue();
-						}
-						break;
-					}
+				String identifierValue = "";
 
-				 if (identifierValue.equals("")) {
+				//check for possible identifiers within the entities
+				switch (entity) {
+				case "Activity":
+					if (sheet.getRow(0).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				case "Architecture":
+					if (sheet.getRow(0).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				case "Group":
+					if (sheet.getRow(0).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				case "Institution":
+					if (sheet.getRow(0).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				case "Object":
+					// object can be identified in two ways
+					if (sheet.getRow(0).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+					} else if (sheet.getRow(32).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(32).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				case "Person":
+					if (sheet.getRow(4).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(4).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				case "Place":
+					if (sheet.getRow(0).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(0).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				case "Reference":
+					if (sheet.getRow(2).getCell(cellIterator) != null) {
+						identifierValue = sheet.getRow(2).getCell(cellIterator).getStringCellValue();
+					}
+					break;
+				}
+
+				//only read entities with a valid identifier
+				if (identifierValue.equals("")) {
 					emptyCell = true;
 					break;
 				} else {
@@ -150,7 +160,7 @@ public class ExcelParser {
 								entityJson.addProperty(JSONVISMO.ID,
 										sheet.getRow(0).getCell(cellIterator).getStringCellValue());
 							} else {
-								if(sheet.getRow(32).getCell(cellIterator) != null) {
+								if (sheet.getRow(32).getCell(cellIterator) != null) {
 									if (!sheet.getRow(32).getCell(cellIterator).getStringCellValue().equals("")) {
 										entityJson.addProperty(JSONVISMO.SECONDARY_IDENTIFIER,
 												sheet.getRow(32).getCell(cellIterator).getStringCellValue());
@@ -172,162 +182,168 @@ public class ExcelParser {
 
 				}
 
-                for (int i = 0; i <= sheet.getLastRowNum(); ++i) {
+				for (int i = 0; i <= sheet.getLastRowNum(); ++i) {
 
-                    Row row = sheet.getRow(i);
+					Row row = sheet.getRow(i);
 
-                    Cell cell = row.getCell(cellIterator);
+					Cell cell = row.getCell(cellIterator);
 
-                    String label = sheet.getRow(i).getCell(0).getStringCellValue();
+					String label = sheet.getRow(i).getCell(0).getStringCellValue();
 
-                    String value = "";
+					String value = "";
 
-                    if (!label.endsWith("Untergruppe") && !label.endsWith("Unteruntergruppe")) {
+					if (!label.endsWith("Untergruppe") && !label.endsWith("Unteruntergruppe")) {
 //                        value = cell.getStringCellValue();
-                        value = this.formatter.formatCellValue(cell);
-                    }
+						value = this.formatter.formatCellValue(cell);
+					}
 
-                    String id = this.getIdWithoutSubGroup(this.idMap.get(entity).get(label));
+					String id = this.getIdWithoutSubGroup(this.idMap.get(entity).get(label));
 
-                    if (label.endsWith("Untergruppe")) {
-                        if (!entityJson.has(id)) {
-                            JsonArray subgroupArray = new JsonArray();
+					if (label.endsWith("Untergruppe")) {
+						if (!entityJson.has(id)) {
+							JsonArray subgroupArray = new JsonArray();
 
-                            // Subgroup tracking
-                            LinkedList<String> subgroupList = new LinkedList<String>();
-                            subgroupList.add(id);
-                            subgroupTracker.add(subgroupList);
+							// Subgroup tracking
+							LinkedList<String> subgroupList = new LinkedList<String>();
+							subgroupList.add(id);
+							subgroupTracker.add(subgroupList);
 
-                            entityJson.add(id, subgroupArray);
+							entityJson.add(id, subgroupArray);
 
-                            JsonObject emptyObject = new JsonObject();
-                            subgroupArray.add(emptyObject);
-                        } else {
-                            // Array is existing, so create a new empty JsonObject to fill
-                            JsonArray subgroupArray = entityJson.getAsJsonArray(id);
+							JsonObject emptyObject = new JsonObject();
+							subgroupArray.add(emptyObject);
+						} else {
+							// Array is existing, so create a new empty JsonObject to fill
+							JsonArray subgroupArray = entityJson.getAsJsonArray(id);
 
-                            JsonObject emptyObject = new JsonObject();
-                            subgroupArray.add(emptyObject);
-                        }
-                    } else if (label.endsWith("Unteruntergruppe")) {
-                        String subgroupName = this.getSubGroupOfId(this.idMap.get(entity).get(label));
+							JsonObject emptyObject = new JsonObject();
+							subgroupArray.add(emptyObject);
+						}
+					} else if (label.endsWith("Unteruntergruppe")) {
+						String subgroupName = this.getSubGroupOfId(this.idMap.get(entity).get(label));
 
-                        JsonArray subgroupJsonArray = entityJson.getAsJsonArray(subgroupName);
+						JsonArray subgroupJsonArray = entityJson.getAsJsonArray(subgroupName);
 
-                        JsonObject lastSubgroupObject = (JsonObject) subgroupJsonArray.get(subgroupJsonArray.size() - 1);
+						JsonObject lastSubgroupObject = (JsonObject) subgroupJsonArray
+								.get(subgroupJsonArray.size() - 1);
 
-                        if (!lastSubgroupObject.has(id)) {
+						if (!lastSubgroupObject.has(id)) {
 
-                            JsonArray subsubgroupArray = new JsonArray();
+							JsonArray subsubgroupArray = new JsonArray();
 
-                            // Subgroup tracking
-                            // First look for the correct list of the tracker
-                            for (LinkedList<String> list : subgroupTracker) {
-                                if (list.contains(id)) {
-                                    list.add(id);
-                                }
-                            }
+							// Subgroup tracking
+							// First look for the correct list of the tracker
+							for (LinkedList<String> list : subgroupTracker) {
+								if (list.contains(id)) {
+									list.add(id);
+								}
+							}
 
-                            JsonObject emptyObject = new JsonObject();
+							JsonObject emptyObject = new JsonObject();
 
-                            subsubgroupArray.add(emptyObject);
+							subsubgroupArray.add(emptyObject);
 
-                            lastSubgroupObject.add(id, subsubgroupArray);
+							lastSubgroupObject.add(id, subsubgroupArray);
 
-                            // Add the combination of subgroup and its subsubgroup to a map to use this information later
-                            this.subGroupMap.put(id, subgroupName);
-                        } else {
-                            JsonObject emptyObject = new JsonObject();
+							// Add the combination of subgroup and its subsubgroup to a map to use this
+							// information later
+							this.subGroupMap.put(id, subgroupName);
+						} else {
+							JsonObject emptyObject = new JsonObject();
 
-                            JsonArray subsubgroupArray = lastSubgroupObject.getAsJsonArray(id);
+							JsonArray subsubgroupArray = lastSubgroupObject.getAsJsonArray(id);
 
-                            subsubgroupArray.add(emptyObject);
-                        }
-                    } else {
-                        if (!value.isEmpty()) {
+							subsubgroupArray.add(emptyObject);
+						}
+					} else {
+						if (!value.isEmpty()) {
 
-                            value = this.adaptInputValue(value);
+							value = this.adaptInputValue(value);
 
-                            // Find the respective JsonObject (which is the overall object or a sub-part of it),
-                            // to which the current property is to be added
-                            JsonObject objectToAddProperty = null;
+							// Find the respective JsonObject (which is the overall object or a sub-part of
+							// it),
+							// to which the current property is to be added
+							JsonObject objectToAddProperty = null;
 
-                            if (this.idContainedInSubgroup(this.idMap.get(entity).get(label))) {
-                                // Id is part of a subgroup or subsubgroup
+							if (this.idContainedInSubgroup(this.idMap.get(entity).get(label))) {
+								// Id is part of a subgroup or subsubgroup
 
-                                // Check if we have a subsubgroup
-                                String subgroup = this.getSubGroupOfId(this.idMap.get(entity).get(label));
+								// Check if we have a subsubgroup
+								String subgroup = this.getSubGroupOfId(this.idMap.get(entity).get(label));
 
-                                if (this.subGroupMap.containsKey(subgroup)) {
-                                    // Subsubgroup affiliation
-                                    JsonArray subgroupJsonArray = entityJson.getAsJsonArray(this.subGroupMap.get(subgroup));
+								if (this.subGroupMap.containsKey(subgroup)) {
+									// Subsubgroup affiliation
+									JsonArray subgroupJsonArray = entityJson
+											.getAsJsonArray(this.subGroupMap.get(subgroup));
 
-                                    JsonObject subgroupLastObject = (JsonObject) subgroupJsonArray.get(subgroupJsonArray.size() - 1);
+									JsonObject subgroupLastObject = (JsonObject) subgroupJsonArray
+											.get(subgroupJsonArray.size() - 1);
 
-                                    JsonArray subsubgroupJsonArray = (JsonArray) subgroupLastObject.get(subgroup);
+									JsonArray subsubgroupJsonArray = (JsonArray) subgroupLastObject.get(subgroup);
 
-                                    objectToAddProperty = (JsonObject) subsubgroupJsonArray.get(subsubgroupJsonArray.size() - 1);
-                                } else {
-                                    // Normal subgroup affiliation
-                                    JsonArray subgroupArray = entityJson.getAsJsonArray(subgroup);
+									objectToAddProperty = (JsonObject) subsubgroupJsonArray
+											.get(subsubgroupJsonArray.size() - 1);
+								} else {
+									// Normal subgroup affiliation
+									JsonArray subgroupArray = entityJson.getAsJsonArray(subgroup);
 
-                                    objectToAddProperty = (JsonObject) subgroupArray.get(subgroupArray.size() - 1);
-                                }
-                            } else {
-                                // Id is not part of subgroup
-                                objectToAddProperty = entityJson;
-                            }
+									objectToAddProperty = (JsonObject) subgroupArray.get(subgroupArray.size() - 1);
+								}
+							} else {
+								// Id is not part of subgroup
+								objectToAddProperty = entityJson;
+							}
 
-                            if (value.contains("|")) {
-                                String[] split = value.split("\\|");
+							if (value.contains("|")) {
+								String[] split = value.split("\\|");
 
-                                String updatedValue = "";
+								String updatedValue = "";
 
-                                for (int j = 0; j < split.length; ++j) {
-                                    String part = split[j];
+								for (int j = 0; j < split.length; ++j) {
+									String part = split[j];
 
-                                    updatedValue += part.trim();
+									updatedValue += part.trim();
 
-                                    if (j < split.length - 1) {
-                                        updatedValue += ", ";
-                                    }
-                                }
+									if (j < split.length - 1) {
+										updatedValue += ", ";
+									}
+								}
 
-                                value = updatedValue;
-                            }
+								value = updatedValue;
+							}
 
-                            // Add the actual property
-                            if (objectToAddProperty.has(id)) {
-                                // Property already existing, so read out old value and add new value
-                                JsonPrimitive jsonPrimitive = objectToAddProperty.getAsJsonPrimitive(id);
+							// Add the actual property
+							if (objectToAddProperty.has(id)) {
+								// Property already existing, so read out old value and add new value
+								JsonPrimitive jsonPrimitive = objectToAddProperty.getAsJsonPrimitive(id);
 
-                                String oldValue = jsonPrimitive.getAsString();
+								String oldValue = jsonPrimitive.getAsString();
 
-                                objectToAddProperty.addProperty(id, oldValue + ", " + value);
-                            } else {
-                                objectToAddProperty.addProperty(id, value);
-                            }
-                        }
-                    }
-                }
+								objectToAddProperty.addProperty(id, oldValue + ", " + value);
+							} else {
+								objectToAddProperty.addProperty(id, value);
+							}
+						}
+					}
+				}
 
-                this.removeEmptySubgroups(entityJson, subgroupTracker);
+				this.removeEmptySubgroups(entityJson, subgroupTracker);
 
-                jsonArray.add(entityJson);
-                ++cellIterator;
-            }
+				jsonArray.add(entityJson);
+				++cellIterator;
+			}
 
-            if(jsonArray.size() > 0) {
-                json.add(entity, jsonArray);
-            }
-        }
-        
-        if (json.size() == 0) {
-        	throw new ExcelParserException("File is empty or has missing ids.");
-        }
+			if (jsonArray.size() > 0) {
+				json.add(entity, jsonArray);
+			}
+		}
 
-        return json.toString();
-    }
+		if (json.size() == 0) {
+			throw new ExcelParserException("File is empty or has missing ids.");
+		}
+
+		return json.toString();
+	}
 
     /**
      * In the idMap of this class every label of the input Excel file is mapped to an ID.

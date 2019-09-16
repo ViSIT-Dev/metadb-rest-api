@@ -5,7 +5,6 @@ import rest.configuration.VisitIDGenerator;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.UUID;
 
 /**
  * Class used by the ImportQueryGenerator for dealing with the to be created IDs.
@@ -63,6 +62,7 @@ public class IdMapper {
 
                 this.referenceIDs.remove(baseID);
             } else {
+            	//generates a new ID 
                 uri = VisitIDGenerator.generateVisitDBID();
             }
 
@@ -71,6 +71,8 @@ public class IdMapper {
         } else { 
         	System.out.println(baseID + " clashes within the system.");
         	uri = VisitIDGenerator.generateVisitDBID();
+        	
+        	//the clashing of IDs is done when a new file is uploaded 
             //throw new IdMapperException("The read baseID <" + baseID + "> clashes and is thereby used more than once, which is not allowed!");
         }
 

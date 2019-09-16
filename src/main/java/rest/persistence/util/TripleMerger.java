@@ -192,14 +192,6 @@ public class TripleMerger {
         return result;
     }
 
-    private HashMap<String, String> findSubstitutions(LinkedList<String> triples) {
-        HashMap<String, String> substitutions = new HashMap<String, String>();
-
-
-
-        return substitutions;
-    }
-
     private static LinkedList<String> extractSingleTriples(List<String> wrapperQueries) {
         LinkedList<String> singleTriples = new LinkedList<String>();
 

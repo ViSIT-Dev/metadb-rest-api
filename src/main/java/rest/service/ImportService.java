@@ -1,6 +1,5 @@
 package rest.service;
 
-import org.apache.marmotta.ldpath.parser.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +43,12 @@ public class ImportService {
 	@Autowired
 	private ExcelParser excelParser;
 
+	/**
+	 * Imports a JSON file represented in a String into the database.
+	 * 
+	 * @param json the JSON to be imported
+	 * @throws ImportException if the import failed
+	 */
 	public void importJSON(String json) throws ImportException {
 		try {
 			try {
@@ -52,8 +57,6 @@ public class ImportService {
 			} catch (QueryEvaluationException e) {
 				throw new ImportException(e.getMessage());
 			} catch (JSONException e) {
-				throw new ImportException(e.getMessage());
-			} catch (ParseException e) {
 				throw new ImportException(e.getMessage());
 			}
 			String updateQuery = this.importQueryGenerator.createUpdateQueryFromJSON(json);
@@ -65,10 +68,20 @@ public class ImportService {
 		}
 	}
 
+	/**
+	 * Imports an excel file into the database.
+	 * 
+	 * @param file    the excel file to be imported
+	 * @param context the context within the graph. If the default graph should be
+	 *                used, use an empty string.
+	 * 
+	 * @throws ExcelParserException if the file can't be imported or parsed
+	 */
 	public void importExcelUpload(MultipartFile file, String context) throws ExcelParserException {
 		try {
 			String jsonFromParsedExcelFile = this.excelParser.createJSONFromParsedExcelFile(file);
 
+			//check, if elements reference others by id
 			jsonFromParsedExcelFile = updateJSON(jsonFromParsedExcelFile, context);
 
 			// check for duplicate ids needs to be done here as we need to check
@@ -91,6 +104,16 @@ public class ImportService {
 		}
 	}
 
+	/**
+	 * Checks all ids for duplicates within the database as IDs have to be unique.
+	 * 
+	 * @param jsonFromParsedExcelFile the JSON to be checked
+	 * @return the JSON
+	 * @throws RepositoryException      if the database has an error
+	 * @throws QueryEvaluationException if the query result was faulty
+	 * @throws JSONException            if the JSON couldn't be read
+	 * @throws IdMapperException        if there was a duplicate ID
+	 */
 	private String checkForDuplicateIds(String jsonFromParsedExcelFile)
 			throws QueryEvaluationException, JSONException, RepositoryException, IdMapperException {
 		ArrayList<String> idList = new ArrayList<String>();
@@ -157,8 +180,19 @@ public class ImportService {
 		return jsonFromParsedExcelFile;
 	}
 
+	/**
+	 * Checks the databased for possible references in the JSON (via ID).
+	 * 
+	 * @param json    the json to be checked
+	 * @param context the context of the JSON
+	 * @return an updated JSON String
+	 * @throws RepositoryException      if the database has an error
+	 * @throws QueryEvaluationException if the query result was faulty
+	 * @throws JSONException            if the JSON couldn't be read
+	 * @throws MalformedQueryException  if the query was malformed
+	 */
 	private String updateJSON(String json, String context) throws RepositoryException, QueryEvaluationException,
-			JSONException, MalformedQueryException, ParseException {
+			JSONException, MalformedQueryException {
 		String[] result = json.split(",\"");
 		boolean change = false;
 
@@ -184,6 +218,7 @@ public class ImportService {
 					Iterator<String> iteratorValues = jsonObjectFromArray.keys();
 					while (iteratorValues.hasNext()) {
 						currentKey = iteratorValues.next();
+						//ids are checked for duplicates later
 						if (!(currentKey.equals("id") || currentKey.contains("idby")
 								|| currentKey.contains("identifiedby"))) {
 							subObject = jsonObjectFromArray.get(currentKey);
@@ -197,7 +232,7 @@ public class ImportService {
 									Iterator<String> subKeys = subJSONObject.keys();
 									while (subKeys.hasNext()) {
 										subKey = subKeys.next();
-										// there are no reference field in subsubparts
+										// there are no reference fields in subsubparts
 										if (!(subJSONObject.get(subKey) instanceof JSONArray)) {
 											final String subValue = subJSONObject.getString(subKey);
 
