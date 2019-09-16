@@ -22,15 +22,6 @@ public class IdMapperTest {
 
     private final static String GENERIC_TYPE = "type";
 
-    @Ignore //TODO check when handling of duplicate IDs is clear
-    @Test(expected = IdMapperException.class)
-    public void testClashingBaseIds() throws IdMapperException {
-        IdMapper mapper = new IdMapper();
-
-        mapper.addBaseID(BASE_ID_ONE, GENERIC_TYPE);
-        mapper.addBaseID(BASE_ID_ONE, GENERIC_TYPE);
-    }
-
     @Test
     public void testSimpleBaseIds() throws IdMapperException {
         IdMapper mapper = new IdMapper();

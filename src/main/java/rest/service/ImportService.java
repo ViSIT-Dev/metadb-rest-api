@@ -27,9 +27,7 @@ import rest.persistence.util.ExcelParser;
 import rest.persistence.util.ImportQueryGenerator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Service class for the import functionality.

@@ -99,7 +99,6 @@ public class ImportQueryGenerator {
 					}
 					queries.add(this.exchangeRDFVariables(mergedTriples, objectID));
 				} else {
-					// TODO Can this happen?
 					throw new QueryGenerationException("Input JSON String contained an incorrect object.");
 				}
 			} else {

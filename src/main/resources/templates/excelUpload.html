@@ -183,16 +183,17 @@ function fire_ajax_submit() {
             document.getElementById("customFileLabel").innerHTML = "Datei auswählen";
         },
         error: function (e) {
-            console.log(e);
 			clearInterval(interval);
 			var pictureSrc = "/images/ViSIT_Logo_done.png";
 			var picture = document.getElementById("progressPicture");
 			picture.src = pictureSrc;
 			
 			if (e.status == 409) {
-				document.getElementById("status").innerHTML = "Fehler in " + filename + ": Bereits benutzte IDs werden erneut verwendet.";
+				var responseText = e.responseText;
+				var message = "Fehler in " + filename + ": Bereits benutzte ID (" + responseText + ") wird erneut verwendet.";
+				document.getElementById("status").innerHTML = message;
 			} else if (e.status == 406) {
-				document.getElementById("status").innerHTML = "Fehler in " + filename + ": Leere Datei oder fehlende IDs";
+					document.getElementById("status").innerHTML = "Fehler in " + filename + ": Leere Datei oder fehlende IDs";
 			} else if (e.status == 500) {
 				document.getElementById("status").innerHTML = "Fehler in " + filename + ": Falsches Dateiformat";
 			} else {

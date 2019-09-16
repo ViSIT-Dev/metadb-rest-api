@@ -39,12 +39,14 @@ public class ImportController {
 		} catch (ExcelParserException e) {
 			if (e.getMessage().contains("baseID")) {
 				//clashing ids
-				return new ResponseEntity(HttpStatus.CONFLICT);
+				String clashingId = e.getMessage().split(" ")[3];
+				clashingId = clashingId.substring(1, clashingId.length()-1);
+				return new ResponseEntity(clashingId, HttpStatus.CONFLICT);
 			} else if (e.getMessage().contains("empty")){
 				//empty file or missing ids
-				return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+				return new ResponseEntity(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
 			} else {
-				return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
+				return new ResponseEntity(e.getMessage(), HttpStatus.NOT_IMPLEMENTED);
 			}
 		}
         
