@@ -38,14 +38,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class ImportControllerTest extends BaseWebTest {
 
-    private final static String STANDARD_URL = "https://database.visit.uni-passau.de/import/";
+	private final static String STANDARD_URL = "https://database.visit.uni-passau.de/import/";
 
-    @Test
+	@Test
 	public void testLinkedExcelFiles() throws Exception {
 		Anno4j anno4j = this.importRepository.getAnno4j();
 		ObjectConnection connection = anno4j.getObjectRepository().getConnection();
 		fillDatabase();
-		
+
 		// Query nach Activity
 		String activity1Id = "";
 		// Find Activity "title"
@@ -70,7 +70,7 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Query nach Activity
 		String activity2Id = "";
 		// Find Activity "activitytitel"
@@ -95,7 +95,7 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Query nach Place
 		String placeId = "";
 		// Find Place "place"
@@ -120,7 +120,7 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Find activity 1 place
 		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 		queryString += "SELECT ?o \n";
@@ -142,7 +142,7 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Find activity 2 place
 		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 		queryString += "SELECT ?o \n";
@@ -165,7 +165,6 @@ public class ImportControllerTest extends BaseWebTest {
 			e.printStackTrace();
 		}
 
-		
 		// Find Person "BezTest"
 		String bezTestId = "";
 		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
@@ -340,7 +339,7 @@ public class ImportControllerTest extends BaseWebTest {
 			while (result.hasNext()) {
 				BindingSet solution = result.next();
 				Value person = solution.getValue("person");
-				assertEquals(bez2Id, person.stringValue()); 
+				assertEquals(bez2Id, person.stringValue());
 				System.out.println("4");
 			}
 		} catch (MalformedQueryException e) {
@@ -701,7 +700,7 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-		
+
 		// find marriage date for BezTest2
 		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
 		queryString += "SELECT ?date ?freedating ?freedatingout \n";
@@ -732,46 +731,80 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-		
+
 		// find date of production of Objekttitel
-				queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
-				queryString += "SELECT ?century ?technique \n";
-				queryString += "WHERE { \n";
-				queryString += "    <" + objecttitel_inventnr + "> erlangen:P108i_was_produced_by ?produced .\n";
-				queryString += "    ?produced erlangen:P160_has_temporal_projection ?temporal .\n";
-				queryString += "    ?temporal erlangen:P81_ongoing_throughout ?century .\n";
-				queryString += "    ?produced erlangen:P32_used_general_technique ?generaltechnique .\n";
-				queryString += "    ?generaltechnique erlangen:P3_has_note ?technique .\n";
-				queryString += "\n }";
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?century ?technique ?date \n";
+		queryString += "WHERE { \n";
+		queryString += "    <" + objecttitel_inventnr + "> erlangen:P108i_was_produced_by ?produced .\n";
+		queryString += "    ?produced erlangen:P160_has_temporal_projection ?temporal .\n";
+		queryString += "    ?temporal erlangen:P81_ongoing_throughout ?century .\n";
+		queryString += "    ?produced erlangen:P32_used_general_technique ?generaltechnique .\n";
+		queryString += "    ?generaltechnique erlangen:P3_has_note ?technique .\n";
+		queryString += "    <" + objecttitel_inventnr + "> erlangen:P30i_custody_transferred_through ?custody .\n";
+		queryString += "    ?custody erlangen:P3_has_note ?date .\n";
+		queryString += "\n }";
 
-				try {
-					TupleQuery temp = connection.prepareTupleQuery(queryString);
-					TupleQueryResult result = temp.evaluate();
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
 
-					while (result.hasNext()) {
-						BindingSet solution = result.next();
-						Value century = solution.getValue("century");
-						assertEquals("18", century.stringValue());
-						Value technique = solution.getValue("technique");
-						assertEquals("Technik", technique.stringValue());
-						System.out.println("14");
-					}
-				} catch (MalformedQueryException e) {
-					e.printStackTrace();
-				}
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value century = solution.getValue("century");
+				assertEquals("18", century.stringValue());
+				Value technique = solution.getValue("technique");
+				assertEquals("Technik", technique.stringValue());
+				Value transferOfCustody = solution.getValue("date");
+				assertEquals("3/22/19", transferOfCustody.stringValue());
+				System.out.println("14");
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+
+		// find production dates of architecturename
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?begin ?beginMod \n";
+		queryString += "WHERE { \n";
+		queryString += "    <" + architectureNameId + "> erlangen:P108i_was_produced_by ?produced .\n";
+		queryString += "    ?produced erlangen:P160_has_temporal_projection ?temporal .\n";
+		queryString += "    ?temporal erlangen:P79_beginning_is_qualified_by ?begin .\n";
+		queryString += "    <" + architectureNameId + "> erlangen:P31i_was_modified_by ?mod .\n";
+		queryString += "    ?mod erlangen:P160_has_temporal_projection ?temporalMod .\n";
+		queryString += "    ?temporalMod erlangen:P79_beginning_is_qualified_by ?beginMod .\n";
+		queryString += "\n }";
+
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
+
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value beginProd = solution.getValue("begin");
+				assertEquals("5/22/19", beginProd.stringValue());
+				Value beginMod = solution.getValue("beginMod");
+				assertEquals("beginn", beginMod.stringValue());
+				System.out.println("15");
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
 
 	}
 
 	@SuppressWarnings("unused")
 	private void fillDatabase() throws Exception {
 		// Activity & Place
-        File originalFile = new File("src/test/resources/visitExcelActivityWithLinksTest.xlsx");
-        InputStream is = new FileInputStream(originalFile);
-        MockMultipartFile file = new MockMultipartFile("file", "visitExcelActivityWithLinksTest.xlsx", "text/plain", is);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
-        MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "")).andDo(print()).andExpect(status().isNoContent()).andReturn();
-        
-        //Activity
+		File originalFile = new File("src/test/resources/visitExcelActivityWithLinksTest.xlsx");
+		InputStream is = new FileInputStream(originalFile);
+		MockMultipartFile file = new MockMultipartFile("file", "visitExcelActivityWithLinksTest.xlsx", "text/plain",
+				is);
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
+		MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "")).andDo(print())
+				.andExpect(status().isNoContent()).andReturn();
+
+		// Activity
 		File original = new File("src/test/resources/visitExcelActivityTest.xlsx");
 		InputStream isActivity = new FileInputStream(original);
 		MockMultipartFile fileActivity = new MockMultipartFile("file", "visitExcelActivityTest.xlsx", "text/plain",
@@ -794,18 +827,17 @@ public class ImportControllerTest extends BaseWebTest {
 		// Institution
 		File institutionPlaceFile = new File("src/test/resources/visitExcelInstitutionAndPlaceTest.xlsx");
 		InputStream isInstitutionPlace = new FileInputStream(institutionPlaceFile);
-		MockMultipartFile fileInstitutionPlace = new MockMultipartFile("file", "visitExcelInstitutionAndPlaceTest.xlsx", "text/plain",
-				isInstitutionPlace);
-		MockHttpServletRequestBuilder builderInstitutionPlace = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel")
-				.file(fileInstitutionPlace);
-		MvcResult mvcResultInstitutionPlace = this.mockMvc.perform(builderInstitutionPlace.param("context", "")).andDo(print())
-				.andExpect(status().isNoContent()).andReturn();
+		MockMultipartFile fileInstitutionPlace = new MockMultipartFile("file", "visitExcelInstitutionAndPlaceTest.xlsx",
+				"text/plain", isInstitutionPlace);
+		MockHttpServletRequestBuilder builderInstitutionPlace = MockMvcRequestBuilders
+				.multipart(STANDARD_URL + "/excel").file(fileInstitutionPlace);
+		MvcResult mvcResultInstitutionPlace = this.mockMvc.perform(builderInstitutionPlace.param("context", ""))
+				.andDo(print()).andExpect(status().isNoContent()).andReturn();
 
 		// Object
 		File objectFile = new File("src/test/resources/visitExcelObjectTest.xlsx");
 		InputStream isFile = new FileInputStream(objectFile);
-		MockMultipartFile fileObject = new MockMultipartFile("file", "visitExcelObjectTest.xlsx", "text/plain",
-				isFile);
+		MockMultipartFile fileObject = new MockMultipartFile("file", "visitExcelObjectTest.xlsx", "text/plain", isFile);
 		MockHttpServletRequestBuilder builderObject = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel")
 				.file(fileObject);
 		MvcResult mvcResultObject = this.mockMvc.perform(builderObject.param("context", "")).andDo(print())
@@ -824,55 +856,56 @@ public class ImportControllerTest extends BaseWebTest {
 		// Group
 		File groupFile = new File("src/test/resources/visitExcelGroupTest.xlsx");
 		InputStream isGroup = new FileInputStream(groupFile);
-		MockMultipartFile fileGroup = new MockMultipartFile("file", "visitExcelGroupTest.xlsx", "text/plain",
-				isGroup);
+		MockMultipartFile fileGroup = new MockMultipartFile("file", "visitExcelGroupTest.xlsx", "text/plain", isGroup);
 		MockHttpServletRequestBuilder builderGroup = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel")
 				.file(fileGroup);
 		MvcResult mvcResultGroup = this.mockMvc.perform(builderGroup.param("context", "")).andDo(print())
 				.andExpect(status().isNoContent()).andReturn();
-		
-		//Architecture
+
+		// Architecture
 		File originalArchitecture = new File("src/test/resources/visitExcelArchitectureTest.xlsx");
-        InputStream isArchitecture = new FileInputStream(originalArchitecture);
-        MockMultipartFile fileArchitecture = new MockMultipartFile("file", "visitExcelArchitectureTest.xlsx", "text/plain", isArchitecture);
-        MockHttpServletRequestBuilder builderArchitecture = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(fileArchitecture);
-        MvcResult mvcResultArchitecture = this.mockMvc.perform(builderArchitecture.param("context", "")).andDo(print()).andExpect(status().isNoContent()).andReturn();
+		InputStream isArchitecture = new FileInputStream(originalArchitecture);
+		MockMultipartFile fileArchitecture = new MockMultipartFile("file", "visitExcelArchitectureTest.xlsx",
+				"text/plain", isArchitecture);
+		MockHttpServletRequestBuilder builderArchitecture = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel")
+				.file(fileArchitecture);
+		MvcResult mvcResultArchitecture = this.mockMvc.perform(builderArchitecture.param("context", "")).andDo(print())
+				.andExpect(status().isNoContent()).andReturn();
 
 		// Links
 		File linkFile = new File("src/test/resources/visitLinkTest.xlsx");
 		InputStream isLink = new FileInputStream(linkFile);
-		MockMultipartFile fileLink = new MockMultipartFile("file", "visitLinkTest.xlsx", "text/plain",
-				isLink);
+		MockMultipartFile fileLink = new MockMultipartFile("file", "visitLinkTest.xlsx", "text/plain", isLink);
 		MockHttpServletRequestBuilder builderLink = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel")
 				.file(fileLink);
 		MvcResult mvcResultLink = this.mockMvc.perform(builderLink.param("context", "")).andDo(print())
 				.andExpect(status().isNoContent()).andReturn();
 
 	}
-   
 
 	@SuppressWarnings("unused")
 	@Test
 	public void testExcelUploadWithContext() throws Exception {
 		Anno4j anno4j = this.importRepository.getAnno4j();
 		ObjectConnection connection = anno4j.getObjectRepository().getConnection();
-		
+
 		// Person
 		File twoPerson = new File("src/test/resources/visitExcelTwoPersonContextTest.xlsx");
 		InputStream isPerson = new FileInputStream(twoPerson);
-		MockMultipartFile filePerson = new MockMultipartFile("file", "visitExcelTwoPersonContextTest.xlsx", "text/plain",
-				isPerson);
+		MockMultipartFile filePerson = new MockMultipartFile("file", "visitExcelTwoPersonContextTest.xlsx",
+				"text/plain", isPerson);
 		MockHttpServletRequestBuilder builderPerson = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel")
 				.file(filePerson);
-		MvcResult mvcResultPerson = this.mockMvc.perform(builderPerson.param("context", "http://context.de/")).andDo(print())
-				.andExpect(status().isNoContent()).andReturn();
-		
+		MvcResult mvcResultPerson = this.mockMvc.perform(builderPerson.param("context", "http://context.de/"))
+				.andDo(print()).andExpect(status().isNoContent()).andReturn();
+
 		File originalFile = new File("src/test/resources/visitExcelArchitectureContextTest.xlsx");
 		InputStream is = new FileInputStream(originalFile);
-		MockMultipartFile file = new MockMultipartFile("file", "visitExcelArchitectureContextTest.xlsx", "text/plain", is);
+		MockMultipartFile file = new MockMultipartFile("file", "visitExcelArchitectureContextTest.xlsx", "text/plain",
+				is);
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(STANDARD_URL + "/excel").file(file);
 		MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "http://context.de/")).andDo(print())
-				.andExpect(status().isNoContent()).andReturn(); 
+				.andExpect(status().isNoContent()).andReturn();
 		String queryString = "";
 		// Find Person "Bez2"
 		String bez2Id = "";
@@ -881,7 +914,8 @@ public class ImportControllerTest extends BaseWebTest {
 		queryString += "FROM <http://context.de/> \n";
 		queryString += "WHERE { \n";
 		queryString += "    ?s erlangen:P1_is_identified_by ?o . \n";
-		queryString += "       ?o erlangen:P3_has_note '" + "Person2" + "'^^<http://www.w3.org/2001/XMLSchema#string> .";
+		queryString += "       ?o erlangen:P3_has_note '" + "Person2"
+				+ "'^^<http://www.w3.org/2001/XMLSchema#string> .";
 		queryString += "\n }";
 
 		try {
@@ -896,7 +930,7 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-				
+
 		// Find Architecture "architectureName"
 		String architectureNameId = "";
 		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
@@ -943,7 +977,7 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
-		
+
 		assertEquals(bez2Id, person.stringValue());
 	}
 
@@ -961,7 +995,7 @@ public class ImportControllerTest extends BaseWebTest {
 		MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "")).andDo(print())
 				.andExpect(status().isConflict()).andReturn();
 	}
-	
+
 	@Test
 	public void testExcelUploadMissingId() throws Exception {
 		File originalFile = new File("src/test/resources/visitExcelMissingIdTest.xlsx");
@@ -976,81 +1010,63 @@ public class ImportControllerTest extends BaseWebTest {
 		MvcResult mvcResult = this.mockMvc.perform(builder.param("context", "")).andDo(print())
 				.andExpect(status().isNotAcceptable()).andReturn();
 	}
-	
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	@Test
-    public void testImportWithJSON() throws Exception {
-        MvcResult mvcResult = this.mockMvc.perform(post(STANDARD_URL).content(COMPLEX_WITH_TWO_ENTITIES))
-                .andDo(print()).andExpect(status().isNoContent()).andReturn();
+	public void testImportWithJSON() throws Exception {
+		MvcResult mvcResult = this.mockMvc.perform(post(STANDARD_URL).content(COMPLEX_WITH_TWO_ENTITIES)).andDo(print())
+				.andExpect(status().isNoContent()).andReturn();
 
-        QueryService qs = this.importRepository.getAnno4j().createQueryService();
-        qs.addPrefix(VISMO.PREFIX, VISMO.NS);
-        qs.addCriteria("vismo:iconography", "GroupIconography");
+		QueryService qs = this.importRepository.getAnno4j().createQueryService();
+		qs.addPrefix(VISMO.PREFIX, VISMO.NS);
+		qs.addCriteria("vismo:iconography", "GroupIconography");
 
-        List<Group> result = qs.execute(Group.class);
+		List<Group> result = qs.execute(Group.class);
 
-        assertEquals(1, result.size());
-        Group resultGroup = result.get(0);
-        assertEquals(2, resultGroup.getEntries().size());
+		assertEquals(1, result.size());
+		Group resultGroup = result.get(0);
+		assertEquals(2, resultGroup.getEntries().size());
 
-        ReferenceEntry referenceEntry = (ReferenceEntry) resultGroup.getEntries().toArray()[0];
+		ReferenceEntry referenceEntry = (ReferenceEntry) resultGroup.getEntries().toArray()[0];
 
-        assertTrue(referenceEntry.getPages().equals(BigInteger.valueOf(11)) || referenceEntry.getPages().equals(BigInteger.valueOf(22)));
-        assertTrue(referenceEntry.getEntryIn() != null);
+		assertTrue(referenceEntry.getPages().equals(BigInteger.valueOf(11))
+				|| referenceEntry.getPages().equals(BigInteger.valueOf(22)));
+		assertTrue(referenceEntry.getEntryIn() != null);
 
-        QueryService qs2 = this.importRepository.getAnno4j().createQueryService();
-        qs2.addPrefix(VISMO.PREFIX, VISMO.NS);
-        qs2.addCriteria("<" + CIDOC.P3_HAS_NOTE + ">", "ImportReferenceKeyword");
+		QueryService qs2 = this.importRepository.getAnno4j().createQueryService();
+		qs2.addPrefix(VISMO.PREFIX, VISMO.NS);
+		qs2.addCriteria("<" + CIDOC.P3_HAS_NOTE + ">", "ImportReferenceKeyword");
 
-        List<Reference> result2 = qs2.execute(Reference.class);
+		List<Reference> result2 = qs2.execute(Reference.class);
 
-        assertEquals(1, result2.size());
+		assertEquals(1, result2.size());
 
-        Reference reference = result2.get(0);
+		Reference reference = result2.get(0);
 
-        assertEquals(reference.getResourceAsString(), referenceEntry.getEntryIn().getResourceAsString());
-        assertTrue(reference.getKeywords().contains("ImportReferenceKeyword"));
-        assertEquals("ImportReferenceTitle", reference.getTitle().getTitle());
-        assertEquals("ImportReferenceSuperordinateTitle", reference.getTitle().getSuperordinateTitle());
-    }
+		assertEquals(reference.getResourceAsString(), referenceEntry.getEntryIn().getResourceAsString());
+		assertTrue(reference.getKeywords().contains("ImportReferenceKeyword"));
+		assertEquals("ImportReferenceTitle", reference.getTitle().getTitle());
+		assertEquals("ImportReferenceSuperordinateTitle", reference.getTitle().getSuperordinateTitle());
+	}
 
-    @Override
-    public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException, RepositoryConfigException, MalformedQueryException, UpdateExecutionException {
+	@Override
+	public void createTestModel() throws RepositoryException, IllegalAccessException, InstantiationException,
+			RepositoryConfigException, MalformedQueryException, UpdateExecutionException {
 
-    }
+	}
 
-    private final static String COMPLEX_WITH_TWO_ENTITIES = "{\n" +
-            "  \"Reference\": {\n" +
-            "    \"reference_title\": {\n" +
-            "      \"reference_title_title\": \"ImportReferenceTitle\",\n" +
-            "      \"reference_title_superordinate\": \"ImportReferenceSuperordinateTitle\",\n" +
-            "      \"id\": \"1.1\",\n" +
-            "      \"type\": \"http://visit.de/ontologies/vismo/Title\"\n" +
-            "    },\n" +
-            "    \"type\": \"http://visit.de/ontologies/vismo/Reference\",\n" +
-            "    \"reference_keyword\": \"ImportReferenceKeyword\",\n" +
-            "    \"id\": \"1\"\n" +
-            "  },\n" +
-            "  \"Group\": {\n" +
-            "    \"type\": \"http://visit.de/ontologies/vismo/Group\",\n" +
-            "    \"group_refentry\": [\n" +
-            "      {\n" +
-            "        \"group_refentry_pages\": \"11\",\n" +
-            "        \"group_refentry_in_reference\": \"1\",\n" +
-            "        \"id\": \"2.1\",\n" +
-            "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"group_refentry_pages\": \"22\",\n" +
-            "        \"group_refentry_in_reference\": \"1\",\n" +
-            "        \"id\": \"2.2\",\n" +
-            "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"id\": \"2\",\n" +
-            "    \"group_iconography\": \"GroupIconography\",\n" +
-            "    \"group_keyword\": \"Keyword,Keyword2\"\n" +
-            "  }\n" +
-            "}";
+	private final static String COMPLEX_WITH_TWO_ENTITIES = "{\n" + "  \"Reference\": {\n"
+			+ "    \"reference_title\": {\n" + "      \"reference_title_title\": \"ImportReferenceTitle\",\n"
+			+ "      \"reference_title_superordinate\": \"ImportReferenceSuperordinateTitle\",\n"
+			+ "      \"id\": \"1.1\",\n" + "      \"type\": \"http://visit.de/ontologies/vismo/Title\"\n" + "    },\n"
+			+ "    \"type\": \"http://visit.de/ontologies/vismo/Reference\",\n"
+			+ "    \"reference_keyword\": \"ImportReferenceKeyword\",\n" + "    \"id\": \"1\"\n" + "  },\n"
+			+ "  \"Group\": {\n" + "    \"type\": \"http://visit.de/ontologies/vismo/Group\",\n"
+			+ "    \"group_refentry\": [\n" + "      {\n" + "        \"group_refentry_pages\": \"11\",\n"
+			+ "        \"group_refentry_in_reference\": \"1\",\n" + "        \"id\": \"2.1\",\n"
+			+ "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n" + "      },\n" + "      {\n"
+			+ "        \"group_refentry_pages\": \"22\",\n" + "        \"group_refentry_in_reference\": \"1\",\n"
+			+ "        \"id\": \"2.2\",\n" + "        \"type\": \"http://visit.de/ontologies/vismo/ReferenceEntry\"\n"
+			+ "      }\n" + "    ],\n" + "    \"id\": \"2\",\n" + "    \"group_iconography\": \"GroupIconography\",\n"
+			+ "    \"group_keyword\": \"Keyword,Keyword2\"\n" + "  }\n" + "}";
 }

@@ -234,6 +234,10 @@ public class ImportQueryGenerator {
 							JSONArray subGroupArray = (JSONArray) subgroup;
 
 							for (int i = 0; i < subGroupArray.length(); ++i) {
+								// this function calls itself for processing each subgroup
+								// subgroups that have subsubgroups are processed in a special way: all query
+								// parts are collected in the totalList and only added when the complete
+								// subgroup is finished
 								LinkedList<String> intermediateQueryParts = processJSONObject(
 										subGroupArray.getJSONObject(i), id);
 
@@ -252,9 +256,16 @@ public class ImportQueryGenerator {
 							}
 
 							// if the recursion reaches the start again, add all parts to the query only now
+							// for subgroups with subsubgroups
 							if (specialCase && uppestGroupCheck(id)) {
 								// we need again a special case, because otherwise the merging fails for the two
 								// dating subsubgroups
+								// TODO: merge of marriage dates in mergeTriples() for start and end does only
+								// work correctly, if
+								// the same
+								// categories are given, e.g. both times only "freie Datierung" and "Taggenaue
+								// Datierung"
+								// if they are not, there are still two different elements of the type Marriage
 								boolean change = false;
 								if (id.equals("person_marriage")) {
 									change = specialCaseMarriage();
@@ -264,6 +275,8 @@ public class ImportQueryGenerator {
 
 								if (change) {
 									List<String> queries = Arrays.asList(split);
+									// another function is used to process the marriage dates to a correct way
+									// before adding the queries
 									queries = changeToY60(queries);
 									queryParts.addAll(this.exchangeRDFVariablesInList(queries));
 								} else {
@@ -308,7 +321,7 @@ public class ImportQueryGenerator {
 	/**
 	 * Updates the list of queries for the special case of marriage dating.
 	 * 
-	 * @param queries the queries to be updated
+	 * @param queries the queries to be updated after merging
 	 * @return updated queries
 	 */
 	private List<String> changeToY60(List<String> queries) {
