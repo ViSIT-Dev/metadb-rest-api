@@ -51,8 +51,10 @@ public class ImportQueryGenerator {
 	 * 
 	 * @param json the JSON, e.g. created by the {@link ExcelParser}
 	 * @return the update query as a String
-	 * @throws QueryGenerationException if the query couldn't be created, e.g. for syntax reasons
-	 * @throws IdMapperException if there was a problem with the identifiers within the JSON
+	 * @throws QueryGenerationException if the query couldn't be created, e.g. for
+	 *                                  syntax reasons
+	 * @throws IdMapperException        if there was a problem with the identifiers
+	 *                                  within the JSON
 	 */
 	public String createUpdateQueryFromJSON(String json) throws QueryGenerationException, IdMapperException {
 		JSONObject jsonObject = new JSONObject(json);
@@ -121,11 +123,13 @@ public class ImportQueryGenerator {
 	/**
 	 * Creates an update query String from a JSON string for a context
 	 * 
-	 * @param json the JSON, e.g. created by the {@link ExcelParser}
+	 * @param json    the JSON, e.g. created by the {@link ExcelParser}
 	 * @param context the context for the graph
 	 * @return the update query as a String
-	 * @throws QueryGenerationException if the query couldn't be created, e.g. for syntax reasons
-	 * @throws IdMapperException if there was a problem with the identifiers within the JSON
+	 * @throws QueryGenerationException if the query couldn't be created, e.g. for
+	 *                                  syntax reasons
+	 * @throws IdMapperException        if there was a problem with the identifiers
+	 *                                  within the JSON
 	 */
 	public String createUpdateQueryFromJSONIntoContext(String json, String context)
 			throws IdMapperException, QueryGenerationException {
@@ -143,7 +147,7 @@ public class ImportQueryGenerator {
 	}
 
 	private LinkedList<String> processJSONObject(JSONObject jsonObject, String groupName) throws IdMapperException {
-		boolean marriage = false;
+		boolean specialCase = false;
 
 		LinkedList<String> queryParts = new LinkedList<String>();
 		if (this.basicGroups.keySet().contains(groupName)) {
@@ -162,11 +166,14 @@ public class ImportQueryGenerator {
 
 			// sort ids
 			if (groupName.equals("activity_dating")) {
-				//there is another order for activity dating
+				// there is another order for activity dating
 				ids.sort(new IdComparatorDating(true));
 			} else {
 				ids.sort(new IdComparatorDating(false));
 			}
+
+			boolean subsubgroup = false;
+			List<String> intermediateQueryParts = new ArrayList<String>();
 
 			String id = "";
 			String value = "";
@@ -175,14 +182,34 @@ public class ImportQueryGenerator {
 				value = jsonObject.getString(id);
 
 				if (this.isSingleValue(value)) {
-					queryParts.add(this.createQueryAddition(groupName, value, id));
+					String query = this.createQueryAddition(groupName, value, id);
+					if (containsSubGroup(id, query, groupName)) {
+						intermediateQueryParts.add(query);
+						subsubgroup = true;
+					} else {
+						queryParts.add(query);
+					}
 				} else {
 					for (String split : value.split(", ")) {
 
 						split = split.trim();
-						queryParts.add(this.createQueryAddition(groupName, split, id));
+						String query = this.createQueryAddition(groupName, split, id);
+
+						if (containsSubGroup(id, query, groupName)) {
+							intermediateQueryParts.add(query);
+							subsubgroup = true;
+						} else {
+							queryParts.add(query);
+						}
 					}
 				}
+			}
+
+			if (subsubgroup) {
+				String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
+				List<String> splitList = Arrays.asList(split);
+
+				totalList.addAll(splitList);
 			}
 		}
 
@@ -213,21 +240,35 @@ public class ImportQueryGenerator {
 								String[] split = TripleMerger.mergeTriples(intermediateQueryParts).split(" .\n");
 								List<String> splitList = Arrays.asList(split);
 
-								//special case for marriage as this includes subsubgroups
-								if (splitList.get(0).contains("P107i_is_current_or_former_member_of")) {
-									marriage = true; 
+								// special case for subsubgroups
+								if (containsSubGroup(id, splitList.get(0), groupName)) {
+									specialCase = true;
 									totalList.addAll(splitList);
-								} else if (totalList.size() > 0 && totalList.get(0).contains("P107i_is_current_or_former_member_of")) {
-									marriage = true; 
+								} else if (totalList.size() > 0 && containsSubGroup(id, totalList.get(0), groupName)) {
+									specialCase = true;
 								} else {
 									queryParts.addAll(this.exchangeRDFVariablesInList(splitList));
 								}
 							}
 
-							//if the recursion reaches the start again, add all parts to the query only now
-							if (marriage && id.equals("person_marriage")) {
+							// if the recursion reaches the start again, add all parts to the query only now
+							if (specialCase && uppestGroupCheck(id)) {
+								// we need again a special case, because otherwise the merging fails for the two
+								// dating subsubgroups
+								boolean change = false;
+								if (id.equals("person_marriage")) {
+									change = specialCaseMarriage();
+								}
+
 								String[] split = TripleMerger.mergeTriples(totalList).split(" .\n");
-								queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
+
+								if (change) {
+									List<String> queries = Arrays.asList(split);
+									queries = changeToY60(queries);
+									queryParts.addAll(this.exchangeRDFVariablesInList(queries));
+								} else {
+									queryParts.addAll(this.exchangeRDFVariablesInList(Arrays.asList(split)));
+								}
 								totalList.clear();
 							}
 						} else {
@@ -255,13 +296,191 @@ public class ImportQueryGenerator {
 						}
 					}
 				} else {
-					this.errors  += "The given id " + id
+					this.errors += "The given id " + id
 							+ " is not supported in the underlying model and thereby ignored.\n";
 				}
 			}
 		}
 
 		return queryParts;
+	}
+
+	/**
+	 * Updates the list of queries for the special case of marriage dating.
+	 * 
+	 * @param queries the queries to be updated
+	 * @return updated queries
+	 */
+	private List<String> changeToY60(List<String> queries) {
+		List<String> updatedQueries = new ArrayList<String>();
+		for (int i = 0; i < queries.size(); i++) {
+			String triple = queries.get(i);
+			updatedQueries.add(triple);
+			String end = "P93i_was_taken_out_of_existence_by> ";
+			if (triple.contains(end)) {
+				// P160_has_temporal_projection
+				updatedQueries.add(queries.get(i + 1));
+				triple = queries.get(i + 2);
+				if (triple.contains("temporal")) {
+					int indexEnde = triple.length();
+					int indexStart = triple.lastIndexOf("?");
+					// find temporal projection
+					String variable = triple.substring(indexStart, indexEnde);
+
+					i = i + 2;
+
+					for (int j = i; j < queries.size(); j++) {
+						triple = queries.get(j);
+						String substitution = triple.replace(variable, "?y60");
+						updatedQueries.add(substitution);
+					}
+
+					i = updatedQueries.size();
+				} else {
+					updatedQueries.add(triple);
+				}
+			}
+		}
+
+		String type = "?y60 rdf:type <http://visit.de/ontologies/vismo/Dating>";
+		updatedQueries.add(type);
+
+		return updatedQueries;
+	}
+
+	/**
+	 * The subgroup marriage has two dating subgroups. To merge them correctly,
+	 * variables need to be swapped out.
+	 * 
+	 * @return
+	 */
+	private boolean specialCaseMarriage() {
+		boolean change = false;
+		for (int i = 0; i < totalList.size(); i++) {
+			String triple = totalList.get(i);
+			String end = "P93i_was_taken_out_of_existence_by> ";
+			if (triple.contains(end)) {
+				String substitution = "";
+				int indexStart = triple.indexOf(end);
+				int indexEnde = indexStart + end.length();
+				char temp = triple.charAt(indexEnde);
+				indexStart = indexEnde;
+
+				if (temp == '?') {
+					indexEnde = triple.length();
+					String variable = triple.substring(indexStart, indexEnde);
+					// P93i_was_taken_out_of_existence_by
+					substitution = triple.replace(variable, "?y50");
+					totalList.remove(i);
+					totalList.add(i, substitution);
+
+					// rdf:type E64_End_of_Existence
+					triple = totalList.get(i + 1);
+					substitution = triple.replace(variable, "?y50");
+					totalList.remove(i + 1);
+					totalList.add(i + 1, substitution);
+
+					// P160_has_temporal_projection
+					triple = totalList.get(i + 2);
+					if (triple.contains("temporal")) {
+						change = true;
+						substitution = triple.replace(variable, "?y50");
+						totalList.remove(i + 2);
+						totalList.add(i + 2, substitution);
+
+						indexEnde = triple.length();
+						indexStart = triple.lastIndexOf("?");
+						// find temporal projection
+						variable = triple.substring(indexStart, indexEnde);
+
+						i = i + 2;
+
+						for (int j = i; j < totalList.size(); j++) {
+							triple = totalList.get(j);
+							substitution = triple.replace(variable, "?y60");
+							totalList.remove(j);
+							totalList.add(j, substitution);
+						}
+
+						i = totalList.size();
+					}
+				}
+			}
+		}
+
+		return change;
+	}
+
+	/**
+	 * Checks for an id whether it is the uppest level of a subgroup that has a
+	 * subsubgroup
+	 * 
+	 * @param id the id to check
+	 * @return true, if this is the uppest id of a subgroup that has a subsubgroup
+	 */
+	private boolean uppestGroupCheck(String id) {
+		if (id.equals("person_marriage")) {
+			return true;
+		} else if (id.equals("person_death")) {
+			return true;
+		} else if (id.equals("person_birth")) {
+			return true;
+		} else if (id.equals("arch_producedby_production")) {
+			return true;
+		} else if (id.equals("arch_modifiedby_structevolution")) {
+			return true;
+		} else if (id.equals("object_producedby_production")) {
+			return true;
+		} else if (id.equals("object_transferred_custody")) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks for an element and an id whether it is part of a subgroup that has a
+	 * subsubgroup.
+	 * 
+	 * @param subGroupTest first elements of the triple list
+	 * @param id           the id
+	 * @param groupName    the name of the group
+	 * @return true, for elements that are part of a subgroup including a
+	 *         subsubgroup
+	 */
+	private boolean containsSubGroup(String id, String subGroupTest, String groupName) {
+		if (groupName.equals("Architecture") || groupName.equals("arch_structevol_dating")
+				|| groupName.equals("arch_production_dating") || groupName.equals("arch_modifiedby_structevolution")
+				|| groupName.equals("arch_producedby_production")) {
+			if (subGroupTest.contains("P108i_was_produced_by")) {
+				return true;
+			} else if (subGroupTest.contains("P31i_was_modified_by")) {
+				return true;
+			}
+		}
+
+		if (groupName.equals("Person") || groupName.contains("marriage") || groupName.contains("birth")
+				|| groupName.contains("death")) {
+			if (subGroupTest.contains("P107i_is_current_or_former_member_of")) {
+				return true;
+			} else if (subGroupTest.contains("P93i_was_taken_out_of_existence_by>")) {
+				return true;
+			} else if (subGroupTest.contains("P92i_was_brought_into_existence_by")) {
+				return true;
+			}
+		}
+
+		if (groupName.equals("Object") || groupName.equals("object_transferred_custody")
+				|| groupName.equals("object_producedby_production") || groupName.equals("production_dating")
+				|| groupName.equals("object_toc_dating")) {
+			if (subGroupTest.contains("P108i_was_produced_by")) {
+				return true;
+			} else if (subGroupTest.contains("P30i_custody_transferred_through")) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private String typeAssociationTriple(String groupName) {
@@ -375,7 +594,7 @@ public class ImportQueryGenerator {
 
 		String csv = "";
 
-		//loads the parts of the queries from the csv file
+		// loads the parts of the queries from the csv file
 		if (this.sparqlEndpointUpdate.equals("none") && this.sparqlEndpointQuery.equals("none")) {
 			csv = "templates/wrapper.csv";
 		} else {

@@ -701,6 +701,64 @@ public class ImportControllerTest extends BaseWebTest {
 		} catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
+		
+		// find marriage date for BezTest2
+		queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+		queryString += "SELECT ?date ?freedating ?freedatingout \n";
+		queryString += "WHERE { \n";
+		queryString += "    <" + marriagePartner2 + "> erlangen:P92i_was_brought_into_existence_by ?existence .\n";
+		queryString += "    ?existence erlangen:P160_has_temporal_projection ?temporal .\n";
+		queryString += "    ?temporal erlangen:P3_has_note ?date .\n";
+		queryString += "    ?temporal erlangen:P82_at_some_time_within ?freedating .\n";
+		queryString += "    <" + marriagePartner2 + "> erlangen:P93i_was_taken_out_of_existence_by ?outexistence .\n";
+		queryString += "    ?outexistence erlangen:P160_has_temporal_projection ?temporalout .\n";
+		queryString += "    ?temporalout erlangen:P82_at_some_time_within ?freedatingout .\n";
+		queryString += "\n }";
+
+		try {
+			TupleQuery temp = connection.prepareTupleQuery(queryString);
+			TupleQueryResult result = temp.evaluate();
+
+			while (result.hasNext()) {
+				BindingSet solution = result.next();
+				Value marriageDate = solution.getValue("date");
+				Value freeMarriageDate = solution.getValue("freedating");
+				Value freeMarriageDateOut = solution.getValue("freedatingout");
+				assertEquals("5/2/93", marriageDate.stringValue());
+				assertEquals("Ende", freeMarriageDateOut.stringValue());
+				assertEquals("frei", freeMarriageDate.stringValue());
+				System.out.println("13");
+			}
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+		
+		// find date of production of Objekttitel
+				queryString = "PREFIX erlangen: <http://erlangen-crm.org/170309/> \n";
+				queryString += "SELECT ?century ?technique \n";
+				queryString += "WHERE { \n";
+				queryString += "    <" + objecttitel_inventnr + "> erlangen:P108i_was_produced_by ?produced .\n";
+				queryString += "    ?produced erlangen:P160_has_temporal_projection ?temporal .\n";
+				queryString += "    ?temporal erlangen:P81_ongoing_throughout ?century .\n";
+				queryString += "    ?produced erlangen:P32_used_general_technique ?generaltechnique .\n";
+				queryString += "    ?generaltechnique erlangen:P3_has_note ?technique .\n";
+				queryString += "\n }";
+
+				try {
+					TupleQuery temp = connection.prepareTupleQuery(queryString);
+					TupleQueryResult result = temp.evaluate();
+
+					while (result.hasNext()) {
+						BindingSet solution = result.next();
+						Value century = solution.getValue("century");
+						assertEquals("18", century.stringValue());
+						Value technique = solution.getValue("technique");
+						assertEquals("Technik", technique.stringValue());
+						System.out.println("14");
+					}
+				} catch (MalformedQueryException e) {
+					e.printStackTrace();
+				}
 
 	}
 
@@ -887,7 +945,6 @@ public class ImportControllerTest extends BaseWebTest {
 		}
 		
 		assertEquals(bez2Id, person.stringValue());
-
 	}
 
 	@Test
