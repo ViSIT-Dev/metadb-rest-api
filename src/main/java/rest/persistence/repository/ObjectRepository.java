@@ -176,7 +176,8 @@ public class ObjectRepository {
 
                         if (bindingElement instanceof JsonObject || bindingElement instanceof JsonPrimitive) {
                             String[] bindingSplit = bindingElement.getAsString().split(",");
-                            if (bindingSplit.length > 1) {
+
+                            if (bindingSplit.length > 1 && i < bindingSplit.length) {
                                 splitObject.addProperty(binding, bindingSplit[i]);
                                 if (binding.equals(JSONVISMO.ID)) {
                                     splitObject.addProperty(JSONVISMO.TYPE, this.anno4jRepository.getLowestClassGivenIdAsString(bindingSplit[i]));
